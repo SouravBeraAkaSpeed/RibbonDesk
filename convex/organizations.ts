@@ -44,6 +44,7 @@ export const create = mutation({
       name,
       slug,
       createdBy: identity.tokenIdentifier,
+      storedBytes: 0,
       deletionStatus: 'active',
       createdAt: now,
       updatedAt: now,

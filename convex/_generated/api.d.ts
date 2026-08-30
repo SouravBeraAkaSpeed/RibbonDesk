@@ -9,9 +9,11 @@
  */
 
 import type * as activity from "../activity.js";
+import type * as applications from "../applications.js";
 import type * as auth from "../auth.js";
 import type * as businesses from "../businesses.js";
 import type * as dashboard from "../dashboard.js";
+import type * as documents from "../documents.js";
 import type * as http from "../http.js";
 import type * as lib_permissions from "../lib/permissions.js";
 import type * as lib_validators from "../lib/validators.js";
@@ -30,9 +32,11 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   activity: typeof activity;
+  applications: typeof applications;
   auth: typeof auth;
   businesses: typeof businesses;
   dashboard: typeof dashboard;
+  documents: typeof documents;
   http: typeof http;
   "lib/permissions": typeof lib_permissions;
   "lib/validators": typeof lib_validators;

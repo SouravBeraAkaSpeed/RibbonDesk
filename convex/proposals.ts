@@ -105,6 +105,67 @@ export const acceptRequirement = mutation({
 
     const now = Date.now();
     const status = args.disposition === 'not_applicable' ? 'not_applicable' : 'not_started';
+    const matchingRequirements = await ctx.db
+      .query('requirements')
+      .withIndex('by_locationId_and_sourceUrl', (index) => index.eq('locationId', proposal.locationId).eq('sourceUrl', snapshot.url))
+      .take(100);
+    const existingRequirement = matchingRequirements.find((requirement) => requirement.title.trim().toLowerCase() === title.toLowerCase());
+    if (existingRequirement) {
+      const nextStatus = args.disposition === 'not_applicable'
+        ? 'not_applicable' as const
+        : ['proposed', 'conflicted'].includes(existingRequirement.status)
+          ? 'not_started' as const
+          : existingRequirement.status;
+      await ctx.db.patch(existingRequirement._id, {
+        description,
+        requirementType,
+        status: nextStatus,
+        agency,
+        sourceSnapshotId: snapshot._id,
+        sourceTitle: snapshot.title,
+        officialSource: snapshot.official,
+        confidence: proposal.confidence,
+        capturedAt: snapshot.capturedAt,
+        lastVerifiedAt: snapshot.lastVerifiedAt,
+        feeMinCents,
+        feeMaxCents,
+        recurrenceRule: payload.recurrenceRule ?? undefined,
+        confirmedBy: identity.tokenIdentifier,
+        confirmedAt: now,
+        notes: payload.unansweredQuestions.length ? `Review questions: ${payload.unansweredQuestions.join(' | ')}` : existingRequirement.notes,
+        updatedAt: now,
+      });
+      await ctx.db.patch(args.proposalId, { status: 'superseded', decidedBy: identity.tokenIdentifier, decidedAt: now, updatedAt: now });
+      const existingTask = (await ctx.db.query('tasks').withIndex('by_requirementId', (index) => index.eq('requirementId', existingRequirement._id)).take(100))
+        .find((task) => !['completed', 'cancelled'].includes(task.status));
+      if (!existingTask && args.disposition === 'start') {
+        await ctx.db.insert('tasks', {
+          organizationId: location.organizationId,
+          locationId: proposal.locationId,
+          requirementId: existingRequirement._id,
+          title: nextAction,
+          description: `Created after human re-confirmation of “${title}”.`,
+          status: 'not_started',
+          priority: args.edits?.deadline ? 'high' : 'normal',
+          dueAt: args.edits?.deadline,
+          createdBy: identity.tokenIdentifier,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
+      await recordActivity(ctx, {
+        organizationId: location.organizationId,
+        locationId: proposal.locationId,
+        actorSubject: identity.tokenIdentifier,
+        action: 'proposal.reconfirmed_existing_requirement',
+        entityType: 'proposal',
+        entityId: args.proposalId,
+        before: { status: proposal.status, requirementId: existingRequirement._id },
+        after: { status: 'superseded', requirementId: existingRequirement._id, disposition: args.disposition },
+        evidence: proposal.citations.map((citation) => ({ kind: 'source_snapshot', id: String(citation.sourceSnapshotId ?? citation.url) })),
+      });
+      return existingRequirement._id;
+    }
     const requirementId = await ctx.db.insert('requirements', {
       organizationId: location.organizationId,
       locationId: proposal.locationId,

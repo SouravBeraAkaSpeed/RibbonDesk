@@ -28,6 +28,7 @@ export default defineSchema({
     name: v.string(),
     slug: v.string(),
     createdBy: v.string(),
+    storedBytes: v.optional(v.number()),
     deletionStatus: v.union(v.literal('active'), v.literal('queued'), v.literal('deleting')),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -222,6 +223,7 @@ export default defineSchema({
   })
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
+    .index('by_locationId_and_sourceUrl', ['locationId', 'sourceUrl'])
     .index('by_locationId_and_deadline', ['locationId', 'deadline'])
     .index('by_organizationId_and_status', ['organizationId', 'status'])
     .index('by_ownerTokenIdentifier_and_status', ['ownerTokenIdentifier', 'status'])
@@ -259,6 +261,7 @@ export default defineSchema({
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_locationId_and_dueAt', ['locationId', 'dueAt'])
+    .index('by_requirementId', ['requirementId'])
     .index('by_ownerTokenIdentifier_and_status', ['ownerTokenIdentifier', 'status']),
 
   applications: defineTable({
@@ -269,6 +272,9 @@ export default defineSchema({
     agency: v.string(),
     status: v.union(v.literal('draft'), v.literal('ready'), v.literal('submitted'), v.literal('needs_attention'), v.literal('approved'), v.literal('denied'), v.literal('withdrawn')),
     officialPortalUrl: v.optional(v.string()),
+    requiredAttachments: v.array(v.string()),
+    unresolvedQuestions: v.array(v.string()),
+    readinessChecks: v.array(v.object({ key: v.string(), label: v.string(), complete: v.boolean() })),
     submittedAt: v.optional(v.number()),
     referenceNumber: v.optional(v.string()),
     expectedResponseAt: v.optional(v.number()),
@@ -280,12 +286,29 @@ export default defineSchema({
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_requirementId', ['requirementId']),
 
+  applicationAnswers: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    applicationId: v.id('applications'),
+    key: v.string(),
+    label: v.string(),
+    value: v.string(),
+    reusable: v.boolean(),
+    updatedBy: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_applicationId_and_key', ['applicationId', 'key'])
+    .index('by_applicationId_and_updatedAt', ['applicationId', 'updatedAt'])
+    .index('by_organizationId_and_key', ['organizationId', 'key']),
+
   applicationPackets: defineTable({
     organizationId: v.id('organizations'),
     locationId: v.id('locations'),
     applicationId: v.id('applications'),
     version: v.number(),
     status: v.union(v.literal('generating'), v.literal('prepared'), v.literal('failed')),
+    errorMessage: v.optional(v.string()),
     pdfStorageId: v.optional(v.id('_storage')),
     zipStorageId: v.optional(v.id('_storage')),
     generatedBy: v.string(),
@@ -319,6 +342,7 @@ export default defineSchema({
     contentType: v.string(),
     sizeBytes: v.number(),
     status: v.union(v.literal('uploaded'), v.literal('processing'), v.literal('needs_review'), v.literal('ready'), v.literal('rejected')),
+    rejectionReason: v.optional(v.string()),
     classification: v.optional(v.string()),
     expiresAt: v.optional(v.number()),
     uploadedBy: v.string(),
@@ -326,6 +350,7 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
+    .index('by_storageId', ['storageId'])
     .index('by_organizationId_and_status', ['organizationId', 'status'])
     .index('by_locationId_and_expiresAt', ['locationId', 'expiresAt']),
 

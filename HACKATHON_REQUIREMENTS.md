@@ -112,7 +112,8 @@ the deadline rather than discovering extra fields during the final hour.
 
 - **Environment:** Codex in the ChatGPT desktop app on Windows.
 - **Repository:** Initialized on `main`, connected to the public GitHub
-  repository, and pushed through the passkey/authenticated-workspace milestone.
+  repository, and pushed through the cited-research milestone. The evidence and
+  application-packet slice is verified locally and awaiting its milestone push.
 - **Convex application:** A development deployment is active. The app has an
   indexed domain schema, authenticated queries and mutations, HTTP auth routes,
   activity events, and a realtime command-center query. Production deployment
@@ -136,7 +137,13 @@ the deadline rather than discovering extra fields during the final hour.
 - **Core workspace:** Organization ownership, role enforcement, business and
   location setup, explicit jurisdiction confirmation, requirement/task data
   foundations, the command center, source preview, replay research, cited
-  proposal review, and approval-gated task creation are deployed to development.
+  proposal review, approval-gated task creation, safe evidence uploads, document
+  expiry capture, reusable application answers, readiness checks, and versioned
+  PDF/ZIP application packets are deployed to development.
+- **Evidence verification:** Authenticated browser automation proves accepted
+  uploads, active-content PDF rejection, evidence linking, packet generation,
+  and private PDF/ZIP downloads. Both pages of a generated PDF were rendered
+  and inspected; the packet carries the explicit prepared-not-filed boundary.
 - **Sponsor components:** AgentMail and Firecrawl components are registered,
   along with Agent, Workflow, and Rate Limiter. The durable Firecrawl callback
   and structured OpenAI extraction paths are implemented behind explicit live

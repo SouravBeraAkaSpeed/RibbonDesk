@@ -1,5 +1,7 @@
 import { existsSync } from 'node:fs';
+import { writeFile } from 'node:fs/promises';
 
+import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { chromium } from 'playwright-core';
 
 const candidates = [
@@ -94,17 +96,101 @@ try {
   await page.getByText('Live workspace').waitFor({ timeout: 20_000 });
   await page.getByRole('heading', { name: /Good (morning|afternoon),/ }).waitFor();
   await page.getByRole('heading', { name: 'Find the rules. Keep the judgment human.' }).waitFor();
-  await page.getByText(/\d+ proposals? waiting/).waitFor({ timeout: 20_000 });
-
   const acceptButtons = page.getByRole('button', { name: 'Accept & create task' });
-  if ((await acceptButtons.count()) === 0) {
-    await page.getByRole('button', { name: /Approve & run research|Run research again/ }).click();
-    await acceptButtons.first().waitFor({ timeout: 20_000 });
+  let existingProposalReady = true;
+  try {
+    await acceptButtons.first().waitFor({ timeout: 5_000 });
+  } catch {
+    existingProposalReady = false;
   }
-  const proposalTitle = await acceptButtons.first().locator('xpath=ancestor::article').getByRole('heading').innerText();
-  await acceptButtons.first().click();
-  await page.getByText('Requirement confirmed and its next action was added to Today.').waitFor({ timeout: 20_000 });
-  await page.getByText(proposalTitle).last().waitFor({ timeout: 20_000 });
+  if (!existingProposalReady) {
+    const confirmedStatus = await page.getByText('Confirmed requirements', { exact: true }).last().locator('..').innerText();
+    const confirmedCount = Number.parseInt(confirmedStatus.match(/\d+/)?.[0] ?? '0', 10);
+    if (confirmedCount === 0) {
+      await page.getByRole('button', { name: /Approve & run research|Run research again/ }).click();
+      await acceptButtons.first().waitFor({ timeout: 20_000 });
+      existingProposalReady = true;
+    }
+  }
+  if (existingProposalReady) {
+    await acceptButtons.first().click();
+    await page.getByText('Requirement confirmed and its next action was added to Today.').waitFor({ timeout: 20_000 });
+  }
+
+  await page.getByRole('button', { name: 'Create application' }).click();
+  await page.getByText('Reusable business answers', { exact: true }).waitFor({ timeout: 20_000 });
+  await page.getByLabel('Legal business name').fill('RibbonDesk Test Café LLC');
+  await page.getByLabel('Primary contact').fill('Test Builder');
+  await page.getByLabel('Business address').fill('123 Test Street, New York, NY 10001');
+  await page.getByRole('button', { name: 'Save answers' }).click();
+  await page.getByText('Reusable business answers saved.').waitFor({ timeout: 20_000 });
+
+  const evidencePdf = await PDFDocument.create();
+  const evidencePage = evidencePdf.addPage([420, 240]);
+  const evidenceFont = await evidencePdf.embedFont(StandardFonts.Helvetica);
+  evidencePage.drawText('Synthetic RibbonDesk permit evidence for automated testing.', { x: 32, y: 180, size: 12, font: evidenceFont });
+  const evidenceBytes = await evidencePdf.save();
+  await page.getByLabel(/PDF, DOCX, TXT/).setInputFiles({
+    name: 'synthetic-permit-evidence.pdf',
+    mimeType: 'application/pdf',
+    buffer: Buffer.from(evidenceBytes),
+  });
+  await page.getByRole('button', { name: 'Upload & check' }).click();
+  const evidenceCard = page.locator('article').filter({ hasText: 'synthetic-permit-evidence.pdf' }).first();
+  await evidenceCard.getByRole('button', { name: 'Confirm type' }).waitFor({ timeout: 20_000 });
+  await evidenceCard.getByRole('button', { name: 'Confirm type' }).click();
+  await evidenceCard.getByRole('button', { name: 'Attach to app' }).waitFor({ timeout: 20_000 });
+  await evidenceCard.getByRole('button', { name: 'Attach to app' }).click();
+  await page.getByText('Document linked to the selected application.').waitFor({ timeout: 20_000 });
+
+  await page.getByLabel('Official portal link').fill('https://nyc-business.nyc.gov/');
+  const unresolvedButton = page.getByRole('button', { name: 'Mark reviewed & resolved' });
+  if (await unresolvedButton.isVisible()) await unresolvedButton.click();
+  const readinessCheckboxes = page.getByRole('checkbox');
+  if ((await readinessCheckboxes.count()) < 4) throw new Error('Application readiness checklist did not render.');
+  for (let index = 0; index < 4; index += 1) {
+    const checkbox = readinessCheckboxes.nth(index);
+    if ((await checkbox.getAttribute('aria-checked')) !== 'true') {
+      await checkbox.click();
+      const checkboxId = await checkbox.getAttribute('id');
+      await page.waitForFunction(
+        (id) => Boolean(id && document.getElementById(id)?.getAttribute('aria-checked') === 'true'),
+        checkboxId,
+        { timeout: 20_000 },
+      );
+    }
+  }
+  const currentPacketBadge = page.getByText(/v\d+ · (prepared|failed|generating)/, { exact: true }).last();
+  const currentPacketVersion = (await currentPacketBadge.count())
+    ? Number.parseInt((await currentPacketBadge.innerText()).match(/\d+/)?.[0] ?? '0', 10)
+    : 0;
+  await page.getByRole('button', { name: 'Generate packet' }).click();
+  await page.getByText(`v${currentPacketVersion + 1} · prepared`, { exact: true }).waitFor({ timeout: 30_000 });
+  const pdfDownload = page.getByRole('link', { name: 'PDF', exact: true });
+  const zipDownload = page.getByRole('link', { name: 'ZIP', exact: true });
+  try {
+    await pdfDownload.waitFor({ timeout: 30_000 });
+  } catch {
+    const packetPanel = page.getByText('PDF summary + ZIP attachments', { exact: true }).locator('..').locator('..');
+    throw new Error(`Packet did not become downloadable: ${await packetPanel.innerText()}`);
+  }
+  await zipDownload.waitFor({ timeout: 30_000 });
+  const pdfResponse = await context.request.get(await pdfDownload.getAttribute('href'));
+  const zipResponse = await context.request.get(await zipDownload.getAttribute('href'));
+  const generatedPdf = await pdfResponse.body();
+  const generatedZip = await zipResponse.body();
+  if (!pdfResponse.ok() || generatedPdf.subarray(0, 5).toString() !== '%PDF-') throw new Error('Generated packet PDF is invalid.');
+  if (!zipResponse.ok() || generatedZip.subarray(0, 2).toString() !== 'PK') throw new Error('Generated attachment ZIP is invalid.');
+  if (process.env.SMOKE_PACKET_PDF) await writeFile(process.env.SMOKE_PACKET_PDF, generatedPdf);
+
+  await page.getByLabel(/PDF, DOCX, TXT/).setInputFiles({
+    name: 'synthetic-active-content.pdf',
+    mimeType: 'application/pdf',
+    buffer: Buffer.from('%PDF-1.4\n1 0 obj<</JavaScript(unsafe-test-only)>>endobj\n%%EOF'),
+  });
+  await page.getByRole('button', { name: 'Upload & check' }).click();
+  const rejectedCard = page.locator('article').filter({ hasText: 'synthetic-active-content.pdf' }).first();
+  await rejectedCard.getByText(/active scripts, launch actions, or embedded files are not allowed/i).waitFor({ timeout: 20_000 });
   if (process.env.SMOKE_SCREENSHOT) {
     await page.screenshot({ path: process.env.SMOKE_SCREENSHOT, fullPage: true });
   }
@@ -112,10 +198,10 @@ try {
   if (consoleErrors.length) {
     throw new Error(`Browser console errors:\n${consoleErrors.join('\n')}`);
   }
-  console.log('Passkey auth, onboarding, cited replay research, human approval, and realtime task creation passed.');
+  console.log('Passkey auth, cited research, approval, safe evidence upload, and versioned PDF/ZIP packet generation passed.');
 } catch (error) {
   console.error(`Smoke test stopped at ${page.url()}`);
-  console.error((await page.locator('body').innerText()).slice(0, 2_000));
+  console.error((await page.locator('body').innerText()).slice(0, 10_000));
   if (failedResponses.length) console.error(failedResponses.join('\n'));
   if (authRequests.length) console.error(authRequests.join('\n'));
   if (consoleErrors.length) console.error(consoleErrors.join('\n'));

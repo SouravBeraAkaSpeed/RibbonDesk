@@ -709,9 +709,16 @@ export const persistSynthesis = internalMutation({
     if (!run || ['needs_review', 'completed'].includes(run.status)) return null;
     const now = Date.now();
     let inserted = 0;
+    const existingPending = await ctx.db
+      .query('proposals')
+      .withIndex('by_locationId_and_status', (index) => index.eq('locationId', run.locationId).eq('status', 'pending'))
+      .take(100);
+    const pendingKeys = new Set(existingPending.flatMap((proposal) => proposal.citations.map((citation) => `${proposal.title.trim().toLowerCase()}|${citation.url}`)));
     for (const requirement of args.requirements.slice(0, 20)) {
       const source = args.snapshots.find((snapshot) => snapshot.url === requirement.sourceUrl);
       if (!source) continue;
+      const proposalKey = `${requirement.title.trim().toLowerCase()}|${source.url}`;
+      if (pendingKeys.has(proposalKey)) continue;
       await ctx.db.insert('proposals', {
         organizationId: run.organizationId,
         locationId: run.locationId,
@@ -727,6 +734,7 @@ export const persistSynthesis = internalMutation({
         createdAt: now,
         updatedAt: now,
       });
+      pendingKeys.add(proposalKey);
       inserted += 1;
     }
     await ctx.db.patch(args.aiRunId, {
@@ -840,9 +848,16 @@ export const applyReplay = internalMutation({
         ]
       : [];
 
+    const existingPending = await ctx.db
+      .query('proposals')
+      .withIndex('by_locationId_and_status', (index) => index.eq('locationId', run.locationId).eq('status', 'pending'))
+      .take(100);
+    const pendingKeys = new Set(existingPending.flatMap((item) => item.citations.map((citation) => `${item.title.trim().toLowerCase()}|${citation.url}`)));
     for (const proposal of replay) {
       const snapshot = snapshotByKey.get(proposal.sourceKey);
       if (!snapshot) continue;
+      const proposalKey = `${proposal.title.trim().toLowerCase()}|${snapshot.source.url}`;
+      if (pendingKeys.has(proposalKey)) continue;
       await ctx.db.insert('proposals', {
         organizationId: run.organizationId,
         locationId: run.locationId,
@@ -857,6 +872,7 @@ export const applyReplay = internalMutation({
         createdAt: now,
         updatedAt: now,
       });
+      pendingKeys.add(proposalKey);
     }
 
     await ctx.db.patch(args.researchRunId, {

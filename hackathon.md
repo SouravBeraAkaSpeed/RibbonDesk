@@ -7,12 +7,12 @@
 - **Repo:** https://github.com/SouravBeraAkaSpeed/RibbonDesk
 - **Frontend:** Codex Sites
 - **Convex deployment:** not deployed
-- **Components:** @convex-dev/agent, @convex-dev/better-auth, @convex-dev/rate-limiter, @convex-dev/workflow
-- **Convex features:** schema, indexes, full-text search, queries, mutations, actions, HTTP actions, scheduled functions, realtime queries
+- **Components:** @convex-dev/agent, @convex-dev/better-auth, @convex-dev/rate-limiter, @convex-dev/workflow, @firecrawl/firecrawl-convex, @agentmail/convex
+- **Convex features:** schema, indexes, full-text search, queries, mutations, actions, HTTP actions, scheduled functions, realtime queries, file storage
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-30T23:23:00Z
+- **Last updated:** 2026-08-30T23:59:02Z
 
 ## Log
 
@@ -72,7 +72,7 @@ now proves registration, sign-out, sign-in, onboarding, NYC coverage selection,
 and the authenticated realtime desk (`scripts/smoke-passkey.mjs`). Convex
 deployment, lint, TypeScript, and the production build all pass.
 
-### 2026-08-30 - working tree
+### 2026-08-30 - b49230e
 I shipped the cited requirement-research and human-review loop in the
 authenticated workspace (`convex/research.ts`, `convex/proposals.ts`,
 `app/app/research-panel.tsx`). A user can preview the official source scope,
@@ -85,3 +85,18 @@ wired for Firecrawl completion callbacks and structured OpenAI extraction but
 has not yet been exercised with sponsor credentials. The browser smoke test now
 proves replay research, human approval, and realtime task creation, and Convex
 deployment, lint, TypeScript, and the production build pass again.
+
+### 2026-08-30 - working tree
+I added the evidence locker and application-preparation workflow
+(`convex/documents.ts`, `convex/applications.ts`,
+`app/app/evidence-applications-panel.tsx`). I can now upload an owned file to
+Convex storage, have its actual content checked before use, confirm its type and
+optional expiry, attach it to a cited requirement or application, reuse
+structured business answers, complete readiness checks, and record an external
+submission reference. RibbonDesk generates versioned PDF summaries and ZIP
+attachment bundles in Convex storage, with every packet explicitly labeled
+“prepared, not filed.” I rendered and visually inspected both pages of a
+generated packet, confirmed it contains no embedded JavaScript, and verified
+the authenticated download bytes. The browser smoke also proves that a file
+with active PDF content is rejected. Convex deployment, lint, TypeScript, and
+the production build pass with this slice.
