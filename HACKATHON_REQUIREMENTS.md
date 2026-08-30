@@ -124,6 +124,11 @@ the deadline rather than discovering extra fields during the final hour.
 - **Frontend:** ChatGPT Sites (`chatgpt.site`) selected.
 - **Sites project:** Scaffolded with the required Sites starter and shadcn
   add-on. The local development preview and production build both run.
+- **Public demo:** Implemented locally with synthetic data, interactive task and
+  proposal state, responsive navigation, and no provider calls or external
+  side effects. Public deployment is still pending.
+- **Policy routes:** Privacy, terms, and the legal-information disclaimer are
+  implemented locally.
 - **Accounts/external actions:** Luma registration is complete. Vibe Apps
   sign-in, sponsor accounts/keys, social post, deployment, and submission are
   still pending.

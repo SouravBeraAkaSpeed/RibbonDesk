@@ -67,8 +67,8 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" render={<Link href="/app" />}>Sign in</Button>
-            <Button className="hidden bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)] sm:inline-flex" render={<Link href="/demo" />}>
+            <Button variant="ghost" nativeButton={false} render={<Link href="/app" />}>Sign in</Button>
+            <Button nativeButton={false} className="hidden bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)] sm:inline-flex" render={<Link href="/demo" />}>
               Explore demo
               <ArrowRight data-icon="inline-end" />
             </Button>
@@ -93,11 +93,11 @@ export default function Home() {
               evidence, and renewals—built for every local business.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Button size="lg" className="h-11 bg-[var(--ribbon)] px-5 text-white hover:bg-[var(--ribbon-dark)]" render={<Link href="/demo" />}>
+              <Button nativeButton={false} size="lg" className="h-11 bg-[var(--ribbon)] px-5 text-white hover:bg-[var(--ribbon-dark)]" render={<Link href="/demo" />}>
                 Explore the live demo
                 <ArrowRight data-icon="inline-end" />
               </Button>
-              <Button size="lg" variant="outline" className="h-11 px-5" render={<Link href="/app" />}>
+              <Button nativeButton={false} size="lg" variant="outline" className="h-11 px-5" render={<Link href="/app" />}>
                 Start with a passkey
               </Button>
             </div>
@@ -143,7 +143,7 @@ export default function Home() {
                     </div>
                     <Progress value={68} className="[&_[data-slot=progress-indicator]]:bg-[var(--sage)]" aria-label="Opening readiness 68 percent" />
                   </div>
-                  <Button variant="outline" className="h-9" render={<Link href="/demo" />}>Open command center</Button>
+                  <Button nativeButton={false} variant="outline" className="h-9" render={<Link href="/demo" />}>Open command center</Button>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-3">
