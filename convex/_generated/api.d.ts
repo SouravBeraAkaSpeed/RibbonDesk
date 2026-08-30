@@ -1,0 +1,76 @@
+/* eslint-disable */
+/**
+ * Generated `api` utility.
+ *
+ * THIS CODE IS AUTOMATICALLY GENERATED.
+ *
+ * To regenerate, run `npx convex dev`.
+ * @module
+ */
+
+import type * as activity from "../activity.js";
+import type * as auth from "../auth.js";
+import type * as businesses from "../businesses.js";
+import type * as dashboard from "../dashboard.js";
+import type * as http from "../http.js";
+import type * as lib_permissions from "../lib/permissions.js";
+import type * as lib_validators from "../lib/validators.js";
+import type * as locations from "../locations.js";
+import type * as organizations from "../organizations.js";
+import type * as requirements from "../requirements.js";
+import type * as tasks from "../tasks.js";
+
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
+
+declare const fullApi: ApiFromModules<{
+  activity: typeof activity;
+  auth: typeof auth;
+  businesses: typeof businesses;
+  dashboard: typeof dashboard;
+  http: typeof http;
+  "lib/permissions": typeof lib_permissions;
+  "lib/validators": typeof lib_validators;
+  locations: typeof locations;
+  organizations: typeof organizations;
+  requirements: typeof requirements;
+  tasks: typeof tasks;
+}>;
+
+/**
+ * A utility for referencing Convex functions in your app's public API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = api.myModule.myFunction;
+ * ```
+ */
+export declare const api: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "public">
+>;
+
+/**
+ * A utility for referencing Convex functions in your app's internal API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = internal.myModule.myFunction;
+ * ```
+ */
+export declare const internal: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "internal">
+>;
+
+export declare const components: {
+  betterAuth: import("../betterAuth/_generated/component.js").ComponentApi<"betterAuth">;
+  agent: import("@convex-dev/agent/_generated/component.js").ComponentApi<"agent">;
+  workflow: import("@convex-dev/workflow/_generated/component.js").ComponentApi<"workflow">;
+  rateLimiter: import("@convex-dev/rate-limiter/_generated/component.js").ComponentApi<"rateLimiter">;
+  agentmail: import("@agentmail/convex/_generated/component.js").ComponentApi<"agentmail">;
+  firecrawl: import("@firecrawl/firecrawl-convex/_generated/component.js").ComponentApi<"firecrawl">;
+};

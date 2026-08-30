@@ -111,10 +111,12 @@ the deadline rather than discovering extra fields during the final hour.
 ## Setup status in this workspace
 
 - **Environment:** Codex in the ChatGPT desktop app on Windows.
-- **Repository:** Initialized on `main` with the public GitHub repository set as
-  `origin`; the first verified push is pending.
-- **Convex application:** Not created yet; therefore project-specific Convex AI
-  files were correctly not installed.
+- **Repository:** Initialized on `main`, connected to the public GitHub
+  repository, and pushed through the public interactive-demo milestone.
+- **Convex application:** A development deployment is active. The app has an
+  indexed domain schema, authenticated queries and mutations, HTTP auth routes,
+  activity events, and a realtime command-center query. Production deployment
+  is still pending.
 - **Convex plugin:** Installed. The current Codex session exposes the official
   Convex skills. Recheck availability after a restart or in a new task before
   relying on it.
@@ -127,11 +129,21 @@ the deadline rather than discovering extra fields during the final hour.
 - **Public demo:** Implemented locally with synthetic data, interactive task and
   proposal state, responsive navigation, and no provider calls or external
   side effects. Public deployment is still pending.
+- **Authentication:** Passkey-first registration and sign-in are implemented
+  with a local Better Auth Convex component. An automated virtual-authenticator
+  smoke test proves registration, sign-out, sign-in, authenticated onboarding,
+  jurisdiction confirmation, and access to the realtime desk.
+- **Core workspace:** Organization ownership, role enforcement, business and
+  location setup, explicit jurisdiction confirmation, requirement/task data
+  foundations, and the command center are deployed to development.
+- **Sponsor components:** AgentMail and Firecrawl components are registered,
+  along with Agent, Workflow, and Rate Limiter. Live sponsor credentials and
+  end-to-end provider calls are not yet verified.
 - **Policy routes:** Privacy, terms, and the legal-information disclaimer are
   implemented locally.
 - **Accounts/external actions:** Luma registration is complete. Vibe Apps
-  sign-in, sponsor accounts/keys, social post, deployment, and submission are
-  still pending.
+  sign-in, live sponsor credentials, live provider smoke tests, the social
+  post, production deployment, and submission are still pending.
 
 ### Convex plugin verification and recovery
 
@@ -152,8 +164,8 @@ The current CLI accepts JSON for `codex plugin list`, but not for
 `codex plugin marketplace list`; the plain marketplace list is the verified
 equivalent in this environment.
 
-Once a real Convex app exists (`package.json` contains `convex` and the same
-root has `convex/` or `convex.json`), check and install managed project AI files:
+The project now meets the Convex-app detection conditions. Recheck managed AI
+files after component or Convex CLI upgrades:
 
 ```powershell
 npx convex ai-files status
@@ -161,7 +173,7 @@ npx convex ai-files install
 npx convex ai-files status
 ```
 
-Do not run those project commands in this currently empty folder.
+The generated Convex guidance is present under `convex/_generated/ai/`.
 
 ## Hosting notes
 

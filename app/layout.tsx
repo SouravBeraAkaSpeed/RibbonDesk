@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Newsreader } from 'next/font/google';
+
+import { ConvexClientProvider } from '@/components/convex-client-provider';
+
 import './globals.css';
 
 const geistSans = Geist({
@@ -25,6 +28,9 @@ export const metadata: Metadata = {
   },
   description:
     'One live desk for permits, applications, inspections, agency email, evidence, and renewals.',
+  icons: {
+    icon: '/icon.svg',
+  },
   openGraph: {
     title: 'RibbonDesk — Open right. Stay ready.',
     description: 'From red tape to ribbon cutting—and every renewal after.',
@@ -50,7 +56,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} antialiased`}>
-        {children}
+        <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>
     </html>
   );
