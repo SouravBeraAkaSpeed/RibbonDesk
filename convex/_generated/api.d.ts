@@ -17,7 +17,9 @@ import type * as lib_permissions from "../lib/permissions.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as locations from "../locations.js";
 import type * as organizations from "../organizations.js";
+import type * as proposals from "../proposals.js";
 import type * as requirements from "../requirements.js";
+import type * as research from "../research.js";
 import type * as tasks from "../tasks.js";
 
 import type {
@@ -36,7 +38,9 @@ declare const fullApi: ApiFromModules<{
   "lib/validators": typeof lib_validators;
   locations: typeof locations;
   organizations: typeof organizations;
+  proposals: typeof proposals;
   requirements: typeof requirements;
+  research: typeof research;
   tasks: typeof tasks;
 }>;
 

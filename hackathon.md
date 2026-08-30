@@ -8,11 +8,11 @@
 - **Frontend:** Codex Sites
 - **Convex deployment:** not deployed
 - **Components:** @convex-dev/agent, @convex-dev/better-auth, @convex-dev/rate-limiter, @convex-dev/workflow
-- **Convex features:** schema, indexes, full-text search, queries, mutations, HTTP actions, realtime queries
+- **Convex features:** schema, indexes, full-text search, queries, mutations, actions, HTTP actions, scheduled functions, realtime queries
 - **Auth:** Other (Better Auth passkeys on Convex)
-- **AI models:** none
+- **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-30T23:02:28Z
+- **Last updated:** 2026-08-30T23:23:00Z
 
 ## Log
 
@@ -59,7 +59,7 @@ terms, and legal-disclaimer routes (`app/app/`, `app/privacy/`, `app/terms/`,
 the proposal state transition, confirmed a clean browser console, and reran
 lint, TypeScript, and the production build successfully.
 
-### 2026-08-30 - working tree
+### 2026-08-30 - 6d87efc
 I connected the real authenticated product path to a Convex development
 deployment. I added passkey-first registration and sign-in, server-enforced
 organization roles, indexed business and location records, explicit
@@ -71,3 +71,17 @@ pending. An automated Chromium smoke test with a virtual hardware authenticator
 now proves registration, sign-out, sign-in, onboarding, NYC coverage selection,
 and the authenticated realtime desk (`scripts/smoke-passkey.mjs`). Convex
 deployment, lint, TypeScript, and the production build all pass.
+
+### 2026-08-30 - working tree
+I shipped the cited requirement-research and human-review loop in the
+authenticated workspace (`convex/research.ts`, `convex/proposals.ts`,
+`app/app/research-panel.tsx`). A user can preview the official source scope,
+start a quota-controlled durable research run, watch its state reactively, and
+accept, edit, reject, or mark a cited proposal not applicable. Only an owner or
+admin can turn a proposal into a confirmed requirement and next-action task;
+the decision and source snapshot stay in the activity record. The default
+provider mode uses a clearly labeled synthetic NYC replay, while live mode is
+wired for Firecrawl completion callbacks and structured OpenAI extraction but
+has not yet been exercised with sponsor credentials. The browser smoke test now
+proves replay research, human approval, and realtime task creation, and Convex
+deployment, lint, TypeScript, and the production build pass again.

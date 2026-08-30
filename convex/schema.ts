@@ -139,6 +139,7 @@ export default defineSchema({
     locationId: v.id('locations'),
     initiatedBy: v.string(),
     mode: v.union(v.literal('verified_pack'), v.literal('dynamic_research'), v.literal('source_refresh')),
+    providerMode: v.union(v.literal('replay'), v.literal('live')),
     status: jobStatusValidator,
     workflowId: v.optional(v.string()),
     crawlId: v.optional(v.string()),

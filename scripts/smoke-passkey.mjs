@@ -93,11 +93,26 @@ try {
 
   await page.getByText('Live workspace').waitFor({ timeout: 20_000 });
   await page.getByRole('heading', { name: /Good (morning|afternoon),/ }).waitFor();
+  await page.getByRole('heading', { name: 'Find the rules. Keep the judgment human.' }).waitFor();
+  await page.getByText(/\d+ proposals? waiting/).waitFor({ timeout: 20_000 });
+
+  const acceptButtons = page.getByRole('button', { name: 'Accept & create task' });
+  if ((await acceptButtons.count()) === 0) {
+    await page.getByRole('button', { name: /Approve & run research|Run research again/ }).click();
+    await acceptButtons.first().waitFor({ timeout: 20_000 });
+  }
+  const proposalTitle = await acceptButtons.first().locator('xpath=ancestor::article').getByRole('heading').innerText();
+  await acceptButtons.first().click();
+  await page.getByText('Requirement confirmed and its next action was added to Today.').waitFor({ timeout: 20_000 });
+  await page.getByText(proposalTitle).last().waitFor({ timeout: 20_000 });
+  if (process.env.SMOKE_SCREENSHOT) {
+    await page.screenshot({ path: process.env.SMOKE_SCREENSHOT, fullPage: true });
+  }
 
   if (consoleErrors.length) {
     throw new Error(`Browser console errors:\n${consoleErrors.join('\n')}`);
   }
-  console.log('Passkey auth, onboarding, jurisdiction confirmation, and the realtime command center passed.');
+  console.log('Passkey auth, onboarding, cited replay research, human approval, and realtime task creation passed.');
 } catch (error) {
   console.error(`Smoke test stopped at ${page.url()}`);
   console.error((await page.locator('body').innerText()).slice(0, 2_000));
