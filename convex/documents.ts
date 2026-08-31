@@ -230,6 +230,9 @@ export const confirm = mutation({
     }
     const patch = { classification, expiresAt: args.expiresAt, status: 'ready' as const, updatedAt: Date.now() };
     await ctx.db.patch(args.documentId, patch);
+    if (args.expiresAt) {
+      await ctx.scheduler.runAfter(0, internal.operations.scheduleDocumentReminders, { documentId: args.documentId });
+    }
     await recordActivity(ctx, {
       organizationId: document.organizationId,
       locationId: document.locationId,

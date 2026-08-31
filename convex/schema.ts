@@ -332,7 +332,27 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index('by_locationId_and_scheduledAt', ['locationId', 'scheduledAt'])
-    .index('by_locationId_and_status', ['locationId', 'status']),
+    .index('by_locationId_and_status', ['locationId', 'status'])
+    .index('by_requirementId', ['requirementId']),
+
+  renewalCycles: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    requirementId: v.id('requirements'),
+    sequence: v.number(),
+    dueAt: v.number(),
+    status: v.union(v.literal('upcoming'), v.literal('due'), v.literal('in_progress'), v.literal('completed'), v.literal('overdue'), v.literal('cancelled')),
+    recurrenceRule: v.string(),
+    outcomeNotes: v.optional(v.string()),
+    completedAt: v.optional(v.number()),
+    remindersScheduledAt: v.optional(v.number()),
+    createdBy: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_locationId_and_dueAt', ['locationId', 'dueAt'])
+    .index('by_requirementId_and_dueAt', ['requirementId', 'dueAt'])
+    .index('by_status_and_dueAt', ['status', 'dueAt']),
 
   documents: defineTable({
     organizationId: v.id('organizations'),
@@ -522,11 +542,14 @@ export default defineSchema({
     readAt: v.optional(v.number()),
     scheduledFor: v.optional(v.number()),
     deliveredEmailAt: v.optional(v.number()),
+    dedupeKey: v.optional(v.string()),
     createdAt: v.number(),
   })
     .index('by_userTokenIdentifier_and_createdAt', ['userTokenIdentifier', 'createdAt'])
+    .index('by_userTokenIdentifier_and_locationId_and_createdAt', ['userTokenIdentifier', 'locationId', 'createdAt'])
     .index('by_userTokenIdentifier_and_readAt', ['userTokenIdentifier', 'readAt'])
-    .index('by_scheduledFor', ['scheduledFor']),
+    .index('by_scheduledFor', ['scheduledFor'])
+    .index('by_dedupeKey', ['dedupeKey']),
 
   notificationPreferences: defineTable({
     organizationId: v.id('organizations'),

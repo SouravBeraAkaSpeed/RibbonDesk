@@ -1,6 +1,7 @@
 import { paginationOptsValidator, paginationResultValidator } from 'convex/server';
 import { ConvexError, v } from 'convex/values';
 
+import { internal } from './_generated/api';
 import { mutation, query } from './_generated/server';
 import { recordActivity, requireLocation, requireMembership } from './lib/permissions';
 import { businessTriggersValidator, lifecycleStageValidator } from './lib/validators';
@@ -157,6 +158,12 @@ export const transitionLifecycle = mutation({
       throw new ConvexError({ code: 'INVALID_TRANSITION', message: `Cannot move from ${location.lifecycleStage} to ${args.lifecycleStage}.` });
     }
     await ctx.db.patch(args.locationId, { lifecycleStage: args.lifecycleStage, updatedAt: Date.now() });
+    if (args.lifecycleStage === 'operating') {
+      await ctx.scheduler.runAfter(0, internal.operations.activateOperatingLifecycle, {
+        locationId: args.locationId,
+        actorSubject: identity.tokenIdentifier,
+      });
+    }
     await recordActivity(ctx, {
       organizationId: location.organizationId,
       locationId: args.locationId,

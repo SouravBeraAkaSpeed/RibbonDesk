@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T00:17:04Z
+- **Last updated:** 2026-08-31T00:32:34Z
 
 ## Log
 
@@ -101,7 +101,7 @@ the authenticated download bytes. The browser smoke also proves that a file
 with active PDF content is rejected. Convex deployment, lint, TypeScript, and
 the production build pass with this slice.
 
-### 2026-08-31 - working tree
+### 2026-08-31 - 0fcde1b
 I built the location case-inbox workflow on the AgentMail component
 (`convex/inbox.ts`, `convex/http.ts`, `app/app/case-inbox-panel.tsx`). The app
 now keeps an owned inbox binding, a reactive sanitized message thread, editable
@@ -116,3 +116,19 @@ paths are implemented but have not yet been exercised with sponsor credentials.
 The browser smoke proves the complete replay loop and observes the new proposal
 reactively in a second authenticated browser context. Convex deployment, lint,
 TypeScript, and the production build pass again.
+
+### 2026-08-31 - working tree
+I extended the workspace from opening preparation into recurring stay-open
+operations (`convex/operations.ts`, `convex/crons.ts`,
+`app/app/operations-lifecycle-panel.tsx`). Moving a location to operating now
+preserves its opening history and activates confirmed recurring requirements.
+I can schedule an inspection, record a supported outcome, create blocking
+corrective work after a failure, track an explicit renewal cycle, start and
+complete it, and roll the same requirement into its next cycle. Convex
+schedules the 90/60/30/14/7/1-day reminder cadence durably, an hourly job marks
+overdue cycles, and expiring checked documents use the same in-app notification
+path. Per-user read state and opt-in email/digest preferences are stored; live
+notification email delivery is not yet verified. The authenticated browser
+smoke proves the operating transition, failed-inspection task, dated evidence,
+near-term reminder, saved preference, and renewal roll-forward. Convex
+deployment, lint, TypeScript, and the production build pass.

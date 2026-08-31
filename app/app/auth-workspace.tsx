@@ -37,6 +37,7 @@ import { authClient } from '@/lib/auth-client';
 import { ResearchPanel } from './research-panel';
 import { EvidenceApplicationsPanel } from './evidence-applications-panel';
 import { CaseInboxPanel } from './case-inbox-panel';
+import { OperationsLifecyclePanel } from './operations-lifecycle-panel';
 
 type FormSubmitEvent = SyntheticEvent<HTMLFormElement, SubmitEvent>;
 
@@ -339,6 +340,7 @@ function CommandCenter({ organizationName, businessName, displayName, locationId
           <ResearchPanel locationId={locationId} role={dashboard.role} />
           <CaseInboxPanel locationId={locationId} />
           <EvidenceApplicationsPanel locationId={locationId} />
+          <OperationsLifecyclePanel locationId={locationId} />
           <div className="mt-7 grid gap-6 xl:grid-cols-[1.45fr_0.8fr]">
             <section className="rounded-[1.5rem] border bg-background p-5 sm:p-6"><div className="flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.17em] text-muted-foreground">Next best actions</p><h2 className="mt-2 text-xl font-semibold">Today</h2></div><Badge variant="outline">Realtime</Badge></div>{today.length ? <div className="mt-5 divide-y">{today.slice(0, 8).map((task: { _id: string; title: string; priority: string; dueAt?: number }) => <div key={task._id} className="flex items-center gap-3 py-4"><span className="size-2 rounded-full bg-[var(--ribbon)]" /><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{task.title}</p><p className="mt-1 text-xs text-muted-foreground">{task.priority} priority{task.dueAt ? ` · due ${new Date(task.dueAt).toLocaleDateString()}` : ''}</p></div><ChevronRight className="size-4 text-muted-foreground" /></div>)}</div> : <EmptyPanel title="Your action queue is clear" copy="Confirmed requirements and approved proposals will produce prioritized work here." />}</section>
             <div className="grid gap-6"><section className="rounded-[1.5rem] border bg-[var(--ink)] p-6 text-white"><div className="flex items-center justify-between"><p className="text-sm font-semibold">Opening readiness</p><span className="font-heading text-3xl">{dashboard.readiness}%</span></div><Progress value={dashboard.readiness} className="mt-5 [&_[data-slot=progress-indicator]]:bg-[var(--sage)]" /><p className="mt-4 text-xs leading-5 text-white/60">Only confirmed requirements count. Uncertain AI proposals cannot improve this score.</p></section><section className="rounded-[1.5rem] border bg-background p-6"><p className="text-xs font-semibold uppercase tracking-[0.17em] text-muted-foreground">Desk status</p><StatusRow label="Confirmed requirements" value={dashboard.counts.confirmedRequirements} /><StatusRow label="Unread notifications" value={dashboard.counts.unreadNotifications} /><StatusRow label="Pending proposals" value={dashboard.counts.pendingProposals} /></section></div>

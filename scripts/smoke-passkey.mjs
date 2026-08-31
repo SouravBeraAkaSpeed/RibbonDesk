@@ -131,14 +131,17 @@ try {
   const evidenceFont = await evidencePdf.embedFont(StandardFonts.Helvetica);
   evidencePage.drawText('Synthetic RibbonDesk permit evidence for automated testing.', { x: 32, y: 180, size: 12, font: evidenceFont });
   const evidenceBytes = await evidencePdf.save();
+  const evidenceFileName = `synthetic-permit-evidence-${Date.now()}.pdf`;
   await page.getByLabel(/PDF, DOCX, TXT/).setInputFiles({
-    name: 'synthetic-permit-evidence.pdf',
+    name: evidenceFileName,
     mimeType: 'application/pdf',
     buffer: Buffer.from(evidenceBytes),
   });
   await page.getByRole('button', { name: 'Upload & check' }).click();
-  const evidenceCard = page.locator('article').filter({ hasText: 'synthetic-permit-evidence.pdf' }).first();
+  const evidenceSection = page.getByTestId('evidence-applications');
+  const evidenceCard = evidenceSection.locator('article').filter({ hasText: evidenceFileName }).first();
   await evidenceCard.getByRole('button', { name: 'Confirm type' }).waitFor({ timeout: 20_000 });
+  await evidenceCard.getByLabel(`Expiry date for ${evidenceFileName}`).fill(new Date(Date.now() + 30 * 24 * 60 * 60 * 1_000).toISOString().slice(0, 10));
   await evidenceCard.getByRole('button', { name: 'Confirm type' }).click();
   await evidenceCard.getByRole('button', { name: 'Attach to app' }).waitFor({ timeout: 20_000 });
   await evidenceCard.getByRole('button', { name: 'Attach to app' }).click();
@@ -147,7 +150,6 @@ try {
   await page.getByLabel('Official portal link').fill('https://nyc-business.nyc.gov/');
   const unresolvedButton = page.getByRole('button', { name: 'Mark reviewed & resolved' });
   if (await unresolvedButton.isVisible()) await unresolvedButton.click();
-  const evidenceSection = page.locator('section').filter({ has: page.getByRole('heading', { name: 'Build the file once. Keep the proof attached.' }) });
   const readinessCheckboxes = evidenceSection.getByRole('checkbox');
   if ((await readinessCheckboxes.count()) < 4) throw new Error('Application readiness checklist did not render.');
   for (let index = 0; index < 4; index += 1) {
@@ -185,16 +187,17 @@ try {
   if (!zipResponse.ok() || generatedZip.subarray(0, 2).toString() !== 'PK') throw new Error('Generated attachment ZIP is invalid.');
   if (process.env.SMOKE_PACKET_PDF) await writeFile(process.env.SMOKE_PACKET_PDF, generatedPdf);
 
+  const activeContentFileName = `synthetic-active-content-${Date.now()}.pdf`;
   await page.getByLabel(/PDF, DOCX, TXT/).setInputFiles({
-    name: 'synthetic-active-content.pdf',
+    name: activeContentFileName,
     mimeType: 'application/pdf',
     buffer: Buffer.from('%PDF-1.4\n1 0 obj<</JavaScript(unsafe-test-only)>>endobj\n%%EOF'),
   });
   await page.getByRole('button', { name: 'Upload & check' }).click();
-  const rejectedCard = page.locator('article').filter({ hasText: 'synthetic-active-content.pdf' }).first();
+  const rejectedCard = evidenceSection.locator('article').filter({ hasText: activeContentFileName }).first();
   await rejectedCard.getByText(/active scripts, launch actions, or embedded files are not allowed/i).waitFor({ timeout: 20_000 });
 
-  const inboxSection = page.locator('section').filter({ has: page.getByRole('heading', { name: 'Agency mail becomes reviewed work.' }) });
+  const inboxSection = page.getByTestId('case-inbox');
   const createInboxButton = inboxSection.getByRole('button', { name: 'Create case inbox' });
   if (await createInboxButton.isVisible()) {
     await createInboxButton.click();
@@ -205,7 +208,7 @@ try {
   const observerContext = await browser.newContext({ baseURL, storageState: await context.storageState() });
   const observerPage = await observerContext.newPage();
   await observerPage.goto('/app', { waitUntil: 'networkidle' });
-  const observerInbox = observerPage.locator('section').filter({ has: observerPage.getByRole('heading', { name: 'Agency mail becomes reviewed work.' }) });
+  const observerInbox = observerPage.getByTestId('case-inbox');
   await observerInbox.getByRole('heading', { name: 'Messages' }).waitFor({ timeout: 20_000 });
   const observerProposalCount = await observerInbox.getByRole('button', { name: 'Approve change' }).count();
   await inboxSection.getByRole('button', { name: 'Receive test reply' }).click();
@@ -233,6 +236,47 @@ try {
   await outboundCard.getByRole('button', { name: 'Approve & send' }).waitFor({ timeout: 20_000 });
   await outboundCard.getByRole('button', { name: 'Approve & send' }).click();
   await outboundCard.getByText('Delivery confirmed').waitFor({ timeout: 20_000 });
+
+  const operationsSection = page.getByTestId('operations-lifecycle');
+  const startOpening = operationsSection.getByRole('button', { name: 'Start opening' });
+  if (await startOpening.isVisible()) {
+    await startOpening.click();
+    await operationsSection.getByRole('button', { name: 'Mark operating' }).waitFor({ timeout: 20_000 });
+  }
+  const markOperating = operationsSection.getByRole('button', { name: 'Mark operating' });
+  if (await markOperating.isVisible()) {
+    await markOperating.click();
+    await operationsSection.getByText('Location is operating. Recurring confirmed requirements are now active.').waitFor({ timeout: 20_000 });
+  }
+
+  const inspectionType = `Controlled safety inspection ${Date.now()}`;
+  await operationsSection.getByLabel('Agency', { exact: true }).fill('Synthetic City Safety Office');
+  await operationsSection.getByLabel('Inspection type', { exact: true }).fill(inspectionType);
+  await operationsSection.getByLabel('Scheduled date').fill(new Date(Date.now() + 3 * 24 * 60 * 60 * 1_000).toISOString().slice(0, 10));
+  await operationsSection.getByRole('button', { name: 'Add inspection' }).click();
+  const inspectionCard = operationsSection.locator('article').filter({ hasText: inspectionType }).first();
+  await inspectionCard.getByLabel(`Outcome for ${inspectionType}`).fill('A controlled finding requires corrective evidence before reinspection.');
+  await inspectionCard.getByRole('button', { name: 'Failed' }).click();
+  await operationsSection.getByText('Failure recorded and a blocking corrective task created.').waitFor({ timeout: 20_000 });
+
+  const renewalDueDate = new Date().toISOString().slice(0, 10);
+  await operationsSection.getByLabel('Confirmed requirement').selectOption({ index: 1 });
+  await operationsSection.getByLabel('Next due date').fill(renewalDueDate);
+  await operationsSection.getByRole('button', { name: 'Track renewal' }).click();
+  await operationsSection.getByText('Renewal tracked with durable reminder scheduling.').waitFor({ timeout: 20_000 });
+  await operationsSection.getByText(/due tomorrow|overdue/).first().waitFor({ timeout: 20_000 });
+  const urgentPreference = operationsSection.getByRole('checkbox', { name: 'Urgent reminder email' });
+  if ((await urgentPreference.getAttribute('aria-checked')) !== 'true') {
+    await urgentPreference.click();
+    await operationsSection.getByText('Reminder preferences saved.').waitFor({ timeout: 20_000 });
+  }
+  const renewalDueLabel = new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(`${renewalDueDate}T12:00:00`));
+  const dueRenewalCard = operationsSection.locator('article').filter({ hasText: renewalDueLabel }).filter({ has: page.getByRole('button', { name: 'Start' }) }).first();
+  if (await dueRenewalCard.count()) {
+    await dueRenewalCard.getByRole('button', { name: 'Start' }).click();
+    await dueRenewalCard.getByRole('button', { name: 'Complete & roll forward' }).click();
+    await operationsSection.getByText('Renewal completed; the next cycle and reminders were created.').waitFor({ timeout: 20_000 });
+  }
   if (process.env.SMOKE_SCREENSHOT) {
     await page.screenshot({ path: process.env.SMOKE_SCREENSHOT, fullPage: true });
   }
@@ -240,7 +284,7 @@ try {
   if (consoleErrors.length) {
     throw new Error(`Browser console errors:\n${consoleErrors.join('\n')}`);
   }
-  console.log('Passkey auth, cited research, evidence and packet generation, realtime inbox proposals, and approval-gated replay delivery passed.');
+  console.log('Passkey auth, cited research, evidence packets, realtime inbox approval, inspections, renewals, and reminders passed.');
 } catch (error) {
   console.error(`Smoke test stopped at ${page.url()}`);
   console.error((await page.locator('body').innerText()).slice(0, 10_000));

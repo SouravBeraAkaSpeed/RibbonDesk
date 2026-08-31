@@ -139,7 +139,7 @@ export function CaseInboxPanel({ locationId }: { locationId: Id<'locations'> }) 
   }
 
   return (
-    <section className="mt-7 overflow-hidden rounded-[1.5rem] border bg-background" aria-labelledby="case-inbox-title">
+    <section data-testid="case-inbox" className="mt-7 overflow-hidden rounded-[1.5rem] border bg-background" aria-labelledby="case-inbox-title">
       <div className="flex flex-col justify-between gap-4 border-b px-5 py-6 sm:flex-row sm:items-start sm:px-6">
         <div><Badge className="bg-[var(--ribbon-soft)] text-[var(--ribbon)]"><Inbox />Case inbox</Badge><h2 id="case-inbox-title" className="mt-4 font-heading text-2xl font-semibold">Agency mail becomes reviewed work.</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Inbound messages are summarized into proposals. Outbound mail requires an immutable owner/admin approval before delivery.</p></div>
         {setup?.binding ? <div className="text-right"><Badge className={statusTone(setup.binding.status)}>{setup.binding.status}</Badge><p className="mt-2 text-xs font-medium">{setup.binding.emailAddress ?? 'Provisioning address…'}</p><p className="mt-1 text-[11px] text-muted-foreground">{setup.binding.providerMode === 'live' ? 'Live AgentMail' : 'Safe replay mode'}</p></div> : null}

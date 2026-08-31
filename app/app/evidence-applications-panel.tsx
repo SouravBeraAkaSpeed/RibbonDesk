@@ -258,7 +258,7 @@ export function EvidenceApplicationsPanel({ locationId }: { locationId: Id<'loca
   }
 
   return (
-    <section className="mt-7 rounded-[1.5rem] border bg-background" aria-labelledby="evidence-applications-title">
+    <section data-testid="evidence-applications" className="mt-7 rounded-[1.5rem] border bg-background" aria-labelledby="evidence-applications-title">
       <div className="flex flex-col justify-between gap-4 border-b px-5 py-6 sm:flex-row sm:items-start sm:px-6">
         <div><Badge className="bg-[var(--sage-soft)] text-[var(--sage)]"><ShieldCheck />Evidence & applications</Badge><h2 id="evidence-applications-title" className="mt-4 font-heading text-2xl font-semibold">Build the file once. Keep the proof attached.</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Upload safe evidence, reuse business answers, prepare versioned packets, and record what you file externally.</p></div>
         <Badge variant="outline" className="w-fit"><Archive />Convex file storage</Badge>

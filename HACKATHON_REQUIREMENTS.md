@@ -112,8 +112,8 @@ the deadline rather than discovering extra fields during the final hour.
 
 - **Environment:** Codex in the ChatGPT desktop app on Windows.
 - **Repository:** Initialized on `main`, connected to the public GitHub
-  repository, and pushed through the evidence/application-packet milestone. The
-  case-inbox slice is verified locally and awaiting its milestone push.
+  repository, and pushed through the case-inbox milestone. The recurring
+  operations slice is verified locally and awaiting its milestone push.
 - **Convex application:** A development deployment is active. The app has an
   indexed domain schema, authenticated queries and mutations, HTTP auth routes,
   activity events, and a realtime command-center query. Production deployment
@@ -142,7 +142,9 @@ the deadline rather than discovering extra fields during the final hour.
   PDF/ZIP application packets are deployed to development. A location-owned
   case inbox now adds sanitized reactive threads, AI-proposed deadline work,
   editable drafts, reviewed attachments, immutable send approvals, and delivery
-  state tracking.
+  state tracking. The operating lifecycle now adds inspections, corrective
+  tasks, renewal cycles, durable reminder scheduling, document-expiry reminders,
+  per-user notification state, and recurrence roll-forward.
 - **Evidence verification:** Authenticated browser automation proves accepted
   uploads, active-content PDF rejection, evidence linking, packet generation,
   and private PDF/ZIP downloads. Both pages of a generated PDF were rendered
@@ -155,6 +157,11 @@ the deadline rather than discovering extra fields during the final hour.
   inbox approval loops, including realtime observation from a second browser
   context. Live sponsor credentials and end-to-end provider calls are not yet
   verified.
+- **Operations verification:** Authenticated browser automation proves the
+  opening-to-operating transition, a failed-inspection blocker, expiring
+  evidence, a near-term in-app reminder, saved notification preferences, and
+  renewal completion that creates the next cycle. Live opt-in reminder email
+  delivery remains pending with the live AgentMail smoke.
 - **Policy routes:** Privacy, terms, and the legal-information disclaimer are
   implemented locally.
 - **Accounts/external actions:** Luma registration is complete. Vibe Apps
