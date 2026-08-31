@@ -3,10 +3,27 @@ import { v } from 'convex/values';
 import { query } from './_generated/server';
 import { requireLocation } from './lib/permissions';
 import { readinessSummary } from './lib/domain';
+import { roleValidator } from './lib/validators';
+import schema from './schema';
 
 export const getCommandCenter = query({
   args: { locationId: v.id('locations') },
-  returns: v.any(),
+  returns: v.object({
+    location: schema.doc('locations'),
+    role: roleValidator,
+    readiness: v.number(),
+    blockers: v.number(),
+    counts: v.object({
+      confirmedRequirements: v.number(),
+      openTasks: v.number(),
+      pendingProposals: v.number(),
+      unreadNotifications: v.number(),
+    }),
+    today: v.array(schema.doc('tasks')),
+    pendingProposals: v.array(schema.doc('proposals')),
+    recentActivity: v.array(schema.doc('activityEvents')),
+    truncated: v.boolean(),
+  }),
   handler: async (ctx, args) => {
     const { membership, location } = await requireLocation(
       ctx,
@@ -14,7 +31,10 @@ export const getCommandCenter = query({
     );
     const [
       requirements,
-      openTasks,
+      notStartedTasks,
+      inProgressTasks,
+      blockedTasks,
+      waitingTasks,
       pendingProposals,
       unreadNotifications,
       recentActivity,
@@ -29,6 +49,24 @@ export const getCommandCenter = query({
         .query('tasks')
         .withIndex('by_locationId_and_status', (query) =>
           query.eq('locationId', args.locationId).eq('status', 'not_started'),
+        )
+        .take(50),
+      ctx.db
+        .query('tasks')
+        .withIndex('by_locationId_and_status', (query) =>
+          query.eq('locationId', args.locationId).eq('status', 'in_progress'),
+        )
+        .take(50),
+      ctx.db
+        .query('tasks')
+        .withIndex('by_locationId_and_status', (query) =>
+          query.eq('locationId', args.locationId).eq('status', 'blocked'),
+        )
+        .take(50),
+      ctx.db
+        .query('tasks')
+        .withIndex('by_locationId_and_status', (query) =>
+          query.eq('locationId', args.locationId).eq('status', 'waiting'),
         )
         .take(50),
       ctx.db
@@ -55,6 +93,12 @@ export const getCommandCenter = query({
     ]);
 
     const readinessState = readinessSummary(requirements);
+    const openTasks = [
+      ...notStartedTasks,
+      ...inProgressTasks,
+      ...blockedTasks,
+      ...waitingTasks,
+    ];
     const confirmed = requirements.filter(
       (requirement) =>
         requirement.status !== 'proposed' &&
@@ -86,7 +130,12 @@ export const getCommandCenter = query({
       }),
       pendingProposals,
       recentActivity,
-      truncated: requirements.length === 250 || openTasks.length === 50,
+      truncated:
+        requirements.length === 250 ||
+        notStartedTasks.length === 50 ||
+        inProgressTasks.length === 50 ||
+        blockedTasks.length === 50 ||
+        waitingTasks.length === 50,
     };
   },
 });

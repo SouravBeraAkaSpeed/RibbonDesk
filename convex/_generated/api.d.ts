@@ -19,6 +19,7 @@ import type * as dataControls from "../dataControls.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
 import type * as inbox from "../inbox.js";
+import type * as integrations from "../integrations.js";
 import type * as lib_domain from "../lib/domain.js";
 import type * as lib_permissions from "../lib/permissions.js";
 import type * as lib_validators from "../lib/validators.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   documents: typeof documents;
   http: typeof http;
   inbox: typeof inbox;
+  integrations: typeof integrations;
   "lib/domain": typeof lib_domain;
   "lib/permissions": typeof lib_permissions;
   "lib/validators": typeof lib_validators;

@@ -134,9 +134,9 @@ export default function Home() {
                 nativeButton={false}
                 size="lg"
                 className="rd-button rd-button-primary"
-                render={<Link href="/demo" />}
+                render={<Link href="/app" />}
               >
-                Explore live demo
+                Start your real workspace
                 <ArrowRight data-icon="inline-end" />
               </Button>
               <Button
@@ -210,8 +210,8 @@ export default function Home() {
                 email, deadlines, and portals. RibbonDesk turns that mess into
                 one clear operating record.
               </p>
-              <Link href="/demo" className="rd-text-link">
-                See the complete demo <ArrowRight />
+              <Link href="/app" className="rd-text-link">
+                Build your operating desk <ArrowRight />
               </Link>
             </div>
           </div>
@@ -478,19 +478,20 @@ export default function Home() {
             </span>
           </div>
           <div className="rd-demo-copy">
-            <span className="rd-section-kicker">No account required</span>
-            <h2>Try a complete opening before starting yours.</h2>
+            <span className="rd-section-kicker">Your data, your desk</span>
+            <h2>Build the live operating record for your business.</h2>
             <p>
-              Explore a synthetic NYC café workspace with requirements, source
-              evidence, agency mail, tasks, and realtime updates.
+              Create your business and location, add cited requirements, assign
+              real work, upload evidence, prepare applications, and track every
+              deadline in one persistent workspace.
             </p>
             <Button
               nativeButton={false}
               size="lg"
               className="rd-button rd-button-primary"
-              render={<Link href="/demo" />}
+              render={<Link href="/app" />}
             >
-              Explore the live demo <ArrowRight data-icon="inline-end" />
+              Start your workspace <ArrowRight data-icon="inline-end" />
             </Button>
           </div>
         </section>
@@ -530,8 +531,8 @@ export default function Home() {
               >
                 Start with a passkey <ArrowRight data-icon="inline-end" />
               </Button>
-              <Link href="/demo" className="rd-text-link">
-                Explore demo <ChevronRight />
+              <Link href="/app" className="rd-text-link">
+                Open RibbonDesk <ChevronRight />
               </Link>
             </div>
           </div>

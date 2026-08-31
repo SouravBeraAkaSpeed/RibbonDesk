@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import {
   type SyntheticEvent,
-  useMemo,
   useState,
   useSyncExternalStore,
 } from 'react';
@@ -42,7 +41,6 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
 import { authClient } from '@/lib/auth-client';
 
 import { ResearchPanel } from './research-panel';
@@ -53,6 +51,7 @@ import { AssistantSourcesPanel } from './assistant-sources-panel';
 import { TeamPanel } from './team-panel';
 import { WorkspaceSearch } from './workspace-search';
 import { DataControlsPanel } from './data-controls-panel';
+import { WorkPlanPanel } from './work-plan-panel';
 
 type FormSubmitEvent = SyntheticEvent<HTMLFormElement, SubmitEvent>;
 
@@ -92,7 +91,7 @@ export function AuthWorkspace() {
 
 function FullPageStatus({ label }: { label: string }) {
   return (
-    <main className="depth-onboarding ribbon-grid grid min-h-screen place-items-center px-5">
+    <main className="auth-page grid min-h-screen place-items-center px-5">
       <div className="flex items-center gap-3 rounded-2xl border bg-background px-5 py-4 text-sm font-medium shadow-sm">
         <LoaderCircle className="size-4 animate-spin text-[var(--ribbon)]" />{' '}
         {label}
@@ -138,7 +137,7 @@ function PasskeyEntry() {
   }
 
   return (
-    <main className="depth-onboarding ribbon-grid grid min-h-screen place-items-center px-5 py-10">
+    <main className="auth-page grid min-h-screen place-items-center px-5 py-10">
       <div className="w-full max-w-md">
         <Link
           href="/"
@@ -146,11 +145,11 @@ function PasskeyEntry() {
         >
           <ArrowLeft className="size-4" /> Back to RibbonDesk
         </Link>
-        <section className="overflow-hidden rounded-[1.75rem] border border-border bg-background shadow-[0_24px_80px_rgb(28_37_51/14%)]">
+        <section className="auth-card overflow-hidden rounded-[1.75rem] border bg-white shadow-[0_24px_80px_rgb(28_37_51/14%)]">
           <div className="border-b border-border bg-[var(--ink)] px-6 py-7 text-white">
             <Badge className="bg-white/10 text-white">
               <Sparkles data-icon="inline-start" />
-              Private beta
+              Live workspace
             </Badge>
             <h1 className="mt-5 font-heading text-3xl font-semibold tracking-[-0.035em]">
               Your opening desk, secured by a passkey.
@@ -240,14 +239,6 @@ function PasskeyEntry() {
                 ? 'Already have an account? Sign in'
                 : 'New to RibbonDesk? Create an account'}
             </button>
-            <Button
-              nativeButton={false}
-              variant="outline"
-              className="mt-4 h-11 w-full"
-              render={<Link href="/demo" />}
-            >
-              Explore the demo instead
-            </Button>
             <div className="mt-6 flex gap-3 rounded-xl bg-[var(--sage-soft)] p-3 text-xs leading-5 text-muted-foreground">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[var(--sage)]" />{' '}
               AI suggestions and outgoing messages always require an authorized
@@ -857,13 +848,12 @@ function CommandCenter({
   locationId: Id<'locations'>;
 }) {
   const dashboard = useQuery(api.dashboard.getCommandCenter, { locationId });
-  const today = useMemo(() => dashboard?.today ?? [], [dashboard]);
   if (dashboard === undefined)
     return <FullPageStatus label="Assembling today’s command center…" />;
 
   return (
     <main className="depth-app-shell min-h-screen text-[var(--ink)]">
-      <header className="depth-header sticky top-0 z-30 border-b border-white/45 bg-[color:var(--paper-strong)/76%] backdrop-blur-2xl">
+      <header className="depth-header sticky top-0 z-30 border-b bg-[var(--paper-strong)]">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <div className="depth-brand-mark grid size-9 place-items-center rounded-xl bg-[var(--ribbon)] text-sm font-black text-white">
@@ -894,17 +884,55 @@ function CommandCenter({
         </div>
       </header>
       <div className="mx-auto grid max-w-[1440px] md:grid-cols-[220px_1fr]">
-        <aside className="depth-rail hidden min-h-[calc(100vh-4rem)] border-r border-white/45 bg-background/48 p-4 backdrop-blur-xl md:block">
+        <aside className="depth-rail hidden min-h-[calc(100vh-4rem)] border-r bg-background p-4 md:block">
           <nav className="grid gap-1 text-sm">
-            <DeskNav icon={LayoutDashboard} label="Today" active />
-            <DeskNav icon={CircleGauge} label="Plan" />
+            <DeskNav
+              icon={LayoutDashboard}
+              label="Today"
+              active
+              onClick={() =>
+                document
+                  .querySelector('#today')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            />
+            <DeskNav
+              icon={CircleGauge}
+              label="Plan"
+              onClick={() =>
+                document
+                  .querySelector('#research')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            />
             <DeskNav
               icon={Inbox}
               label="Inbox"
               badge={dashboard.counts.pendingProposals}
+              onClick={() =>
+                document
+                  .querySelector('#case-inbox')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
             />
-            <DeskNav icon={CalendarClock} label="Calendar" />
-            <DeskNav icon={Building2} label="Businesses" />
+            <DeskNav
+              icon={CalendarClock}
+              label="Calendar"
+              onClick={() =>
+                document
+                  .querySelector('#operations')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            />
+            <DeskNav
+              icon={Building2}
+              label="Business"
+              onClick={() =>
+                document
+                  .querySelector('#business-summary')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            />
             <DeskNav
               icon={Users}
               label="Team"
@@ -915,7 +943,7 @@ function CommandCenter({
               }
             />
           </nav>
-          <div className="mt-8 rounded-2xl border bg-background p-4">
+          <div id="business-summary" className="mt-8 rounded-2xl border bg-background p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               Location
             </p>
@@ -976,6 +1004,7 @@ function CommandCenter({
               tone="ribbon"
             />
           </div>
+          <WorkPlanPanel locationId={locationId} role={dashboard.role} />
           <ResearchPanel locationId={locationId} role={dashboard.role} />
           <CaseInboxPanel locationId={locationId} />
           <EvidenceApplicationsPanel locationId={locationId} />
@@ -990,102 +1019,13 @@ function CommandCenter({
             organizationName={organizationName}
             role={dashboard.role}
           />
-          <div className="mt-7 grid gap-6 xl:grid-cols-[1.45fr_0.8fr]">
-            <section
-              id="today"
-              className="rounded-[1.5rem] border bg-background p-5 sm:p-6"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.17em] text-muted-foreground">
-                    Next best actions
-                  </p>
-                  <h2 className="mt-2 text-xl font-semibold">Today</h2>
-                </div>
-                <Badge variant="outline">Realtime</Badge>
-              </div>
-              {today.length ? (
-                <div className="mt-5 divide-y">
-                  {today
-                    .slice(0, 8)
-                    .map(
-                      (task: {
-                        _id: string;
-                        title: string;
-                        priority: string;
-                        dueAt?: number;
-                      }) => (
-                        <div
-                          key={task._id}
-                          className="flex items-center gap-3 py-4"
-                        >
-                          <span className="size-2 rounded-full bg-[var(--ribbon)]" />
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium">
-                              {task.title}
-                            </p>
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              {task.priority} priority
-                              {task.dueAt
-                                ? ` · due ${new Date(task.dueAt).toLocaleDateString()}`
-                                : ''}
-                            </p>
-                          </div>
-                          <ChevronRight className="size-4 text-muted-foreground" />
-                        </div>
-                      ),
-                    )}
-                </div>
-              ) : (
-                <EmptyPanel
-                  title="Your action queue is clear"
-                  copy="Confirmed requirements and approved proposals will produce prioritized work here."
-                />
-              )}
-            </section>
-            <div className="grid gap-6">
-              <section className="rounded-[1.5rem] border bg-[var(--ink)] p-6 text-white">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold">Opening readiness</p>
-                  <span className="font-heading text-3xl">
-                    {dashboard.readiness}%
-                  </span>
-                </div>
-                <Progress
-                  value={dashboard.readiness}
-                  className="mt-5 [&_[data-slot=progress-indicator]]:bg-[var(--sage)]"
-                />
-                <p className="mt-4 text-xs leading-5 text-white/60">
-                  Only confirmed requirements count. Uncertain AI proposals
-                  cannot improve this score.
-                </p>
-              </section>
-              <section className="rounded-[1.5rem] border bg-background p-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.17em] text-muted-foreground">
-                  Desk status
-                </p>
-                <StatusRow
-                  label="Confirmed requirements"
-                  value={dashboard.counts.confirmedRequirements}
-                />
-                <StatusRow
-                  label="Unread notifications"
-                  value={dashboard.counts.unreadNotifications}
-                />
-                <StatusRow
-                  label="Pending proposals"
-                  value={dashboard.counts.pendingProposals}
-                />
-              </section>
-            </div>
-          </div>
         </section>
       </div>
       <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-background px-2 py-2 md:hidden">
-        <MobileNav icon={LayoutDashboard} label="Today" active />
-        <MobileNav icon={CircleGauge} label="Plan" />
-        <MobileNav icon={Inbox} label="Inbox" />
-        <MobileNav icon={Building2} label="More" />
+        <MobileNav icon={LayoutDashboard} label="Today" active target="today" />
+        <MobileNav icon={CircleGauge} label="Plan" target="research" />
+        <MobileNav icon={Inbox} label="Inbox" target="case-inbox" />
+        <MobileNav icon={Building2} label="More" target="operations" />
       </nav>
     </main>
   );
@@ -1105,7 +1045,7 @@ function OnboardingFrame({
   children: React.ReactNode;
 }) {
   return (
-    <main className="depth-onboarding ribbon-grid min-h-screen px-5 py-10">
+    <main className="auth-page min-h-screen px-5 py-10">
       <div className="mx-auto w-full max-w-2xl">
         <div className="flex items-center justify-between">
           <Link
@@ -1121,7 +1061,7 @@ function OnboardingFrame({
             Sign out
           </button>
         </div>
-        <section className="mt-10 rounded-[1.75rem] border bg-background p-6 shadow-[0_24px_80px_rgb(28_37_51/10%)] sm:p-8">
+        <section className="auth-card mt-10 rounded-[1.75rem] border bg-white p-6 shadow-[0_24px_80px_rgb(28_37_51/10%)] sm:p-8">
           <div className="flex items-center justify-between">
             <Badge className="bg-[var(--ribbon-soft)] text-[var(--ribbon)]">
               Setup · {step}
@@ -1187,13 +1127,20 @@ function MobileNav({
   icon: Icon,
   label,
   active,
+  target,
 }: {
   icon: typeof LayoutDashboard;
   label: string;
   active?: boolean;
+  target: string;
 }) {
   return (
     <button
+      onClick={() =>
+        document
+          .querySelector(`#${target}`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
       className={`grid place-items-center gap-1 text-[10px] ${active ? 'font-semibold text-[var(--ribbon)]' : 'text-muted-foreground'}`}
     >
       <Icon className="size-5" />
@@ -1227,25 +1174,6 @@ function Metric({
       </div>
       <p className="mt-5 font-heading text-3xl font-semibold">{value}</p>
       <p className="mt-1 text-xs font-medium text-muted-foreground">{label}</p>
-    </div>
-  );
-}
-function EmptyPanel({ title, copy }: { title: string; copy: string }) {
-  return (
-    <div className="mt-5 grid place-items-center rounded-2xl border border-dashed bg-[var(--paper-strong)] px-5 py-10 text-center">
-      <CheckCircle2 className="size-7 text-[var(--sage)]" />
-      <p className="mt-3 text-sm font-semibold">{title}</p>
-      <p className="mt-1 max-w-sm text-xs leading-5 text-muted-foreground">
-        {copy}
-      </p>
-    </div>
-  );
-}
-function StatusRow({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="mt-4 flex items-center justify-between border-t pt-4 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-semibold">{value}</span>
     </div>
   );
 }

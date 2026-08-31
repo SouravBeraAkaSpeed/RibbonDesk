@@ -229,3 +229,17 @@ source captures rendered to a sharp 1920×1080 H.264 video, with public-safe
 captions and a timestamped test report (`artifacts/flow-recording/`). The manual
 test also identified three honest demo gaps for the next slice: secondary
 workspace navigation, notification content, and stronger search results.
+
+I rejected and removed the slideshow-style recording and the synthetic public
+workspace after reviewing them as the wrong representation of the product. The
+current source now sends `/demo` to the real passkey workspace, removes every
+demo call to action, defaults provider behavior to live, and blocks external
+research or inbox provisioning when genuine credentials are absent instead of
+manufacturing replacement data. I removed the global glass/3D layer from all
+working surfaces and rebuilt the passkey and onboarding cards with solid,
+high-contrast rendering so forms and text remain sharp. I also added a
+Convex-backed live operating plan where a real user can enter cited requirements,
+approve them with role checks, create and link tasks, and move both records
+through realtime statuses (`app/app/work-plan-panel.tsx`,
+`convex/integrations.ts`). Genuine OpenAI, Firecrawl, and AgentMail credentials
+remain the explicit blocker for end-to-end live provider verification.

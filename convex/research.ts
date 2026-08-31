@@ -242,6 +242,21 @@ export const start = mutation({
       });
     }
 
+    const providerMode =
+      process.env.RIBBONDESK_PROVIDER_MODE === 'replay' ? 'replay' : 'live';
+    if (
+      providerMode === 'live' &&
+      (!process.env.OPENAI_API_KEY ||
+        !process.env.FIRECRAWL_API_KEY ||
+        process.env.FIRECRAWL_API_KEY.toLowerCase().includes('mock'))
+    ) {
+      throw new ConvexError({
+        code: 'LIVE_PROVIDERS_NOT_CONFIGURED',
+        message:
+          'Live research needs genuine OpenAI and Firecrawl credentials. No synthetic result was created.',
+      });
+    }
+
     const activeStatuses = ['queued', 'running'] as const;
     for (const status of activeStatuses) {
       const active = await ctx.db
@@ -290,8 +305,6 @@ export const start = mutation({
       });
     }
 
-    const providerMode =
-      process.env.RIBBONDESK_PROVIDER_MODE === 'live' ? 'live' : 'replay';
     if (providerMode === 'live' && (usage?.aiOperations ?? 0) >= 25) {
       throw new ConvexError({
         code: 'AI_QUOTA',

@@ -132,17 +132,18 @@ the deadline rather than discovering extra fields during the final hour.
   preview and production build both run. The verified source is deployed at
   `https://ribbondesk.souravberaakagralius.chatgpt.site` with public access.
   Anonymous route checks pass and the production runtime reports no errors.
-- **Public demo:** Implemented with synthetic data, interactive task and
-  proposal state, responsive navigation, and no provider calls or external
-  side effects. It is publicly available at `/demo` and verified without
-  authentication.
+- **Public product path:** The synthetic workspace has been removed from the
+  current source. `/demo` now redirects to the real passkey workspace at `/app`.
+  Judges will evaluate the same persistent product path a business owner uses;
+  a separate recorded walkthrough must be captured from the real app after live
+  provider credentials are configured.
 - **Authentication:** Passkey-first registration and sign-in are implemented
   with a local Better Auth Convex component. An automated virtual-authenticator
   smoke test proves registration, sign-out, sign-in, authenticated onboarding,
   jurisdiction confirmation, and access to the realtime desk.
 - **Core workspace:** Organization ownership, role enforcement, business and
-  location setup, explicit jurisdiction confirmation, requirement/task data
-  foundations, the command center, source preview, replay research, cited
+  location setup, explicit jurisdiction confirmation, a real cited-requirement
+  and task editor, the command center, source preview, live-only research, cited
   proposal review, approval-gated task creation, safe evidence uploads, document
   expiry capture, reusable application answers, readiness checks, and versioned
   PDF/ZIP application packets are deployed to development. A location-owned
@@ -171,11 +172,11 @@ the deadline rather than discovering extra fields during the final hour.
   mode. AgentMail's signed webhook, inbound callback, durable send, and delivery
   polling paths are also implemented. The Agent component now stores durable
   Ribbon Assistant threads, with direct OpenAI generation implemented behind
-  live mode. Safe replay tests prove the research, inbox, grounded-answer, and
-  source-change approval loops, including realtime observation from a second
-  browser context. The Firecrawl credential is configured in production, but
-  provider mode remains replay-only while OpenAI and AgentMail production
-  credentials and all end-to-end provider calls remain unverified.
+  live mode. Earlier replay tests proved the research, inbox, grounded-answer,
+  and source-change approval loops, including realtime observation from a
+  second browser context, but replay is no longer exposed in the product UI or
+  used as the default. Genuine Firecrawl, OpenAI, and AgentMail credentials and
+  all end-to-end live provider calls remain unverified.
 - **Operations verification:** Authenticated browser automation proves the
   opening-to-operating transition, a failed-inspection blocker, expiring
   evidence, a near-term in-app reminder, saved notification preferences, and
@@ -192,8 +193,9 @@ the deadline rather than discovering extra fields during the final hour.
   publicly deployed and verified without authentication.
 - **Accounts/external actions:** Luma registration is complete. Vibe Apps
   sign-in, live sponsor credentials, live provider smoke tests, the social
-  post, and submission are still pending. The public Site and production Convex
-  deployment are live in replay mode.
+  post, and submission are still pending. The currently published Site predates
+  the live-only product correction and must not be redeployed until genuine
+  provider credentials are configured and the real flow is verified.
 
 ### Convex plugin verification and recovery
 

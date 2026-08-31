@@ -25,7 +25,7 @@ function todayKey(now: number) {
 }
 
 function providerMode(): 'replay' | 'live' {
-  return process.env.RIBBONDESK_PROVIDER_MODE === 'live' ? 'live' : 'replay';
+  return process.env.RIBBONDESK_PROVIDER_MODE === 'replay' ? 'replay' : 'live';
 }
 
 function text(value: unknown, maximum = 20_000) {
@@ -194,6 +194,16 @@ export const provision = mutation({
     if (existing) return existing._id;
     const now = Date.now();
     const mode = providerMode();
+    if (
+      mode === 'live' &&
+      (!process.env.AGENTMAIL_API_KEY || !process.env.OPENAI_API_KEY)
+    ) {
+      throw new ConvexError({
+        code: 'LIVE_PROVIDERS_NOT_CONFIGURED',
+        message:
+          'A live case inbox needs genuine AgentMail and OpenAI credentials. No synthetic inbox was created.',
+      });
+    }
     const bindingId = await ctx.db.insert('inboxBindings', {
       organizationId: location.organizationId,
       locationId: args.locationId,

@@ -38,7 +38,3 @@ next-env.d.ts
 /outputs/
 /work/
 *.tsbuildinfo
-
-# superseded local recording captures
-/artifacts/flow-recording/frames/
-/artifacts/flow-recording/recording-preview.png

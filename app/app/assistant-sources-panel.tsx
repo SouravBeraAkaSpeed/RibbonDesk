@@ -63,6 +63,7 @@ export function AssistantSourcesPanel({
       : 'skip',
   );
   const setup = useQuery(api.sourceMonitor.getSetup, { locationId });
+  const integrations = useQuery(api.integrations.status);
   const changes = useQuery(api.sourceMonitor.listChanges, {
     locationId,
     paginationOpts: { numItems: 12, cursor: null },
@@ -70,7 +71,6 @@ export function AssistantSourcesPanel({
   const createThread = useMutation(api.assistant.createThread);
   const askAssistant = useAction(api.assistant.ask);
   const startResearch = useMutation(api.research.start);
-  const simulateChange = useMutation(api.sourceMonitor.simulateReplayChange);
   const acceptChange = useMutation(api.sourceMonitor.acceptChange);
   const rejectChange = useMutation(api.sourceMonitor.rejectChange);
   const [question, setQuestion] = useState('');
@@ -143,7 +143,9 @@ export function AssistantSourcesPanel({
               </p>
             </div>
             <Badge variant="outline">
-              {setup?.providerMode === 'live' ? 'Live OpenAI' : 'Safe replay'}
+              {integrations?.openai && integrations.mode === 'live'
+                ? 'Live OpenAI'
+                : 'Live OpenAI required'}
             </Badge>
           </div>
 
@@ -167,7 +169,11 @@ export function AssistantSourcesPanel({
                     'Assistant thread created.',
                   )
                 }
-                disabled={pending === 'assistant-create'}
+                disabled={
+                  pending === 'assistant-create' ||
+                  !integrations?.openai ||
+                  integrations.mode !== 'live'
+                }
               >
                 {pending === 'assistant-create' ? (
                   <LoaderCircle className="animate-spin" />
@@ -248,7 +254,10 @@ export function AssistantSourcesPanel({
                   type="submit"
                   className="sm:h-10"
                   disabled={
-                    pending === 'assistant-ask' || question.trim().length < 3
+                    pending === 'assistant-ask' ||
+                    question.trim().length < 3 ||
+                    !integrations?.openai ||
+                    integrations.mode !== 'live'
                   }
                 >
                   {pending === 'assistant-ask' ? (
@@ -293,7 +302,10 @@ export function AssistantSourcesPanel({
                   'Official-source refresh queued. Progress is visible in the research desk.',
                 )
               }
-              disabled={pending === 'source-refresh'}
+              disabled={
+                pending === 'source-refresh' ||
+                integrations?.researchReady === false
+              }
             >
               {pending === 'source-refresh' ? (
                 <LoaderCircle className="animate-spin" />
@@ -317,30 +329,6 @@ export function AssistantSourcesPanel({
               </p>
             </div>
           </div>
-          {setup?.providerMode === 'replay' && canApprove ? (
-            <Button
-              data-testid="source-simulate"
-              size="sm"
-              variant="outline"
-              className="mt-3"
-              onClick={() =>
-                void run(
-                  'source-simulate',
-                  () => simulateChange({ locationId }),
-                  'Safe replay captured a source change for review.',
-                )
-              }
-              disabled={pending === 'source-simulate'}
-            >
-              {pending === 'source-simulate' ? (
-                <LoaderCircle className="animate-spin" />
-              ) : (
-                <FileDiff />
-              )}
-              Preview safe source change
-            </Button>
-          ) : null}
-
           <div data-testid="source-change-list" className="mt-4 grid gap-3">
             {changes?.page.length ? (
               changes.page.map(({ change, before, after }) => (

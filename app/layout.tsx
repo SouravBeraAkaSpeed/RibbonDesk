@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Newsreader } from 'next/font/google';
 
 import { ConvexClientProvider } from '@/components/convex-client-provider';
-import { DimensionalScene } from '@/components/dimensional-scene';
 
 import './globals.css';
 
@@ -61,10 +60,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} depth-ui antialiased`}
       >
-        <DimensionalScene />
-        <div className="relative z-10">
-          <ConvexClientProvider>{children}</ConvexClientProvider>
-        </div>
+        <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>
     </html>
   );

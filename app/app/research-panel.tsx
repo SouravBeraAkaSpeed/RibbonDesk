@@ -66,6 +66,7 @@ export function ResearchPanel({
 }) {
   const preview = useQuery(api.research.previewSources, { locationId });
   const latest = useQuery(api.research.latest, { locationId });
+  const integrations = useQuery(api.integrations.status);
   const proposals = useQuery(api.proposals.list, {
     locationId,
     status: 'pending',
@@ -180,6 +181,7 @@ export function ResearchPanel({
 
   return (
     <section
+      id="research"
       className="mt-7 overflow-hidden rounded-[1.5rem] border bg-background"
       aria-labelledby="research-title"
     >
@@ -200,7 +202,7 @@ export function ResearchPanel({
                 <Badge className="bg-white/10 text-white">
                   {latest.run.providerMode === 'live'
                     ? 'Live providers'
-                    : 'Synthetic replay'}
+                    : 'Development replay disabled'}
                 </Badge>
               ) : null}
             </div>
@@ -218,7 +220,12 @@ export function ResearchPanel({
           <div className="flex shrink-0 flex-wrap gap-2">
             <Button
               onClick={runResearch}
-              disabled={runActive || pending === 'research' || !preview}
+              disabled={
+                runActive ||
+                pending === 'research' ||
+                !preview ||
+                integrations?.researchReady === false
+              }
               className="bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
             >
               {runActive || pending === 'research' ? (
@@ -228,7 +235,9 @@ export function ResearchPanel({
               ) : (
                 <Sparkles />
               )}
-              {runActive
+              {integrations?.researchReady === false
+                ? 'Connect live providers'
+                : runActive
                 ? 'Research running…'
                 : latest?.run
                   ? 'Run research again'
@@ -284,6 +293,14 @@ export function ResearchPanel({
           </div>
         ) : null}
       </div>
+
+      {integrations && !integrations.researchReady ? (
+        <div className="border-b bg-[var(--amber-soft)] px-5 py-4 text-sm text-[var(--amber)] sm:px-6">
+          Live research is paused until genuine OpenAI and Firecrawl credentials
+          are configured. Manual cited requirements and tasks remain fully
+          available; RibbonDesk will not manufacture replacement results.
+        </div>
+      ) : null}
 
       <div className="grid gap-0 xl:grid-cols-[0.82fr_1.3fr]">
         <div className="border-b p-5 sm:p-6 xl:border-r xl:border-b-0">

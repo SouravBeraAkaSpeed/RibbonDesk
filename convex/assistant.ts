@@ -29,7 +29,7 @@ export const ribbonAgent = new Agent(components.agent, {
 });
 
 function providerMode(): 'replay' | 'live' {
-  return process.env.RIBBONDESK_PROVIDER_MODE === 'live' ? 'live' : 'replay';
+  return process.env.RIBBONDESK_PROVIDER_MODE === 'replay' ? 'replay' : 'live';
 }
 
 function cleanQuestion(question: string) {

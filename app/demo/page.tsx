@@ -1,13 +1,11 @@
 import type { Metadata } from 'next';
-
-import { DemoWorkspace } from './workspace';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: 'Interactive demo',
-  description:
-    'Explore a safe, synthetic RibbonDesk workspace for a New York City café.',
+  title: 'Start your workspace',
+  description: 'Create a real RibbonDesk workspace for your own business.',
 };
 
 export default function DemoPage() {
-  return <DemoWorkspace />;
+  redirect('/app');
 }
