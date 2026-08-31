@@ -423,3 +423,16 @@ NYC food-service verified pack based on geography alone. Verified-pack selection
 now requires both the NYC jurisdiction and a food-service business signal from
 the business type or operational triggers. Other NYC businesses correctly enter
 dynamic cited research with review-required labeling.
+
+I published the corrected flow as ChatGPT Sites version 9 from commit `3b382c3`
+and verified it against production Convex with an authenticated browser session.
+The landing page resolved to “Open dashboard” with no sign-in controls or error
+overlay; the dashboard routed to the saved location step; Back opened the
+prefilled business record; and the stepper returned to location without data
+loss. I completed a controlled NYC technology-office profile, confirmed dynamic
+coverage, and opened the real command center. One live Firecrawl → OpenRouter →
+Convex run produced a cited New York Department of State proposal and kept it in
+the human review queue because the business's foreign-LLC status is unanswered.
+I also provisioned the location's real AgentMail case inbox and verified its
+active webhook-backed empty thread; I did not send an external message or write
+the private inbox address to this public log.

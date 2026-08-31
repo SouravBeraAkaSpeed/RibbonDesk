@@ -142,6 +142,10 @@ the deadline rather than discovering extra fields during the final hour.
   onboarding flow supports revisiting completed steps before jurisdiction
   confirmation. The Google callback gate now hydrates from identical server and
   client markup so it cannot create a framework error overlay during startup.
+  Sites version 9 is the current production release. An authenticated production
+  walkthrough verified session-aware landing actions, reversible saved setup,
+  dynamic coverage for a non-food NYC office, a live cited research proposal,
+  and an active AgentMail case inbox without sending external mail.
   Anonymous route checks pass and the production runtime reports no errors.
 - **Public product path:** The synthetic workspace has been removed from the
   current source. `/demo` now redirects to the real passkey workspace at `/app`.
