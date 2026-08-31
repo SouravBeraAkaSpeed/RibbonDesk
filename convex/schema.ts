@@ -74,6 +74,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_organizationId_and_status', ['organizationId', 'status'])
     .index('by_normalizedEmail_and_status', ['normalizedEmail', 'status'])
     .index('by_tokenHash', ['tokenHash']),
@@ -92,7 +93,11 @@ export default defineSchema({
     .index('by_organizationId_and_lifecycleStage', [
       'organizationId',
       'lifecycleStage',
-    ]),
+    ])
+    .searchIndex('search_name', {
+      searchField: 'name',
+      filterFields: ['organizationId'],
+    }),
 
   locations: defineTable({
     organizationId: v.id('organizations'),
@@ -134,7 +139,11 @@ export default defineSchema({
     .index('by_organizationId_and_lifecycleStage', [
       'organizationId',
       'lifecycleStage',
-    ]),
+    ])
+    .searchIndex('search_name', {
+      searchField: 'name',
+      filterFields: ['organizationId'],
+    }),
 
   coveragePacks: defineTable({
     key: v.string(),
@@ -191,6 +200,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_organizationId_and_createdAt', ['organizationId', 'createdAt'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status']),
@@ -212,6 +222,7 @@ export default defineSchema({
     capturedAt: v.number(),
     lastVerifiedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_capturedAt', ['locationId', 'capturedAt'])
     .index('by_locationId_and_url', ['locationId', 'url'])
     .index('by_researchRunId', ['researchRunId'])
@@ -229,6 +240,7 @@ export default defineSchema({
     decidedAt: v.optional(v.number()),
     decidedBy: v.optional(v.string()),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_detectedAt', ['locationId', 'detectedAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
@@ -259,6 +271,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_locationId_and_sourceUrl', ['locationId', 'sourceUrl'])
@@ -286,6 +299,7 @@ export default defineSchema({
     createdBy: v.string(),
     createdAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId', ['locationId'])
     .index('by_fromRequirementId', ['fromRequirementId'])
     .index('by_toRequirementId', ['toRequirementId'])
@@ -314,6 +328,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_locationId_and_dueAt', ['locationId', 'dueAt'])
@@ -321,7 +336,11 @@ export default defineSchema({
     .index('by_ownerTokenIdentifier_and_status', [
       'ownerTokenIdentifier',
       'status',
-    ]),
+    ])
+    .searchIndex('search_title', {
+      searchField: 'title',
+      filterFields: ['organizationId', 'locationId', 'status'],
+    }),
 
   applications: defineTable({
     organizationId: v.id('organizations'),
@@ -351,9 +370,14 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
-    .index('by_requirementId', ['requirementId']),
+    .index('by_requirementId', ['requirementId'])
+    .searchIndex('search_name', {
+      searchField: 'name',
+      filterFields: ['organizationId', 'locationId', 'status'],
+    }),
 
   applicationAnswers: defineTable({
     organizationId: v.id('organizations'),
@@ -367,6 +391,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_applicationId_and_key', ['applicationId', 'key'])
     .index('by_applicationId_and_updatedAt', ['applicationId', 'updatedAt'])
     .index('by_organizationId_and_key', ['organizationId', 'key']),
@@ -388,6 +413,7 @@ export default defineSchema({
     generatedAt: v.optional(v.number()),
     createdAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_applicationId_and_version', ['applicationId', 'version'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt']),
 
@@ -411,6 +437,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_scheduledAt', ['locationId', 'scheduledAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_requirementId', ['requirementId']),
@@ -437,6 +464,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_dueAt', ['locationId', 'dueAt'])
     .index('by_requirementId_and_dueAt', ['requirementId', 'dueAt'])
     .index('by_status_and_dueAt', ['status', 'dueAt']),
@@ -462,10 +490,15 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_storageId', ['storageId'])
     .index('by_organizationId_and_status', ['organizationId', 'status'])
-    .index('by_locationId_and_expiresAt', ['locationId', 'expiresAt']),
+    .index('by_locationId_and_expiresAt', ['locationId', 'expiresAt'])
+    .searchIndex('search_fileName', {
+      searchField: 'fileName',
+      filterFields: ['organizationId', 'locationId', 'status'],
+    }),
 
   documentLinks: defineTable({
     organizationId: v.id('organizations'),
@@ -482,6 +515,7 @@ export default defineSchema({
     createdBy: v.string(),
     createdAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_documentId', ['documentId'])
     .index('by_requirementId', ['requirementId'])
     .index('by_applicationId', ['applicationId']),
@@ -503,6 +537,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId', ['locationId'])
     .index('by_providerInboxId', ['providerInboxId'])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
@@ -542,16 +577,18 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_providerMessageId', ['providerMessageId'])
     .index('by_locationId_and_receivedAt', ['locationId', 'receivedAt'])
     .index('by_locationId_and_providerThreadId', [
       'locationId',
       'providerThreadId',
     ])
-    .index('by_inboxBindingId_and_receivedAt', [
-      'inboxBindingId',
-      'receivedAt',
-    ]),
+    .index('by_inboxBindingId_and_receivedAt', ['inboxBindingId', 'receivedAt'])
+    .searchIndex('search_subject', {
+      searchField: 'subject',
+      filterFields: ['organizationId', 'locationId', 'status'],
+    }),
 
   outboundDrafts: defineTable({
     organizationId: v.id('organizations'),
@@ -586,6 +623,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_providerOutboundId', ['providerOutboundId']),
@@ -603,6 +641,7 @@ export default defineSchema({
     attachmentDocumentIds: v.array(v.id('documents')),
     approvedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_outboundDraftId', ['outboundDraftId'])
     .index('by_locationId_and_approvedAt', ['locationId', 'approvedAt']),
 
@@ -618,6 +657,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_providerMessageId', ['providerMessageId'])
     .index('by_locationId_and_providerThreadId', [
       'locationId',
@@ -641,6 +681,7 @@ export default defineSchema({
     createdAt: v.number(),
     completedAt: v.optional(v.number()),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_organizationId_and_createdAt', ['organizationId', 'createdAt'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
@@ -655,6 +696,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_componentThreadId', ['componentThreadId'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_createdBy_and_createdAt', [
@@ -695,6 +737,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_locationId_and_type_and_status', [
@@ -722,6 +765,7 @@ export default defineSchema({
     dedupeKey: v.optional(v.string()),
     createdAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_userTokenIdentifier_and_createdAt', [
       'userTokenIdentifier',
       'createdAt',
@@ -746,10 +790,12 @@ export default defineSchema({
     digestHourLocal: v.number(),
     timezone: v.string(),
     updatedAt: v.number(),
-  }).index('by_organizationId_and_userTokenIdentifier', [
-    'organizationId',
-    'userTokenIdentifier',
-  ]),
+  })
+    .index('by_organizationId', ['organizationId'])
+    .index('by_organizationId_and_userTokenIdentifier', [
+      'organizationId',
+      'userTokenIdentifier',
+    ]),
 
   activityEvents: defineTable({
     organizationId: v.id('organizations'),
@@ -765,6 +811,7 @@ export default defineSchema({
     ),
     createdAt: v.number(),
   })
+    .index('by_organizationId', ['organizationId'])
     .index('by_organizationId_and_createdAt', ['organizationId', 'createdAt'])
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_entityType_and_entityId', ['entityType', 'entityId']),
@@ -777,7 +824,9 @@ export default defineSchema({
     approvedSends: v.number(),
     storedBytes: v.number(),
     updatedAt: v.number(),
-  }).index('by_organizationId_and_periodKey', ['organizationId', 'periodKey']),
+  })
+    .index('by_organizationId', ['organizationId'])
+    .index('by_organizationId_and_periodKey', ['organizationId', 'periodKey']),
 
   demoSessions: defineTable({
     sessionKeyHash: v.string(),

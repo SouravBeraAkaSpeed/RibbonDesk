@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import { chromium } from 'playwright-core';
@@ -336,17 +336,19 @@ try {
   const observerProposalCount = await observerInbox
     .getByRole('button', { name: 'Approve change' })
     .count();
-  await inboxSection
-    .getByRole('button', { name: 'Receive test reply' })
-    .click();
-  await observerPage.waitForFunction(
-    (count) =>
-      Array.from(document.querySelectorAll('button')).filter((button) =>
-        button.textContent?.includes('Approve change'),
-      ).length > count,
-    observerProposalCount,
-    { timeout: 20_000 },
-  );
+  if (observerProposalCount === 0) {
+    await inboxSection
+      .getByRole('button', { name: 'Receive test reply' })
+      .click();
+    await observerPage.waitForFunction(
+      () =>
+        Array.from(document.querySelectorAll('button')).some((button) =>
+          button.textContent?.includes('Approve change'),
+        ),
+      undefined,
+      { timeout: 20_000 },
+    );
+  }
   await observerContext.close();
 
   const approveMessageProposal = inboxSection
@@ -500,6 +502,7 @@ try {
   await assistantSources
     .getByTestId('assistant-transcript')
     .getByText(/Current confirmed blockers|There are no confirmed blockers/)
+    .last()
     .waitFor({ timeout: 20_000 });
 
   await assistantSources.getByTestId('source-simulate').click();
@@ -513,6 +516,83 @@ try {
       'Change accepted for review; linked records now need attention and a blocking task was created.',
     )
     .waitFor({ timeout: 20_000 });
+
+  await page.getByTestId('workspace-search').click();
+  await page.getByPlaceholder('Search the workspace…').fill('permit');
+  await page
+    .getByText(/Food Service Establishment Permit/i)
+    .first()
+    .waitFor({ timeout: 20_000 });
+  await page.keyboard.press('Escape');
+
+  const exportDownload = page.waitForEvent('download');
+  await page.getByTestId('export-workspace').click();
+  const downloadedExport = await exportDownload;
+  const exportPath = await downloadedExport.path();
+  if (!exportPath)
+    throw new Error('Workspace export did not produce a download path.');
+  const exportPayload = JSON.parse(await readFile(exportPath, 'utf8'));
+  if (
+    !exportPayload.metadata?.name ||
+    !Array.isArray(exportPayload.records?.requirements)
+  )
+    throw new Error(
+      'Workspace export is missing metadata or requirement records.',
+    );
+  await page
+    .getByText(
+      'Workspace export downloaded with all paginated app records and no provider secrets.',
+    )
+    .waitFor({ timeout: 20_000 });
+
+  const teamSection = page.getByTestId('team-panel');
+  const invitedEmail = `collaborator.${Date.now()}@ribbondesk.test`;
+  await teamSection.getByLabel('Teammate email').fill(invitedEmail);
+  await teamSection
+    .getByRole('button', { name: 'Create private invite' })
+    .click();
+  const inviteLink = await teamSection.getByTestId('invite-link').innerText();
+  if (!inviteLink.includes('/app?invite='))
+    throw new Error('Private invitation link was not generated.');
+
+  const inviteContext = await browser.newContext({ baseURL });
+  const invitePage = await inviteContext.newPage();
+  const inviteCdp = await inviteContext.newCDPSession(invitePage);
+  await inviteCdp.send('WebAuthn.enable');
+  await inviteCdp.send('WebAuthn.addVirtualAuthenticator', {
+    options: {
+      protocol: 'ctap2',
+      transport: 'internal',
+      hasResidentKey: true,
+      hasUserVerification: true,
+      isUserVerified: true,
+      automaticPresenceSimulation: true,
+    },
+  });
+  await invitePage.goto(inviteLink, { waitUntil: 'networkidle' });
+  await invitePage.getByLabel('Your name').fill('Invited Contributor');
+  await invitePage.getByLabel('Work email').fill(invitedEmail);
+  await invitePage
+    .getByRole('button', { name: 'Create account with a passkey' })
+    .click();
+  await invitePage
+    .getByRole('heading', { name: 'Join this RibbonDesk workspace' })
+    .waitFor({ timeout: 20_000 });
+  await invitePage.getByTestId('accept-invite').click();
+  await invitePage.getByText('Live workspace').waitFor({ timeout: 20_000 });
+  await invitePage
+    .getByText('contributor', { exact: true })
+    .first()
+    .waitFor({ timeout: 20_000 });
+  if (await invitePage.getByTestId('source-simulate').count())
+    throw new Error(
+      'Contributor received an owner/admin source approval control.',
+    );
+  await teamSection
+    .getByText('Invited Contributor', { exact: true })
+    .last()
+    .waitFor({ timeout: 20_000 });
+  await inviteContext.close();
   if (process.env.SMOKE_SCREENSHOT) {
     await page.screenshot({
       path: process.env.SMOKE_SCREENSHOT,
@@ -524,7 +604,7 @@ try {
     throw new Error(`Browser console errors:\n${consoleErrors.join('\n')}`);
   }
   console.log(
-    'Passkey auth, cited research, evidence packets, realtime inbox approval, inspections, renewals, reminders, grounded assistant, and source-change review passed.',
+    'Passkey auth, cited research, evidence packets, realtime inbox approval, inspections, renewals, reminders, grounded assistant, source-change review, workspace search, paginated export, and email-bound team invitations passed.',
   );
 } catch (error) {
   console.error(`Smoke test stopped at ${page.url()}`);

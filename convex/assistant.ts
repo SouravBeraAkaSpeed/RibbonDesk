@@ -21,7 +21,7 @@ import schema from './schema';
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY ?? 'not-configured',
 });
-const ribbonAgent = new Agent(components.agent, {
+export const ribbonAgent = new Agent(components.agent, {
   name: 'Ribbon Assistant',
   languageModel: openai.responses('gpt-5.6-terra'),
   instructions:

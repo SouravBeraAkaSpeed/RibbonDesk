@@ -1,0 +1,73 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import {
+  canTransitionRequirement,
+  dependencyWouldCycle,
+  hasMinimumRole,
+  isHttpsCitation,
+  nextRecurrence,
+  readinessSummary,
+  reminderCadences,
+} from '../convex/lib/domain.ts';
+
+void test('role rank preserves approval boundaries', () => {
+  assert.equal(hasMinimumRole('owner', 'admin'), true);
+  assert.equal(hasMinimumRole('contributor', 'admin'), false);
+  assert.equal(
+    canTransitionRequirement('proposed', 'in_progress', 'owner'),
+    false,
+  );
+  assert.equal(
+    canTransitionRequirement('proposed', 'confirmed', 'contributor'),
+    false,
+  );
+  assert.equal(
+    canTransitionRequirement('proposed', 'confirmed', 'admin'),
+    true,
+  );
+});
+
+void test('recurrence clamps end-of-month dates', () => {
+  const january31 = Date.UTC(2026, 0, 31, 12);
+  assert.equal(
+    new Date(nextRecurrence(january31, 'FREQ=MONTHLY')).toISOString(),
+    '2026-02-28T12:00:00.000Z',
+  );
+  assert.equal(
+    new Date(
+      nextRecurrence(january31, 'FREQ=MONTHLY;INTERVAL=3'),
+    ).toISOString(),
+    '2026-04-30T12:00:00.000Z',
+  );
+});
+
+void test('reminder cadence schedules future checkpoints and immediate due work', () => {
+  const now = Date.UTC(2026, 0, 1);
+  assert.deepEqual(
+    reminderCadences(now + 100 * 86_400_000, now),
+    [90, 60, 30, 14, 7, 1],
+  );
+  assert.deepEqual(reminderCadences(now, now), [0]);
+});
+
+void test('citation and dependency validation reject unsafe inputs', () => {
+  assert.equal(isHttpsCitation('https://www.nyc.gov/permits'), true);
+  assert.equal(isHttpsCitation('javascript:alert(1)'), false);
+  const edges = [
+    { from: 'a', to: 'b' },
+    { from: 'b', to: 'c' },
+  ];
+  assert.equal(dependencyWouldCycle(edges, 'c', 'a'), true);
+  assert.equal(dependencyWouldCycle(edges, 'a', 'c'), false);
+});
+
+void test('readiness excludes proposals and conflicts from the denominator', () => {
+  const result = readinessSummary([
+    { status: 'proposed' },
+    { status: 'conflicted' },
+    { status: 'completed' },
+    { status: 'not_started' },
+  ]);
+  assert.deepEqual(result, { confirmed: 2, complete: 1, score: 50 });
+});

@@ -50,6 +50,9 @@ import { EvidenceApplicationsPanel } from './evidence-applications-panel';
 import { CaseInboxPanel } from './case-inbox-panel';
 import { OperationsLifecyclePanel } from './operations-lifecycle-panel';
 import { AssistantSourcesPanel } from './assistant-sources-panel';
+import { TeamPanel } from './team-panel';
+import { WorkspaceSearch } from './workspace-search';
+import { DataControlsPanel } from './data-controls-panel';
 
 type FormSubmitEvent = SyntheticEvent<HTMLFormElement, SubmitEvent>;
 
@@ -264,9 +267,17 @@ function AuthenticatedDesk() {
   });
   const activeOrganization =
     organizations?.page.find((item) => item.organization)?.organization ?? null;
+  const invitationToken =
+    typeof window === 'undefined'
+      ? null
+      : new URLSearchParams(window.location.search).get('invite');
 
   if (user === undefined || organizations === undefined)
     return <FullPageStatus label="Opening your desk…" />;
+  if (invitationToken)
+    return (
+      <InvitationAcceptance token={invitationToken} email={user?.email ?? ''} />
+    );
   if (!activeOrganization)
     return <OrganizationSetup displayName={user?.name ?? ''} />;
   return (
@@ -275,6 +286,59 @@ function AuthenticatedDesk() {
       organizationName={activeOrganization.name}
       displayName={user?.name ?? 'Builder'}
     />
+  );
+}
+
+function InvitationAcceptance({
+  token,
+  email,
+}: {
+  token: string;
+  email: string;
+}) {
+  const acceptInvitation = useMutation(api.organizations.acceptInvitation);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  async function accept() {
+    setPending(true);
+    setError(null);
+    try {
+      await acceptInvitation({ token });
+      const url = new URL(window.location.href);
+      url.searchParams.delete('invite');
+      window.history.replaceState({}, '', url);
+      window.location.reload();
+    } catch (caught) {
+      setError(errorMessage(caught));
+      setPending(false);
+    }
+  }
+  return (
+    <OnboardingFrame
+      step="Invitation"
+      title="Join this RibbonDesk workspace"
+      description={`This private invitation is bound to ${email || 'the email on your passkey account'}.`}
+    >
+      <div className="flex gap-3 rounded-xl bg-[var(--sage-soft)] p-3 text-xs leading-5 text-muted-foreground">
+        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[var(--sage)]" />
+        The workspace role will be enforced on every server operation after you
+        accept.
+      </div>
+      {error ? (
+        <div className="mt-4">
+          <FormError message={error} />
+        </div>
+      ) : null}
+      <Button
+        data-testid="accept-invite"
+        onClick={accept}
+        className="mt-5 h-11 w-full bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
+        disabled={pending}
+      >
+        {pending ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />}
+        Accept invitation
+      </Button>
+    </OnboardingFrame>
   );
 }
 
@@ -483,6 +547,7 @@ function LocationSetup({
     );
   return (
     <CommandCenter
+      organizationId={organizationId}
       organizationName={organizationName}
       businessName={business.name}
       displayName={displayName}
@@ -779,11 +844,13 @@ function ConfirmJurisdiction({
 }
 
 function CommandCenter({
+  organizationId,
   organizationName,
   businessName,
   displayName,
   locationId,
 }: {
+  organizationId: Id<'organizations'>;
   organizationName: string;
   businessName: string;
   displayName: string;
@@ -810,6 +877,7 @@ function CommandCenter({
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <WorkspaceSearch organizationId={organizationId} />
             <Badge variant="outline" className="hidden sm:inline-flex">
               {dashboard.role}
             </Badge>
@@ -837,7 +905,15 @@ function CommandCenter({
             />
             <DeskNav icon={CalendarClock} label="Calendar" />
             <DeskNav icon={Building2} label="Businesses" />
-            <DeskNav icon={Users} label="Team" />
+            <DeskNav
+              icon={Users}
+              label="Team"
+              onClick={() =>
+                document
+                  .querySelector('#team')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            />
           </nav>
           <div className="mt-8 rounded-2xl border bg-background p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -908,8 +984,17 @@ function CommandCenter({
             locationId={locationId}
             role={dashboard.role}
           />
+          <TeamPanel organizationId={organizationId} role={dashboard.role} />
+          <DataControlsPanel
+            organizationId={organizationId}
+            organizationName={organizationName}
+            role={dashboard.role}
+          />
           <div className="mt-7 grid gap-6 xl:grid-cols-[1.45fr_0.8fr]">
-            <section className="rounded-[1.5rem] border bg-background p-5 sm:p-6">
+            <section
+              id="today"
+              className="rounded-[1.5rem] border bg-background p-5 sm:p-6"
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.17em] text-muted-foreground">
@@ -1075,14 +1160,17 @@ function DeskNav({
   label,
   active,
   badge,
+  onClick,
 }: {
   icon: typeof LayoutDashboard;
   label: string;
   active?: boolean;
   badge?: number;
+  onClick?: () => void;
 }) {
   return (
     <button
+      onClick={onClick}
       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-left ${active ? 'bg-[var(--ribbon-soft)] font-semibold text-[var(--ribbon)]' : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}`}
     >
       <Icon className="size-4" />

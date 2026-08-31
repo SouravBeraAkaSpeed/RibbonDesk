@@ -373,6 +373,46 @@ export const latest = query({
   },
 });
 
+export const cancel = mutation({
+  args: { researchRunId: v.id('researchRuns') },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const run = await ctx.db.get(args.researchRunId);
+    if (!run)
+      throw new ConvexError({
+        code: 'NOT_FOUND',
+        message: 'Research run not found.',
+      });
+    const { identity } = await requireLocation(
+      ctx,
+      run.locationId,
+      'contributor',
+    );
+    if (!['queued', 'running'].includes(run.status))
+      throw new ConvexError({
+        code: 'NOT_ACTIVE',
+        message: 'Only an active research run can be cancelled.',
+      });
+    const now = Date.now();
+    await ctx.db.patch(run._id, {
+      status: 'cancelled',
+      completedAt: now,
+      updatedAt: now,
+    });
+    await recordActivity(ctx, {
+      organizationId: run.organizationId,
+      locationId: run.locationId,
+      actorSubject: identity.tokenIdentifier,
+      action: 'research.cancelled',
+      entityType: 'researchRun',
+      entityId: run._id,
+      before: { status: run.status },
+      after: { status: 'cancelled' },
+    });
+    return null;
+  },
+});
+
 export const listSources = query({
   args: {
     locationId: v.id('locations'),

@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T00:49:15Z
+- **Last updated:** 2026-08-31T01:16:47Z
 
 ## Log
 
@@ -133,7 +133,7 @@ smoke proves the operating transition, failed-inspection task, dated evidence,
 near-term reminder, saved preference, and renewal roll-forward. Convex
 deployment, lint, TypeScript, and the production build pass.
 
-### 2026-08-31 - working tree
+### 2026-08-31 - 28b80fb
 I added Ribbon Assistant as a durable, private workspace thread grounded in
 confirmed requirements, tasks, applications, agency messages, inspections,
 renewals, and preserved source evidence (`convex/assistant.ts`,
@@ -147,3 +147,19 @@ requirement. The authenticated browser smoke proves a grounded answer and the
 complete replay detection-to-approval loop; live OpenAI and Firecrawl calls
 remain pending credentials. Convex deployment, lint, TypeScript, and the
 production build pass.
+
+### 2026-08-31 - working tree
+I hardened the authenticated workspace for real collaboration and data control.
+Owners and admins can create expiring private invitations that bind to the
+invitee's exact passkey-account email; the two-account browser test proves
+acceptance, the contributor role, and the absence of owner/admin approval
+controls (`convex/organizations.ts`, `app/app/team-panel.tsx`). I added indexed
+workspace search with a keyboard command palette, cancellable research, a
+paginated owner JSON export, and exact-name-confirmed deletion that clears app
+records, stored files, inbox mappings, and Agent threads in bounded batches
+(`convex/search.ts`, `convex/dataControls.ts`). The export is downloaded and
+parsed in the browser smoke; permanent deletion is implemented but intentionally
+not run against the shared development workspace. CI now runs focused unit tests
+for role boundaries, requirement approval, citation safety, dependency cycles,
+reminder cadence, recurrence, and readiness math. Convex deployment, lint,
+TypeScript, unit tests, the production build, and the full browser smoke pass.
