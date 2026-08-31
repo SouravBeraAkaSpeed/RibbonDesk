@@ -114,6 +114,10 @@ the deadline rather than discovering extra fields during the final hour.
 - **Repository:** Initialized on `main`, connected to the public GitHub
   repository, and pushed through the collaboration, authorization, search,
   export, deletion, accessibility, and provider-contract hardening milestone.
+  The root now includes an MIT license, author metadata, contribution and
+  conduct policies, private security-reporting guidance, architecture and
+  deployment runbooks, issue/PR templates, Dependabot, CI, and a product-led
+  README using the actual RibbonDesk brand assets.
 - **Convex application:** A development deployment is active. The app has an
   indexed domain schema, authenticated queries and mutations, HTTP auth routes,
   activity events, and a realtime command-center query. The production

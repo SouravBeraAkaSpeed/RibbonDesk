@@ -42,6 +42,7 @@ await cdp.send('WebAuthn.addVirtualAuthenticator', {
 const runId = Date.now();
 const email = `live.research.${runId}@ribbondesk.test`;
 const businessName = `RibbonDesk Live Café ${runId}`;
+const organizationName = `Live Test ${runId}`;
 
 try {
   await page.goto('/app', { waitUntil: 'networkidle' });
@@ -50,7 +51,7 @@ try {
   await page.getByRole('button', { name: 'Create account with a passkey' }).click();
   await page.getByRole('heading', { name: 'Name your workspace' }).waitFor({ timeout: 30_000 });
 
-  await page.getByLabel('Organization name').fill(`Live Test ${runId}`);
+  await page.getByLabel('Organization name').fill(organizationName);
   await page.getByRole('button', { name: 'Create workspace' }).click();
   await page.getByRole('heading', { name: 'Tell me about the business' }).waitFor({ timeout: 30_000 });
   await page.getByLabel('Business name').fill(businessName);
@@ -110,6 +111,11 @@ try {
     throw new Error('The grounded assistant did not return a usable answer.');
   }
 
+  const dataControls = page.getByTestId('data-controls');
+  await dataControls.getByLabel('Workspace name').fill(organizationName);
+  await dataControls.getByRole('button', { name: 'Queue permanent deletion' }).click();
+  await page.getByRole('heading', { name: 'Name your workspace' }).waitFor({ timeout: 30_000 });
+
   if (consoleErrors.length) throw new Error(`Browser console errors:\n${consoleErrors.join('\n')}`);
   console.log(JSON.stringify({
     status: 'passed',
@@ -118,6 +124,7 @@ try {
     humanApproval: true,
     realtimeSecondTab: true,
     groundedAssistant: true,
+    controlledCleanup: true,
     proposalTitle,
   }, null, 2));
 } catch (error) {

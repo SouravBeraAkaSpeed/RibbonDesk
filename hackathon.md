@@ -288,3 +288,18 @@ temporary sender and workspace were removed; no test inbox remains. The public
 Site still serves the earlier frontend commit, so publishing this current
 spacious landing page, live-only copy, safe source reader, and hardening work is
 the remaining release action.
+
+I prepared the repository as a public production project before the final Site
+release. I added an MIT license under my name, a Contributor Covenant, security
+reporting policy, contribution guide, issue and pull-request templates,
+Dependabot configuration, package author/repository metadata, and detailed
+architecture and deployment runbooks. I rebuilt the README around RibbonDesk's
+actual logo and social artwork, documented the complete owner journey and trust
+model, and attributed the project to me as Saurabh Bera, Head of Tech at Quark
+Labs and previously CEO of Dot Labs. I also changed the live-research acceptance
+script to permanently remove its uniquely named test workspace after a
+successful run. Convex validation, strict TypeScript, lint, five domain tests,
+passkey registration/sign-in/onboarding with controlled deletion, the production
+build, and the production dependency audit all pass; the audit reports zero
+known production vulnerabilities. The owner has explicitly approved public
+publication of this verified source.

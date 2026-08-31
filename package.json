@@ -1,7 +1,30 @@
 {
   "name": "ribbondesk",
   "version": "0.1.0",
+  "description": "A cited, human-reviewed operating desk that helps local businesses open right and stay ready.",
   "private": true,
+  "license": "MIT",
+  "author": {
+    "name": "Saurabh Bera"
+  },
+  "homepage": "https://ribbondesk.souravberaakagralius.chatgpt.site",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SouravBeraAkaSpeed/RibbonDesk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SouravBeraAkaSpeed/RibbonDesk/issues"
+  },
+  "keywords": [
+    "local-business",
+    "permits",
+    "convex",
+    "firecrawl",
+    "agentmail",
+    "openrouter",
+    "passkeys",
+    "realtime"
+  ],
   "engines": {
     "node": ">=22.13.0"
   },

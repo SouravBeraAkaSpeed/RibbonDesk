@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a reproducible RibbonDesk problem using synthetic data.
+title: "[Bug]: "
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve RibbonDesk. Never paste secrets, real messages, private inbox addresses, or customer records.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the observed and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps
+      placeholder: "1. Open …\n2. Choose …\n3. Observe …"
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Affected surface
+      options:
+        - Public landing page
+        - Passkey authentication
+        - Business onboarding
+        - Research and sources
+        - Plan, tasks, and evidence
+        - Case inbox and email
+        - Applications, inspections, or renewals
+        - Assistant
+        - Export or deletion
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Public-safe evidence
+      description: Add screenshots or logs only after removing private data.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Safety check
+      options:
+        - label: I have not included secrets, personal data, or a currently exploitable security vulnerability.
+          required: true

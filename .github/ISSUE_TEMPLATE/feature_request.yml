@@ -1,0 +1,28 @@
+name: Feature request
+description: Propose a focused improvement for local business owners or maintainers.
+title: "[Feature]: "
+labels: [enhancement, needs-triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What real workflow is difficult today, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: Describe the user result, not only the interface.
+    validations:
+      required: true
+  - type: textarea
+    id: trust
+    attributes:
+      label: Trust and safety considerations
+      description: Note any regulatory claims, AI decisions, external sends, private data, or new providers involved.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

@@ -1,61 +1,134 @@
-# RibbonDesk
+<div align="center">
+  <img src="./public/icon.svg" width="72" height="72" alt="RibbonDesk logo" />
+  <h1>RibbonDesk</h1>
+  <p><strong>Open right. Stay ready.</strong></p>
+  <p>One live desk for official-source research, requirements, tasks, evidence, agency email, applications, inspections, and renewals.</p>
 
-**Open right. Stay ready.**
+  <p>
+    <a href="https://ribbondesk.souravberaakagralius.chatgpt.site"><strong>Open the live app</strong></a>
+    ·
+    <a href="./hackathon.md">Build log</a>
+    ·
+    <a href="./CONTRIBUTING.md">Contributing</a>
+  </p>
+
+  <p>
+    <a href="https://github.com/SouravBeraAkaSpeed/RibbonDesk/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/SouravBeraAkaSpeed/RibbonDesk/actions/workflows/ci.yml/badge.svg" /></a>
+    <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-1c2533.svg" /></a>
+    <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6.svg" />
+    <img alt="Convex" src="https://img.shields.io/badge/backend-Convex-ee342f.svg" />
+  </p>
+</div>
+
+![RibbonDesk — from red tape to ribbon cutting](./public/og-playful.png)
+
+## What RibbonDesk does
 
 RibbonDesk helps a local business owner understand what must be done to open a
-business and keep it running. The owner describes the business and location;
+business and keep it running. The owner describes the business and its location;
 RibbonDesk researches official sources, proposes a cited plan for human review,
-organizes tasks and evidence, turns agency email into reviewed follow-up work,
-and keeps renewals and inspections visible after opening.
+organizes the work, turns agency email into reviewed follow-up actions, and keeps
+renewals and inspections visible after opening.
 
-NYC cafés and restaurants are the first verified coverage pack. Any business
-and location can use dynamic official-source research, with unsupported or
-uncertain results clearly labeled for review.
+NYC cafés and restaurants are the first verified coverage pack. Any business in
+any location can run dynamic official-source research. Unsupported, uncertain,
+or conflicting results stay visibly marked for review rather than being
+presented as settled guidance.
 
-## What a real user can do
+RibbonDesk is an information organizer and work tracker, not a law firm or a
+government filing service. It prepares and tracks applications; it does not
+submit them or make legal decisions for the owner.
 
-- Create a passkey account and a role-protected organization.
-- Configure a business and explicitly confirm its jurisdiction.
-- Run a live Firecrawl research job and review OpenRouter-generated proposals
-  with preserved official-source evidence.
-- Accept, edit, reject, or mark each proposal not applicable; AI never silently
-  confirms a business requirement.
-- Manage requirements, dependencies, tasks, evidence, application preparation,
-  inspections, renewals, notifications, and source changes in realtime.
-- Provision a location-owned AgentMail case inbox, receive agency messages,
-  approve AI-proposed follow-up work, and approve an editable reply before it
-  can leave the app.
-- Ask Ribbon Assistant grounded questions about the workspace record.
-- Export organization data or permanently delete it, including the remote case
-  inbox and stored Convex files.
+## A complete owner journey
 
-RibbonDesk prepares and tracks work. It does not file government applications,
-make legal decisions, or send email without an owner/admin approval record.
+1. **Create a passkey account.** No password is stored by RibbonDesk.
+2. **Create a protected workspace.** Name the organization, business, and first location.
+3. **Describe the real operation.** Add the address, business type, activities, and triggers such as food service, alcohol, seating, employees, construction, delivery, or signage.
+4. **Confirm the jurisdiction.** RibbonDesk detects a likely jurisdiction but requires the owner to confirm it.
+5. **Approve source research.** The owner sees the trusted domains and starts a live Firecrawl run.
+6. **Review cited proposals.** OpenRouter models extract possible permits, registrations, inspections, fees, dependencies, deadlines, and open questions. Every proposal keeps its source evidence and confidence.
+7. **Keep people in control.** The owner accepts, edits, rejects, or marks each proposal not applicable. AI output never silently becomes a requirement.
+8. **Run the opening plan.** Confirmed requirements become assignable tasks with deadlines, blockers, dependencies, status, notes, and evidence.
+9. **Prepare applications.** Reuse business answers, track attachments, inspect readiness, follow the official portal link, and record an external submission receipt and outcome.
+10. **Work from one case inbox.** Provision a location-owned AgentMail inbox, receive agency mail, review the AI summary and proposed changes, edit a reply, and require owner/admin approval before it is sent.
+11. **Coordinate in realtime.** Invite teammates as owner, admin, contributor, or viewer; assign work; search the workspace; and see changes in another browser immediately.
+12. **Stay ready after opening.** Move the location to operating mode and track renewals, inspections, notices, document expirations, corrective actions, reminders, and meaningful source changes.
+13. **Retain control of the data.** Export the organization record or queue permanent deletion of app records, stored files, scheduled work, and the remote case inbox.
 
-## Stack
+## Product capabilities
 
-- ChatGPT Sites / Vinext, React, TypeScript, Tailwind, and shadcn
-- Convex database, realtime queries, functions, HTTP actions, crons, components,
-  and file storage
-- Better Auth passkeys on Convex
-- Firecrawl for official-source capture
-- OpenRouter for `openai/gpt-5.6-terra` and `openai/gpt-5.6-luna`
-- AgentMail for location case inboxes, signed webhooks, and delivery
+| Area | What users can do |
+| --- | --- |
+| Today | See overdue, blocking, waiting-on-agency, upcoming, and informational work in priority order |
+| Research | Run durable official-source capture, watch progress live, inspect safe source snapshots, and recover partial/failed runs |
+| Requirements | Review cited AI proposals, resolve conflicts, manage dependencies, assign owners, and confirm statuses |
+| Tasks and evidence | Create work, attach private files, link evidence, set expirations, and track completion in realtime |
+| Applications | Collect reusable answers, track attachments and readiness, use official portal links, and record external outcomes |
+| Case inbox | Provision an inbox, receive signed webhooks, link threads to work, approve proposed updates, and approve outbound delivery |
+| Inspections and renewals | Record outcomes, corrective actions, recurrence, reminders, and future deadlines |
+| Ribbon Assistant | Ask grounded questions about the current workspace and receive cited, proposal-only help |
+| Team | Invite members and enforce owner, admin, contributor, and viewer boundaries server-side |
+| Data controls | Search, receive notifications, export the organization, and permanently delete it |
 
-## Local setup
+## Trust model
+
+- **People confirm consequential changes.** AI proposes; owners and admins approve requirements, deadline changes, and external email.
+- **Evidence stays attached.** Confirmed requirements preserve the source URL, agency, capture date, excerpt, confidence, and verification state.
+- **Uncertainty stays visible.** Missing, conflicting, nonofficial, or truncated guidance becomes a review item.
+- **Authorization lives on the server.** Every protected Convex operation checks the authenticated user, organization membership, and role.
+- **External content is untrusted.** Pages, documents, and email are isolated from system instructions and rendered through safe readers.
+- **Secrets stay server-side.** Only public Site and Convex URLs reach the browser.
+
+Read the full [security policy](SECURITY.md) and the plain-language live
+[disclaimer](https://ribbondesk.souravberaakagralius.chatgpt.site/disclaimer).
+
+## Architecture
+
+```mermaid
+flowchart LR
+  U[Business owner and team] --> S[ChatGPT Site\nReact + Vinext]
+  S --> A[Better Auth\npasskeys]
+  S <--> C[Convex\ndata + realtime + workflows + files]
+  C --> F[Firecrawl\nofficial-source capture]
+  C --> O[OpenRouter\nOpenAI models]
+  C <--> M[AgentMail\ncase inbox + signed webhooks]
+  C --> H[Human review gates]
+  H --> S
+```
+
+RibbonDesk uses ChatGPT Sites/Vinext, React 19, strict TypeScript, Tailwind and
+shadcn for the product surface. Convex is the single backend for data, realtime
+queries, server functions, HTTP callbacks, scheduled work, durable components,
+and file storage. Better Auth provides passkeys. Firecrawl captures official
+sources, OpenRouter serves OpenAI models for structured extraction and grounded
+assistance, and AgentMail provides case inboxes and delivery events.
+
+See [Architecture](docs/ARCHITECTURE.md) for domains, workflows, authorization,
+provider boundaries, and failure behavior.
+
+## Local development
+
+### Requirements
+
+- Node.js 22.13 or newer
+- npm
+- A Convex account and deployment
+- Google Chrome or Microsoft Edge for the virtual-passkey smoke test
+- Optional Firecrawl, OpenRouter, and AgentMail credentials for live provider verification
 
 ```powershell
+git clone https://github.com/SouravBeraAkaSpeed/RibbonDesk.git
+cd RibbonDesk
 npm install
+Copy-Item .env.example .env.local
 npx convex dev
 npm run dev
 ```
 
-The app opens at `http://localhost:3000`. Copy `.env.example` to an ignored
-local environment file, and set provider secrets in the Convex deployment
-environment. Never commit `.env`, `.env.local`, provider keys, webhook secrets,
-private inbox addresses, or customer records.
+Open `http://localhost:3000`. Keep provider secrets in the Convex deployment
+environment, not `.env.local`. The client receives only public URLs.
 
-Required live-provider variables:
+Required production values:
 
 - `OPENROUTER_API_KEY`
 - `FIRECRAWL_API_KEY`
@@ -63,10 +136,10 @@ Required live-provider variables:
 - `AGENTMAIL_WEBHOOK_SECRET`
 - `BETTER_AUTH_SECRET`
 - `RIBBONDESK_PROVIDER_MODE=live`
-- `SITE_URL` and the public Convex/Sites URLs shown in `.env.example`
+- `SITE_URL`, `CONVEX_SITE_URL`, and the public client URLs documented in `.env.example`
 
-The model IDs, provider base URLs, and Firecrawl webhook variables are optional
-overrides. The client receives only public site and Convex URLs.
+Provider/model URLs and Firecrawl webhook values are optional overrides. See
+[Deployment](docs/DEPLOYMENT.md) for the safe promotion order.
 
 ## Verification
 
@@ -80,20 +153,46 @@ npm run build
 npm audit --omit=dev
 ```
 
-Controlled live-provider checks create temporary passkey workspaces and
-provider resources, then clean them up:
+Controlled live-provider checks create uniquely named workspaces and resources,
+prove the real workflow, and remove their test data:
 
 ```powershell
 npm run test:live-research
 npm run test:live-agentmail
 ```
 
-The AgentMail check proves inbox provisioning, signed inbound delivery,
-OpenRouter classification, human approval, approved outbound delivery, and
-provider-side inbox deletion. The research check proves live Firecrawl capture,
-cited OpenRouter proposals, the safe source reader, human acceptance, realtime
-updates in a second tab, and a grounded Assistant answer.
+CI runs installation, strict type checking, lint, unit tests, and the production
+build on every push and pull request.
 
-The judge-facing first-person build history is maintained in
-[`hackathon.md`](hackathon.md), and the event checklist is in
-[`HACKATHON_REQUIREMENTS.md`](HACKATHON_REQUIREMENTS.md).
+## Repository map
+
+```text
+app/                      Public pages and authenticated product surfaces
+components/               Shared interface and provider components
+convex/                   Schema, auth, functions, workflows, webhooks, and crons
+lib/                      Shared client and domain helpers
+scripts/                  Controlled browser and live-provider acceptance tests
+tests/                    Domain and authorization-focused unit tests
+public/                   Brand, social preview, and original 3D artwork
+docs/                     Architecture and deployment operations
+hackathon.md              First-person, evidence-backed build history
+HACKATHON_REQUIREMENTS.md Event requirements and readiness evidence
+```
+
+## Project governance
+
+- [Contributing guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security policy](SECURITY.md)
+- [MIT License](LICENSE)
+
+## Author
+
+**Saurabh Bera**<br />
+Head of Tech at Quark Labs · Previously CEO of Dot Labs
+
+Built for the [Convex All Gas, No Brakes Hackathon](https://www.convex.dev/hackathons/all-gas).
+
+---
+
+<div align="center"><strong>From red tape to ribbon cutting—and every renewal after.</strong></div>
