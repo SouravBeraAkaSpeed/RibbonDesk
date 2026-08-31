@@ -5,6 +5,7 @@ import {
   canTransitionRequirement,
   dependencyWouldCycle,
   hasMinimumRole,
+  hasVerifiedNycFoodServicePack,
   isHttpsCitation,
   nextRecurrence,
   readinessSummary,
@@ -70,4 +71,27 @@ void test('readiness excludes proposals and conflicts from the denominator', () 
     { status: 'not_started' },
   ]);
   assert.deepEqual(result, { confirmed: 2, complete: 1, score: 50 });
+});
+
+void test('NYC verified coverage requires a food-service business signal', () => {
+  assert.equal(
+    hasVerifiedNycFoodServicePack({
+      countryCode: 'US',
+      region: 'NY',
+      city: 'New York',
+      businessType: 'Technology consulting office',
+      servesFood: false,
+    }),
+    false,
+  );
+  assert.equal(
+    hasVerifiedNycFoodServicePack({
+      countryCode: 'US',
+      region: 'NY',
+      city: 'New York',
+      businessType: 'Neighborhood café',
+      servesFood: true,
+    }),
+    true,
+  );
 });

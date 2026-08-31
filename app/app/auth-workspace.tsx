@@ -41,6 +41,7 @@ import {
 
 import { api } from '@/convex/_generated/api';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
+import { hasVerifiedNycFoodServicePack } from '@/convex/lib/domain';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -862,6 +863,7 @@ function BusinessSetup({
       <ConfirmJurisdiction
         location={location}
         businessName={business.name}
+        businessType={business.businessType}
         onComplete={() => setSelectedStep(null)}
         {...frameProps}
       />
@@ -1290,6 +1292,7 @@ function CreateLocation({
 function ConfirmJurisdiction({
   location,
   businessName,
+  businessType,
   onComplete,
   currentStep,
   furthestStep,
@@ -1297,6 +1300,7 @@ function ConfirmJurisdiction({
 }: {
   location: LocationDoc;
   businessName: string;
+  businessType: string;
   onComplete: () => void;
   currentStep: OnboardingStep;
   furthestStep: OnboardingStep;
@@ -1305,10 +1309,13 @@ function ConfirmJurisdiction({
   const confirm = useMutation(api.locations.confirmJurisdiction);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const isNyc =
-    location.countryCode === 'US' &&
-    ['NY', 'NEW YORK'].includes(location.region.toUpperCase()) &&
-    ['NEW YORK', 'NYC'].includes(location.city.toUpperCase());
+  const hasVerifiedPack = hasVerifiedNycFoodServicePack({
+    countryCode: location.countryCode,
+    region: location.region,
+    city: location.city,
+    businessType,
+    servesFood: location.triggers.food,
+  });
   const jurisdiction = `${location.city}, ${location.region}, ${location.countryCode}`;
 
   async function approve() {
@@ -1319,8 +1326,8 @@ function ConfirmJurisdiction({
         locationId: location._id,
         jurisdictionLabel: jurisdiction,
         jurisdictionCountryCode: location.countryCode,
-        coverageMode: isNyc ? 'verified_pack' : 'dynamic_research',
-        coveragePackKey: isNyc ? 'nyc-food-service-v1' : undefined,
+        coverageMode: hasVerifiedPack ? 'verified_pack' : 'dynamic_research',
+        coveragePackKey: hasVerifiedPack ? 'nyc-food-service-v1' : undefined,
       });
       onComplete();
     } catch (caught) {
@@ -1354,16 +1361,18 @@ function ConfirmJurisdiction({
         </div>
       </div>
       <div className="mt-4 rounded-2xl border p-5">
-        <Badge variant={isNyc ? 'default' : 'outline'}>
-          {isNyc ? 'Verified coverage pack' : 'Dynamic cited research'}
+        <Badge variant={hasVerifiedPack ? 'default' : 'outline'}>
+          {hasVerifiedPack
+            ? 'Verified coverage pack'
+            : 'Dynamic cited research'}
         </Badge>
         <h3 className="mt-3 font-semibold">
-          {isNyc
+          {hasVerifiedPack
             ? 'NYC food-service opening pack'
             : 'Research this business and location'}
         </h3>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          {isNyc
+          {hasVerifiedPack
             ? 'Starts from a maintained official-source pack. Every result still stays reviewable.'
             : 'RibbonDesk will research official sources and label all results “review required” until you confirm them.'}
         </p>

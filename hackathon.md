@@ -416,3 +416,10 @@ and removed a server/client mismatch in the Google callback gate that could
 surface React's development error overlay. Convex production deployment, strict
 TypeScript, lint, five domain tests, the production Sites build, and a local
 browser check with no hydration/error overlay all pass for this release.
+
+The production walkthrough caught and corrected a coverage-selection edge case
+before I confirmed jurisdiction: an NYC technology office was being offered the
+NYC food-service verified pack based on geography alone. Verified-pack selection
+now requires both the NYC jurisdiction and a food-service business signal from
+the business type or operational triggers. Other NYC businesses correctly enter
+dynamic cited research with review-required labeling.

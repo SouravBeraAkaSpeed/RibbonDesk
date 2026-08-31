@@ -109,3 +109,22 @@ export function readinessSummary(records: Array<{ status: RequirementState }>) {
       : 0,
   };
 }
+
+export function hasVerifiedNycFoodServicePack(input: {
+  countryCode: string;
+  region: string;
+  city: string;
+  businessType: string;
+  servesFood: boolean;
+}) {
+  const isNyc =
+    input.countryCode.toUpperCase() === 'US' &&
+    ['NY', 'NEW YORK'].includes(input.region.toUpperCase()) &&
+    ['NEW YORK', 'NYC'].includes(input.city.toUpperCase());
+  const isFoodService =
+    input.servesFood ||
+    /\b(caf[eé]|coffee|restaurant|bakery|food|deli|bar|kitchen|catering)\b/i.test(
+      input.businessType,
+    );
+  return isNyc && isFoodService;
+}
