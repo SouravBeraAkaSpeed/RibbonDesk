@@ -365,3 +365,9 @@ production dependency audit pass. The AgentMail send path is currently
 provider-degraded—direct and connector sends have alternated between success,
 `429`, and timeout—so I am not recording the latest full email/reset journey as
 passed even though the application queue and retry behavior are working.
+
+I exported the established RibbonDesk app mark as a dedicated Google OAuth
+branding asset (`public/brand/ribbondesk-google-oauth-logo.png`). The PNG is an
+exact 120 × 120 square, uses the production ink, coral, and sage brand colors,
+and is only 2 KB, satisfying Google's consent-screen recommendation and 1 MB
+upload limit without introducing a second logo direction.
