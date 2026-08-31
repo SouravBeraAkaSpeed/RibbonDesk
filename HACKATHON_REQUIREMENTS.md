@@ -112,13 +112,13 @@ the deadline rather than discovering extra fields during the final hour.
 
 - **Environment:** Codex in the ChatGPT desktop app on Windows.
 - **Repository:** Initialized on `main`, connected to the public GitHub
-  repository, and pushed through the grounded-assistant and source-watch
-  milestone. The collaboration, search, export, and deletion hardening slice is
-  verified locally and awaiting its milestone push.
+  repository, and pushed through the collaboration, authorization, search,
+  export, deletion, accessibility, and provider-contract hardening milestone.
 - **Convex application:** A development deployment is active. The app has an
   indexed domain schema, authenticated queries and mutations, HTTP auth routes,
-  activity events, and a realtime command-center query. Production deployment
-  is still pending.
+  activity events, and a realtime command-center query. The same backend code
+  is now deployed to production; live provider secrets and the final public
+  site origin are still pending.
 - **Convex plugin:** Installed. The current Codex session exposes the official
   Convex skills. Recheck availability after a restart or in a new task before
   relying on it.
@@ -127,7 +127,9 @@ the deadline rather than discovering extra fields during the final hour.
 - **Build log:** Created at the Git root and updated from repository evidence.
 - **Frontend:** ChatGPT Sites (`chatgpt.site`) selected.
 - **Sites project:** Scaffolded with the required Sites starter and shadcn
-  add-on. The local development preview and production build both run.
+  add-on. The preferred `ribbondesk` slug is reserved, its opaque Sites project
+  identity is persisted in `.openai/hosting.json`, and the local development
+  preview and production build both run. It has not been made public.
 - **Public demo:** Implemented locally with synthetic data, interactive task and
   proposal state, responsive navigation, and no provider calls or external
   side effects. Public deployment is still pending.
@@ -186,7 +188,8 @@ the deadline rather than discovering extra fields during the final hour.
   implemented locally.
 - **Accounts/external actions:** Luma registration is complete. Vibe Apps
   sign-in, live sponsor credentials, live provider smoke tests, the social
-  post, production deployment, and submission are still pending.
+  post, public Sites deployment, and submission are still pending. Production
+  Convex code is deployed in replay mode.
 
 ### Convex plugin verification and recovery
 

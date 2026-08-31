@@ -6,17 +6,18 @@
 - **Live app:** not deployed
 - **Repo:** https://github.com/SouravBeraAkaSpeed/RibbonDesk
 - **Frontend:** Codex Sites
-- **Convex deployment:** not deployed
+- **Convex deployment:** https://steady-sockeye-84.convex.cloud
 - **Components:** @convex-dev/agent, @convex-dev/better-auth, @convex-dev/rate-limiter, @convex-dev/workflow, @firecrawl/firecrawl-convex, @agentmail/convex
 - **Convex features:** schema, indexes, full-text search, queries, mutations, actions, HTTP actions, scheduled functions, realtime queries, file storage
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T01:16:47Z
+- **Last updated:** 2026-08-31T01:38:00Z
 
 ## Log
 
 ### 2026-08-30
+
 I started the project by reviewing the official event rules, judging criteria,
 submission flow, setup prompt, and sponsor resources. I installed the official
 project-local build-log skill and captured a requirements checklist before
@@ -24,12 +25,14 @@ choosing the product or implementation (`hackathon.md`,
 `HACKATHON_REQUIREMENTS.md`, `.agents/skills/convex-hackathon-skill/`).
 
 ### 2026-08-30
+
 I registered for the event on Luma, confirmed that the Convex plugin is
 installed, and selected ChatGPT Sites for the public frontend. I also clarified
 that `allgas` is the hackathon workspace; the actual app will live in a named
 child folder after I choose the product concept.
 
 ### 2026-08-30
+
 I chose RibbonDesk as the product direction: a daily operating desk for local
 businesses to manage requirements, agency correspondence, applications,
 inspections, evidence, deadlines, and renewals from opening onward. I narrowed
@@ -37,6 +40,7 @@ the differentiator away from one-time permit checklists and toward a persistent,
 collaborative, source-backed compliance case file.
 
 ### 2026-08-30 - 4d219c5
+
 I initialized RibbonDesk as a ChatGPT Sites project in its public repository and
 built the first recognizable product surface. The landing experience now shows
 the calm civic-studio brand, the opening-readiness desk, cited-work positioning,
@@ -48,6 +52,7 @@ CI for lint, type checking, and production builds (`public/og.png`,
 pass before the first commit.
 
 ### 2026-08-30 - 32fd01a
+
 I shipped the first complete judge-facing product path: a public, isolated demo
 of an NYC café workspace with a reactive task queue, readiness scoring,
 requirements and dependencies, official-source evidence, an agency inbox, and a
@@ -60,6 +65,7 @@ the proposal state transition, confirmed a clean browser console, and reran
 lint, TypeScript, and the production build successfully.
 
 ### 2026-08-30 - 6d87efc
+
 I connected the real authenticated product path to a Convex development
 deployment. I added passkey-first registration and sign-in, server-enforced
 organization roles, indexed business and location records, explicit
@@ -73,6 +79,7 @@ and the authenticated realtime desk (`scripts/smoke-passkey.mjs`). Convex
 deployment, lint, TypeScript, and the production build all pass.
 
 ### 2026-08-30 - b49230e
+
 I shipped the cited requirement-research and human-review loop in the
 authenticated workspace (`convex/research.ts`, `convex/proposals.ts`,
 `app/app/research-panel.tsx`). A user can preview the official source scope,
@@ -87,6 +94,7 @@ proves replay research, human approval, and realtime task creation, and Convex
 deployment, lint, TypeScript, and the production build pass again.
 
 ### 2026-08-30 - 7a89c7f
+
 I added the evidence locker and application-preparation workflow
 (`convex/documents.ts`, `convex/applications.ts`,
 `app/app/evidence-applications-panel.tsx`). I can now upload an owned file to
@@ -102,6 +110,7 @@ with active PDF content is rejected. Convex deployment, lint, TypeScript, and
 the production build pass with this slice.
 
 ### 2026-08-31 - 0fcde1b
+
 I built the location case-inbox workflow on the AgentMail component
 (`convex/inbox.ts`, `convex/http.ts`, `app/app/case-inbox-panel.tsx`). The app
 now keeps an owned inbox binding, a reactive sanitized message thread, editable
@@ -118,6 +127,7 @@ reactively in a second authenticated browser context. Convex deployment, lint,
 TypeScript, and the production build pass again.
 
 ### 2026-08-31 - 5855381
+
 I extended the workspace from opening preparation into recurring stay-open
 operations (`convex/operations.ts`, `convex/crons.ts`,
 `app/app/operations-lifecycle-panel.tsx`). Moving a location to operating now
@@ -134,6 +144,7 @@ near-term reminder, saved preference, and renewal roll-forward. Convex
 deployment, lint, TypeScript, and the production build pass.
 
 ### 2026-08-31 - 28b80fb
+
 I added Ribbon Assistant as a durable, private workspace thread grounded in
 confirmed requirements, tasks, applications, agency messages, inspections,
 renewals, and preserved source evidence (`convex/assistant.ts`,
@@ -148,7 +159,8 @@ complete replay detection-to-approval loop; live OpenAI and Firecrawl calls
 remain pending credentials. Convex deployment, lint, TypeScript, and the
 production build pass.
 
-### 2026-08-31 - working tree
+### 2026-08-31 - aea7d0f
+
 I hardened the authenticated workspace for real collaboration and data control.
 Owners and admins can create expiring private invitations that bind to the
 invitee's exact passkey-account email; the two-account browser test proves
@@ -163,3 +175,14 @@ not run against the shared development workspace. CI now runs focused unit tests
 for role boundaries, requirement approval, citation safety, dependency cycles,
 reminder cadence, recurrence, and readiness math. Convex deployment, lint,
 TypeScript, unit tests, the production build, and the full browser smoke pass.
+
+### 2026-08-31 - working tree
+
+I created the production Convex deployment and reserved RibbonDesk's preferred
+`ribbondesk` ChatGPT Sites slug, then persisted the Sites project identity in
+the repository (`.openai/hosting.json`). The production backend contains the
+same verified schema, indexes, components, functions, HTTP routes, and scheduled
+jobs as the development build. I generated a separate production auth secret
+without writing it to source and left provider mode on the safe replay setting;
+live OpenAI, Firecrawl, and AgentMail credentials and controlled sponsor smoke
+tests remain pending. The Site is not public and no live-app URL is claimed yet.
