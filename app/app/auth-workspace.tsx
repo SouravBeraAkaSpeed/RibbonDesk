@@ -92,7 +92,7 @@ export function AuthWorkspace() {
 
 function FullPageStatus({ label }: { label: string }) {
   return (
-    <main className="ribbon-grid grid min-h-screen place-items-center bg-[var(--paper-strong)] px-5">
+    <main className="depth-onboarding ribbon-grid grid min-h-screen place-items-center px-5">
       <div className="flex items-center gap-3 rounded-2xl border bg-background px-5 py-4 text-sm font-medium shadow-sm">
         <LoaderCircle className="size-4 animate-spin text-[var(--ribbon)]" />{' '}
         {label}
@@ -138,7 +138,7 @@ function PasskeyEntry() {
   }
 
   return (
-    <main className="ribbon-grid grid min-h-screen place-items-center bg-[var(--paper-strong)] px-5 py-10">
+    <main className="depth-onboarding ribbon-grid grid min-h-screen place-items-center px-5 py-10">
       <div className="w-full max-w-md">
         <Link
           href="/"
@@ -862,11 +862,11 @@ function CommandCenter({
     return <FullPageStatus label="Assembling today’s command center…" />;
 
   return (
-    <main className="min-h-screen bg-[var(--paper-strong)] text-[var(--ink)]">
-      <header className="sticky top-0 z-30 border-b bg-[color:var(--paper-strong)/92%] backdrop-blur-xl">
+    <main className="depth-app-shell min-h-screen text-[var(--ink)]">
+      <header className="depth-header sticky top-0 z-30 border-b border-white/45 bg-[color:var(--paper-strong)/76%] backdrop-blur-2xl">
         <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-xl bg-[var(--ribbon)] text-sm font-black text-white">
+            <div className="depth-brand-mark grid size-9 place-items-center rounded-xl bg-[var(--ribbon)] text-sm font-black text-white">
               R
             </div>
             <div>
@@ -894,7 +894,7 @@ function CommandCenter({
         </div>
       </header>
       <div className="mx-auto grid max-w-[1440px] md:grid-cols-[220px_1fr]">
-        <aside className="hidden min-h-[calc(100vh-4rem)] border-r p-4 md:block">
+        <aside className="depth-rail hidden min-h-[calc(100vh-4rem)] border-r border-white/45 bg-background/48 p-4 backdrop-blur-xl md:block">
           <nav className="grid gap-1 text-sm">
             <DeskNav icon={LayoutDashboard} label="Today" active />
             <DeskNav icon={CircleGauge} label="Plan" />
@@ -1105,7 +1105,7 @@ function OnboardingFrame({
   children: React.ReactNode;
 }) {
   return (
-    <main className="ribbon-grid min-h-screen bg-[var(--paper-strong)] px-5 py-10">
+    <main className="depth-onboarding ribbon-grid min-h-screen px-5 py-10">
       <div className="mx-auto w-full max-w-2xl">
         <div className="flex items-center justify-between">
           <Link

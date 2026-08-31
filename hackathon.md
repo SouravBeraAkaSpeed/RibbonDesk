@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T01:36:28Z
+- **Last updated:** 2026-08-31T07:28:00Z
 
 ## Log
 
@@ -192,7 +192,7 @@ at `https://ribbondesk.souravberaakagralius.chatgpt.site`, then rebound the
 production auth origin and Sites metadata to that assigned URL. At this commit,
 public access and signed-out verification were still pending.
 
-### 2026-08-31 - working tree
+### 2026-08-31 - 6800352
 
 I published RibbonDesk for anyone on the internet after explicit approval. I
 verified the landing page, isolated demo, passkey entry, privacy, terms, and
@@ -200,3 +200,14 @@ disclaimer routes without authentication; all returned successfully with their
 expected content. The production runtime reported no worker errors during the
 check. The authenticated product remains in replay mode until the controlled
 OpenAI, Firecrawl, and AgentMail live tests are complete.
+
+### 2026-08-31 - working tree
+
+I redesigned the complete public experience as a dimensional calm-civic studio.
+The landing page now uses a pointer-reactive 3D atmosphere, a floating live-desk
+composition, glass surfaces, layered lighting, and operational depth cues; the
+same restrained surface and motion system carries through the demo, passkey
+onboarding, authenticated workspace, and policy pages
+(`components/dimensional-scene.tsx`, `app/globals.css`, `app/`). I added a new
+3D social preview and preserved a reduced-motion path. Formatting, TypeScript,
+lint, unit tests, all six local routes, and the production build pass.

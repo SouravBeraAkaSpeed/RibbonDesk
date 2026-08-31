@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono, Newsreader } from 'next/font/google';
 
 import { ConvexClientProvider } from '@/components/convex-client-provider';
+import { DimensionalScene } from '@/components/dimensional-scene';
 
 import './globals.css';
 
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og.png',
+        url: '/og-dimensional.png',
         width: 1672,
         height: 941,
         alt: 'RibbonDesk — Open right. Stay ready.',
@@ -48,15 +49,22 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'RibbonDesk — Open right. Stay ready.',
     description: 'From red tape to ribbon cutting—and every renewal after.',
-    images: ['/og.png'],
+    images: ['/og-dimensional.png'],
   },
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} antialiased`}>
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} depth-ui antialiased`}
+      >
+        <DimensionalScene />
+        <div className="relative z-10">
+          <ConvexClientProvider>{children}</ConvexClientProvider>
+        </div>
       </body>
     </html>
   );
