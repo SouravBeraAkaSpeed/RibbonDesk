@@ -341,3 +341,13 @@ runs; the full single-run reset and cleanup gate is still pending after the
 current AgentMail rate limit clears. Google and Apple buttons and secure server
 configuration are implemented, but their production OAuth credentials must be
 created in the provider consoles before those two buttons can be enabled.
+
+I removed OpenRouter application attribution at the owner's request. The shared
+OpenRouter provider no longer supplies either `appName` or `appUrl`, which means
+the SDK no longer emits `X-OpenRouter-Title` or `HTTP-Referer` on RibbonDesk AI
+requests (`convex/lib/aiProvider.ts`). I searched the repository for alternate
+OpenRouter attribution headers, ran strict TypeScript, lint, and domain tests,
+deployed the change to production Convex, and completed a live provider-health
+request successfully through the anonymous request path. Historical OpenRouter
+dashboard activity may retain its original attribution, but new backend calls
+do not send the RibbonDesk name or Site URL.

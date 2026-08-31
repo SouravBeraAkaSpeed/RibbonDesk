@@ -12,11 +12,9 @@ export function hasAiProvider() {
 }
 
 const openrouter = createOpenRouter({
-    apiKey: env.OPENROUTER_API_KEY?.trim() || 'not-configured',
-    appName: 'RibbonDesk',
-    appUrl: env.SITE_URL ?? 'http://localhost:3000',
-    compatibility: 'strict',
-  });
+  apiKey: env.OPENROUTER_API_KEY?.trim() || 'not-configured',
+  compatibility: 'strict',
+});
 
 export function requireAiProvider() {
   if (!hasAiProvider()) {
