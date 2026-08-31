@@ -59,6 +59,7 @@ import { DataControlsPanel } from './data-controls-panel';
 import { WorkPlanPanel } from './work-plan-panel';
 
 type FormSubmitEvent = SyntheticEvent<HTMLFormElement, SubmitEvent>;
+type OnboardingStep = 1 | 2 | 3 | 4;
 
 function errorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
@@ -110,10 +111,22 @@ type AuthMode = 'signin' | 'register' | 'forgot' | 'reset' | 'verify';
 function GoogleMark() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4">
-      <path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.5-.2-2.2H12v4.3h5.4a4.6 4.6 0 0 1-2 3v2.8h3.3c1.9-1.8 2.9-4.4 2.9-7.9Z" />
-      <path fill="#34A853" d="M12 22c2.7 0 5-.9 6.7-2.4l-3.3-2.7c-.9.6-2.1 1-3.4 1a5.9 5.9 0 0 1-5.5-4.1H3.1v2.8A10 10 0 0 0 12 22Z" />
-      <path fill="#FBBC05" d="M6.5 13.8A6 6 0 0 1 6.2 12c0-.6.1-1.2.3-1.8V7.4H3.1A10 10 0 0 0 2 12c0 1.7.4 3.2 1.1 4.6l3.4-2.8Z" />
-      <path fill="#EA4335" d="M12 6.1c1.5 0 2.8.5 3.8 1.5l2.9-2.8A9.7 9.7 0 0 0 12 2a10 10 0 0 0-8.9 5.4l3.4 2.8A5.9 5.9 0 0 1 12 6.1Z" />
+      <path
+        fill="#4285F4"
+        d="M21.6 12.2c0-.7-.1-1.5-.2-2.2H12v4.3h5.4a4.6 4.6 0 0 1-2 3v2.8h3.3c1.9-1.8 2.9-4.4 2.9-7.9Z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 22c2.7 0 5-.9 6.7-2.4l-3.3-2.7c-.9.6-2.1 1-3.4 1a5.9 5.9 0 0 1-5.5-4.1H3.1v2.8A10 10 0 0 0 12 22Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M6.5 13.8A6 6 0 0 1 6.2 12c0-.6.1-1.2.3-1.8V7.4H3.1A10 10 0 0 0 2 12c0 1.7.4 3.2 1.1 4.6l3.4-2.8Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 6.1c1.5 0 2.8.5 3.8 1.5l2.9-2.8A9.7 9.7 0 0 0 12 2a10 10 0 0 0-8.9 5.4l3.4 2.8A5.9 5.9 0 0 1 12 6.1Z"
+      />
     </svg>
   );
 }
@@ -123,25 +136,50 @@ function AccountEntry() {
   const urlParameters = new URLSearchParams(window.location.search);
   const resetToken = urlParameters.get('token');
   const justVerified = urlParameters.get('verified') === '1';
-  const pendingVerificationEmail = window.sessionStorage.getItem('ribbondesk.pendingVerificationEmail') ?? '';
-  const pendingResetEmail = window.sessionStorage.getItem('ribbondesk.passwordResetRequested') ?? '';
-  const [mode, setMode] = useState<AuthMode>(resetToken ? 'reset' : justVerified ? 'signin' : pendingVerificationEmail ? 'verify' : pendingResetEmail ? 'forgot' : 'signin');
+  const pendingVerificationEmail =
+    window.sessionStorage.getItem('ribbondesk.pendingVerificationEmail') ?? '';
+  const pendingResetEmail =
+    window.sessionStorage.getItem('ribbondesk.passwordResetRequested') ?? '';
+  const [mode, setMode] = useState<AuthMode>(
+    resetToken
+      ? 'reset'
+      : justVerified
+        ? 'signin'
+        : pendingVerificationEmail
+          ? 'verify'
+          : pendingResetEmail
+            ? 'forgot'
+            : 'signin',
+  );
   const [name, setName] = useState('');
-  const [email, setEmail] = useState(pendingVerificationEmail || pendingResetEmail);
+  const [email, setEmail] = useState(
+    pendingVerificationEmail || pendingResetEmail,
+  );
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(justVerified ? 'Email confirmed. Sign in to open your desk.' : pendingVerificationEmail ? `A confirmation link is queued for ${pendingVerificationEmail}.` : pendingResetEmail ? 'If an account exists for that email, its reset link is queued for delivery.' : null);
+  const [notice, setNotice] = useState<string | null>(
+    justVerified
+      ? 'Email confirmed. Sign in to open your desk.'
+      : pendingVerificationEmail
+        ? `A confirmation link is queued for ${pendingVerificationEmail}.`
+        : pendingResetEmail
+          ? 'If an account exists for that email, its reset link is queued for delivery.'
+          : null,
+  );
 
   useEffect(() => {
-    if (justVerified) window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
+    if (justVerified)
+      window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
   }, [justVerified]);
 
   function switchMode(next: AuthMode) {
-    if (next !== 'verify') window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
-    if (next !== 'forgot') window.sessionStorage.removeItem('ribbondesk.passwordResetRequested');
+    if (next !== 'verify')
+      window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
+    if (next !== 'forgot')
+      window.sessionStorage.removeItem('ribbondesk.passwordResetRequested');
     setMode(next);
     setError(null);
     setNotice(null);
@@ -158,39 +196,53 @@ function AccountEntry() {
       if (mode === 'register') {
         if (password !== confirmPassword)
           throw new Error('The passwords do not match.');
-        window.sessionStorage.setItem('ribbondesk.pendingVerificationEmail', email);
+        window.sessionStorage.setItem(
+          'ribbondesk.pendingVerificationEmail',
+          email,
+        );
         const result = await authClient.signUp.email({
           name,
           email,
           password,
           callbackURL: `${window.location.origin}/app?verified=1`,
         });
-        if (result.error) throw new Error(result.error.message || 'Account creation failed.');
+        if (result.error)
+          throw new Error(result.error.message || 'Account creation failed.');
         setMode('verify');
         setNotice(`A confirmation link is queued for ${email}.`);
         return;
       }
 
       if (mode === 'forgot') {
-        window.sessionStorage.setItem('ribbondesk.passwordResetRequested', email);
+        window.sessionStorage.setItem(
+          'ribbondesk.passwordResetRequested',
+          email,
+        );
         const result = await authClient.requestPasswordReset({
           email,
           redirectTo: `${window.location.origin}/app`,
         });
-        if (result.error) throw new Error(result.error.message || 'The reset request failed.');
-        setNotice('If an account exists for that email, its reset link is queued for delivery.');
+        if (result.error)
+          throw new Error(result.error.message || 'The reset request failed.');
+        setNotice(
+          'If an account exists for that email, its reset link is queued for delivery.',
+        );
         return;
       }
 
       if (mode === 'reset') {
-        if (!resetToken) throw new Error('This password-reset link is incomplete.');
+        if (!resetToken)
+          throw new Error('This password-reset link is incomplete.');
         if (password !== confirmPassword)
           throw new Error('The passwords do not match.');
         const result = await authClient.resetPassword({
           newPassword: password,
           token: resetToken,
         });
-        if (result.error) throw new Error(result.error.message || 'The password could not be reset.');
+        if (result.error)
+          throw new Error(
+            result.error.message || 'The password could not be reset.',
+          );
         window.history.replaceState({}, '', '/app');
         window.sessionStorage.removeItem('ribbondesk.passwordResetRequested');
         switchMode('signin');
@@ -210,13 +262,21 @@ function AccountEntry() {
             callbackURL: `${window.location.origin}/app?verified=1`,
           });
           if (verification.error)
-            throw new Error(verification.error.message || 'The confirmation email could not be sent.');
-          window.sessionStorage.setItem('ribbondesk.pendingVerificationEmail', email);
+            throw new Error(
+              verification.error.message ||
+                'The confirmation email could not be sent.',
+            );
+          window.sessionStorage.setItem(
+            'ribbondesk.pendingVerificationEmail',
+            email,
+          );
           setMode('verify');
           setNotice(`A new confirmation link is queued for ${email}.`);
           return;
         }
-        throw new Error(result.error.message || 'The email or password was not accepted.');
+        throw new Error(
+          result.error.message || 'The email or password was not accepted.',
+        );
       }
       window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
       window.history.replaceState({}, '', '/app');
@@ -238,7 +298,9 @@ function AccountEntry() {
     try {
       const result = await authClient.signIn.passkey();
       if (result.error)
-        throw new Error(result.error.message || 'This passkey could not be verified.');
+        throw new Error(
+          result.error.message || 'This passkey could not be verified.',
+        );
       window.history.replaceState({}, '', '/app');
       window.location.reload();
     } catch (caught) {
@@ -258,7 +320,8 @@ function AccountEntry() {
         newUserCallbackURL: `${window.location.origin}/app`,
         errorCallbackURL: `${window.location.origin}/app?authError=google`,
       });
-      if (result.error) throw new Error(result.error.message || 'Google sign-in failed.');
+      if (result.error)
+        throw new Error(result.error.message || 'Google sign-in failed.');
     } catch (caught) {
       setError(errorMessage(caught));
       setPending(false);
@@ -273,7 +336,10 @@ function AccountEntry() {
         email,
         callbackURL: `${window.location.origin}/app?verified=1`,
       });
-      if (result.error) throw new Error(result.error.message || 'The confirmation email could not be sent.');
+      if (result.error)
+        throw new Error(
+          result.error.message || 'The confirmation email could not be sent.',
+        );
       setNotice(`A fresh confirmation link is queued for ${email}.`);
     } catch (caught) {
       setError(errorMessage(caught));
@@ -283,7 +349,8 @@ function AccountEntry() {
   }
 
   const isRegister = mode === 'register';
-  const isPasswordMode = mode === 'signin' || mode === 'register' || mode === 'reset';
+  const isPasswordMode =
+    mode === 'signin' || mode === 'register' || mode === 'reset';
   const title =
     mode === 'register'
       ? 'Create your RibbonDesk account'
@@ -320,10 +387,16 @@ function AccountEntry() {
           <form className="p-6" onSubmit={handleEmail}>
             <div className="flex items-center gap-3">
               <div className="grid size-12 place-items-center rounded-2xl bg-[var(--ribbon-soft)] text-[var(--ribbon)]">
-                {mode === 'verify' ? <Mail className="size-6" /> : <LockKeyhole className="size-6" />}
+                {mode === 'verify' ? (
+                  <Mail className="size-6" />
+                ) : (
+                  <LockKeyhole className="size-6" />
+                )}
               </div>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">Secure account</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">
+                  Secure account
+                </p>
                 <h2 className="mt-1 text-lg font-semibold">{title}</h2>
               </div>
             </div>
@@ -346,13 +419,18 @@ function AccountEntry() {
                     className="h-11"
                     onClick={handleGoogle}
                     disabled={pending || !capabilities?.google}
-                    title={capabilities?.google ? 'Continue with Google' : 'Google OAuth setup is pending'}
+                    title={
+                      capabilities?.google
+                        ? 'Continue with Google'
+                        : 'Google OAuth setup is pending'
+                    }
                   >
                     <GoogleMark /> Google
                   </Button>
                 </div>
                 <div className="my-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  <span className="h-px flex-1 bg-border" /> or use email <span className="h-px flex-1 bg-border" />
+                  <span className="h-px flex-1 bg-border" /> or use email{' '}
+                  <span className="h-px flex-1 bg-border" />
                 </div>
               </>
             ) : null}
@@ -360,18 +438,18 @@ function AccountEntry() {
             {mode !== 'verify' ? (
               <div className="grid gap-4">
                 {isRegister ? (
-                <div className="grid gap-2">
-                  <Label htmlFor="account-name">Your name</Label>
-                  <Input
-                    id="account-name"
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    autoComplete="name"
-                    minLength={2}
-                    maxLength={80}
-                    required
-                  />
-                </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="account-name">Your name</Label>
+                    <Input
+                      id="account-name"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      autoComplete="name"
+                      minLength={2}
+                      maxLength={80}
+                      required
+                    />
+                  </div>
                 ) : null}
                 <div className="grid gap-2">
                   <Label htmlFor="account-email">Work email</Label>
@@ -388,9 +466,15 @@ function AccountEntry() {
                 {isPasswordMode ? (
                   <div className="grid gap-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="account-password">{mode === 'reset' ? 'New password' : 'Password'}</Label>
+                      <Label htmlFor="account-password">
+                        {mode === 'reset' ? 'New password' : 'Password'}
+                      </Label>
                       {mode === 'signin' ? (
-                        <button type="button" onClick={() => switchMode('forgot')} className="text-xs font-medium text-[var(--ribbon)] hover:underline">
+                        <button
+                          type="button"
+                          onClick={() => switchMode('forgot')}
+                          className="text-xs font-medium text-[var(--ribbon)] hover:underline"
+                        >
                           Forgot password?
                         </button>
                       ) : null}
@@ -401,7 +485,13 @@ function AccountEntry() {
                         type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
-                        autoComplete={isRegister ? 'new-password' : mode === 'signin' ? 'current-password' : 'new-password'}
+                        autoComplete={
+                          isRegister
+                            ? 'new-password'
+                            : mode === 'signin'
+                              ? 'current-password'
+                              : 'new-password'
+                        }
                         minLength={10}
                         maxLength={128}
                         required
@@ -410,13 +500,23 @@ function AccountEntry() {
                       <button
                         type="button"
                         onClick={() => setShowPassword((current) => !current)}
-                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        aria-label={
+                          showPassword ? 'Hide password' : 'Show password'
+                        }
                         className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted-foreground hover:text-foreground"
                       >
-                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                        {showPassword ? (
+                          <EyeOff className="size-4" />
+                        ) : (
+                          <Eye className="size-4" />
+                        )}
                       </button>
                     </div>
-                    {isRegister || mode === 'reset' ? <p className="text-xs text-muted-foreground">Use at least 10 characters.</p> : null}
+                    {isRegister || mode === 'reset' ? (
+                      <p className="text-xs text-muted-foreground">
+                        Use at least 10 characters.
+                      </p>
+                    ) : null}
                   </div>
                 ) : null}
                 {isRegister || mode === 'reset' ? (
@@ -426,7 +526,9 @@ function AccountEntry() {
                       id="confirm-password"
                       type={showPassword ? 'text' : 'password'}
                       value={confirmPassword}
-                      onChange={(event) => setConfirmPassword(event.target.value)}
+                      onChange={(event) =>
+                        setConfirmPassword(event.target.value)
+                      }
                       autoComplete="new-password"
                       minLength={10}
                       maxLength={128}
@@ -450,12 +552,37 @@ function AccountEntry() {
               </p>
             ) : null}
             {mode === 'verify' ? (
-              <Button type="button" variant="outline" className="mt-6 h-11 w-full" onClick={resendVerification} disabled={pending || !email}>
-                {pending ? <LoaderCircle className="animate-spin" /> : <RefreshCw />} Resend confirmation
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-6 h-11 w-full"
+                onClick={resendVerification}
+                disabled={pending || !email}
+              >
+                {pending ? (
+                  <LoaderCircle className="animate-spin" />
+                ) : (
+                  <RefreshCw />
+                )}{' '}
+                Resend confirmation
               </Button>
             ) : (
-              <Button type="submit" className="mt-6 h-11 w-full bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]" disabled={pending || (isRegister && capabilities?.emailVerification === false)}>
-                {pending ? <LoaderCircle className="animate-spin" data-icon="inline-start" /> : <Mail data-icon="inline-start" />}
+              <Button
+                type="submit"
+                className="mt-6 h-11 w-full bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
+                disabled={
+                  pending ||
+                  (isRegister && capabilities?.emailVerification === false)
+                }
+              >
+                {pending ? (
+                  <LoaderCircle
+                    className="animate-spin"
+                    data-icon="inline-start"
+                  />
+                ) : (
+                  <Mail data-icon="inline-start" />
+                )}
                 {pending
                   ? 'Working…'
                   : mode === 'register'
@@ -469,23 +596,48 @@ function AccountEntry() {
             )}
 
             {mode === 'signin' ? (
-              <Button type="button" variant="ghost" className="mt-2 h-11 w-full" onClick={handlePasskey} disabled={pending}>
+              <Button
+                type="button"
+                variant="ghost"
+                className="mt-2 h-11 w-full"
+                onClick={handlePasskey}
+                disabled={pending}
+              >
                 <Fingerprint /> Sign in with a passkey
               </Button>
             ) : null}
 
             <div className="mt-4 text-center text-sm">
               {mode === 'signin' ? (
-                <button type="button" onClick={() => switchMode('register')} className="font-medium text-[var(--ink)] hover:underline">New to RibbonDesk? Create an account</button>
+                <button
+                  type="button"
+                  onClick={() => switchMode('register')}
+                  className="font-medium text-[var(--ink)] hover:underline"
+                >
+                  New to RibbonDesk? Create an account
+                </button>
               ) : mode === 'register' ? (
-                <button type="button" onClick={() => switchMode('signin')} className="font-medium text-[var(--ink)] hover:underline">Already have an account? Sign in</button>
+                <button
+                  type="button"
+                  onClick={() => switchMode('signin')}
+                  className="font-medium text-[var(--ink)] hover:underline"
+                >
+                  Already have an account? Sign in
+                </button>
               ) : (
-                <button type="button" onClick={() => switchMode('signin')} className="font-medium text-[var(--ink)] hover:underline">Back to sign in</button>
+                <button
+                  type="button"
+                  onClick={() => switchMode('signin')}
+                  className="font-medium text-[var(--ink)] hover:underline"
+                >
+                  Back to sign in
+                </button>
               )}
             </div>
             <div className="mt-6 flex gap-3 rounded-xl bg-[var(--sage-soft)] p-3 text-xs leading-5 text-muted-foreground">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[var(--sage)]" />{' '}
-              Email links expire in one hour. Passwords are hashed by Better Auth, and AI never receives your credentials.
+              Email links expire in one hour. Passwords are hashed by Better
+              Auth, and AI never receives your credentials.
             </div>
           </form>
         </section>
@@ -600,6 +752,8 @@ function OrganizationSetup({ displayName }: { displayName: string }) {
       step="1 of 4"
       title="Name your workspace"
       description="This is the shared desk for your businesses, locations, team, and business-readiness record."
+      currentStep={1}
+      furthestStep={1}
     >
       <form onSubmit={submit} className="grid gap-5">
         <div className="grid gap-2">
@@ -642,36 +796,96 @@ function BusinessSetup({
     paginationOpts: { numItems: 20, cursor: null },
   });
   const business = businesses?.page[0];
-  if (businesses === undefined)
+  const locations = useQuery(
+    api.locations.listByBusiness,
+    business
+      ? {
+          businessId: business._id,
+          paginationOpts: { numItems: 20, cursor: null },
+        }
+      : 'skip',
+  );
+  const location = locations?.page[0];
+  const [selectedStep, setSelectedStep] = useState<OnboardingStep | null>(null);
+
+  if (businesses === undefined || (business && locations === undefined))
     return <FullPageStatus label="Loading your business portfolio…" />;
-  if (!business)
+
+  const furthestStep: OnboardingStep = !business ? 2 : !location ? 3 : 4;
+  if (location?.jurisdictionStatus === 'confirmed' && selectedStep === null)
+    return (
+      <CommandCenter
+        organizationId={organizationId}
+        organizationName={organizationName}
+        businessName={business!.name}
+        displayName={displayName}
+        locationId={location._id}
+      />
+    );
+
+  const currentStep = selectedStep ?? furthestStep;
+  const navigate = (step: OnboardingStep) => setSelectedStep(step);
+  const frameProps = { currentStep, furthestStep, onStepChange: navigate };
+
+  if (currentStep === 1)
+    return (
+      <EditOrganization
+        organizationId={organizationId}
+        organizationName={organizationName}
+        onComplete={() => setSelectedStep(2)}
+        {...frameProps}
+      />
+    );
+  if (currentStep === 2)
     return (
       <CreateBusiness
         organizationId={organizationId}
         organizationName={organizationName}
+        business={business}
+        onComplete={() => setSelectedStep(business ? 3 : null)}
+        {...frameProps}
       />
     );
-  return (
-    <LocationSetup
-      organizationId={organizationId}
-      organizationName={organizationName}
-      business={business}
-      displayName={displayName}
-    />
-  );
+  if (currentStep === 3 && business)
+    return (
+      <CreateLocation
+        organizationId={organizationId}
+        organizationName={organizationName}
+        business={business}
+        location={location}
+        onComplete={() => setSelectedStep(location ? 4 : null)}
+        {...frameProps}
+      />
+    );
+  if (currentStep === 4 && business && location)
+    return (
+      <ConfirmJurisdiction
+        location={location}
+        businessName={business.name}
+        onComplete={() => setSelectedStep(null)}
+        {...frameProps}
+      />
+    );
+  return <FullPageStatus label="Opening the next setup step…" />;
 }
 
-function CreateBusiness({
+function EditOrganization({
   organizationId,
   organizationName,
+  onComplete,
+  currentStep,
+  furthestStep,
+  onStepChange,
 }: {
   organizationId: Id<'organizations'>;
   organizationName: string;
+  onComplete: () => void;
+  currentStep: OnboardingStep;
+  furthestStep: OnboardingStep;
+  onStepChange: (step: OnboardingStep) => void;
 }) {
-  const createBusiness = useMutation(api.businesses.create);
-  const [name, setName] = useState('');
-  const [businessType, setBusinessType] = useState('');
-  const [description, setDescription] = useState('');
+  const updateName = useMutation(api.organizations.updateName);
+  const [name, setName] = useState(organizationName);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -680,12 +894,100 @@ function CreateBusiness({
     setPending(true);
     setError(null);
     try {
-      await createBusiness({
-        organizationId,
-        name,
-        businessType,
-        description: description || undefined,
-      });
+      await updateName({ organizationId, name });
+      onComplete();
+    } catch (caught) {
+      setError(errorMessage(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <OnboardingFrame
+      step="1 of 4"
+      title="Review your workspace"
+      description="This is the shared desk for your businesses, locations, team, and business-readiness record."
+      currentStep={currentStep}
+      furthestStep={furthestStep}
+      onStepChange={onStepChange}
+    >
+      <form onSubmit={submit} className="grid gap-5">
+        <div className="grid gap-2">
+          <Label htmlFor="edit-org-name">Organization name</Label>
+          <Input
+            id="edit-org-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            minLength={2}
+            maxLength={80}
+            required
+          />
+        </div>
+        {error ? <FormError message={error} /> : null}
+        <Button
+          type="submit"
+          className="h-11 bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
+          disabled={pending}
+        >
+          {pending ? <LoaderCircle className="animate-spin" /> : null} Save and
+          continue <ChevronRight />
+        </Button>
+      </form>
+    </OnboardingFrame>
+  );
+}
+
+type BusinessDoc = Doc<'businesses'>;
+type LocationDoc = Doc<'locations'>;
+
+function CreateBusiness({
+  organizationId,
+  organizationName,
+  business,
+  onComplete,
+  currentStep,
+  furthestStep,
+  onStepChange,
+}: {
+  organizationId: Id<'organizations'>;
+  organizationName: string;
+  business?: BusinessDoc;
+  onComplete: () => void;
+  currentStep: OnboardingStep;
+  furthestStep: OnboardingStep;
+  onStepChange: (step: OnboardingStep) => void;
+}) {
+  const createBusiness = useMutation(api.businesses.create);
+  const updateBusiness = useMutation(api.businesses.updateDetails);
+  const [name, setName] = useState(business?.name ?? '');
+  const [businessType, setBusinessType] = useState(
+    business?.businessType ?? '',
+  );
+  const [description, setDescription] = useState(business?.description ?? '');
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(event: FormSubmitEvent) {
+    event.preventDefault();
+    setPending(true);
+    setError(null);
+    try {
+      if (business)
+        await updateBusiness({
+          businessId: business._id,
+          name,
+          businessType,
+          description: description || undefined,
+        });
+      else
+        await createBusiness({
+          organizationId,
+          name,
+          businessType,
+          description: description || undefined,
+        });
+      onComplete();
     } catch (caught) {
       setError(errorMessage(caught));
     } finally {
@@ -697,8 +999,11 @@ function CreateBusiness({
     <OnboardingFrame
       step="2 of 4"
       eyebrow={organizationName}
-      title="Tell me about the business"
+      title={business ? 'Review the business' : 'Tell me about the business'}
       description="RibbonDesk is built for any local business. The type and activities determine which requirements need research."
+      currentStep={currentStep}
+      furthestStep={furthestStep}
+      onStepChange={onStepChange}
     >
       <form onSubmit={submit} className="grid gap-4">
         <div className="grid gap-2">
@@ -739,54 +1044,11 @@ function CreateBusiness({
           className="mt-1 h-11 bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
           disabled={pending}
         >
-          {pending ? <LoaderCircle className="animate-spin" /> : null} Save
-          business <ChevronRight />
+          {pending ? <LoaderCircle className="animate-spin" /> : null} Save and
+          continue <ChevronRight />
         </Button>
       </form>
     </OnboardingFrame>
-  );
-}
-
-type BusinessDoc = Doc<'businesses'>;
-
-function LocationSetup({
-  organizationId,
-  organizationName,
-  business,
-  displayName,
-}: {
-  organizationId: Id<'organizations'>;
-  organizationName: string;
-  business: BusinessDoc;
-  displayName: string;
-}) {
-  const locations = useQuery(api.locations.listByBusiness, {
-    businessId: business._id,
-    paginationOpts: { numItems: 20, cursor: null },
-  });
-  const location = locations?.page[0];
-  if (locations === undefined)
-    return <FullPageStatus label="Loading locations…" />;
-  if (!location)
-    return (
-      <CreateLocation
-        organizationId={organizationId}
-        organizationName={organizationName}
-        business={business}
-      />
-    );
-  if (location.jurisdictionStatus !== 'confirmed')
-    return (
-      <ConfirmJurisdiction location={location} businessName={business.name} />
-    );
-  return (
-    <CommandCenter
-      organizationId={organizationId}
-      organizationName={organizationName}
-      businessName={business.name}
-      displayName={displayName}
-      locationId={location._id}
-    />
   );
 }
 
@@ -794,32 +1056,48 @@ function CreateLocation({
   organizationId,
   organizationName,
   business,
+  location,
+  onComplete,
+  currentStep,
+  furthestStep,
+  onStepChange,
 }: {
   organizationId: Id<'organizations'>;
   organizationName: string;
   business: BusinessDoc;
+  location?: LocationDoc;
+  onComplete: () => void;
+  currentStep: OnboardingStep;
+  furthestStep: OnboardingStep;
+  onStepChange: (step: OnboardingStep) => void;
 }) {
   const createLocation = useMutation(api.locations.create);
+  const updateLocation = useMutation(api.locations.updateProfile);
   const [form, setForm] = useState({
-    name: 'Primary location',
-    addressLine1: '',
-    city: '',
-    region: '',
-    postalCode: '',
-    countryCode: 'US',
-    openingTarget: '',
+    name: location?.name ?? 'Primary location',
+    addressLine1: location?.addressLine1 ?? '',
+    addressLine2: location?.addressLine2 ?? '',
+    city: location?.city ?? '',
+    region: location?.region ?? '',
+    postalCode: location?.postalCode ?? '',
+    countryCode: location?.countryCode ?? 'US',
+    openingTarget: location?.openingTarget
+      ? new Date(location.openingTarget).toISOString().slice(0, 10)
+      : '',
   });
-  const [activities, setActivities] = useState('');
+  const [activities, setActivities] = useState(
+    location?.activities.join(', ') ?? '',
+  );
   const [triggers, setTriggers] = useState({
-    employees: false,
-    construction: false,
-    food: false,
-    alcohol: false,
-    signage: false,
-    seating: false,
-    delivery: false,
-    hazardousMaterials: false,
-    regulatedServices: false,
+    employees: location?.triggers.employees ?? false,
+    construction: location?.triggers.construction ?? false,
+    food: location?.triggers.food ?? false,
+    alcohol: location?.triggers.alcohol ?? false,
+    signage: location?.triggers.signage ?? false,
+    seating: location?.triggers.seating ?? false,
+    delivery: location?.triggers.delivery ?? false,
+    hazardousMaterials: location?.triggers.hazardousMaterials ?? false,
+    regulatedServices: location?.triggers.regulatedServices ?? false,
   });
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -832,16 +1110,18 @@ function CreateLocation({
     setPending(true);
     setError(null);
     try {
-      await createLocation({
-        organizationId,
-        businessId: business._id,
+      const values = {
         name: form.name,
         addressLine1: form.addressLine1,
+        addressLine2: form.addressLine2 || undefined,
         city: form.city,
         region: form.region,
         postalCode: form.postalCode,
         countryCode: form.countryCode,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+        timezone:
+          location?.timezone ||
+          Intl.DateTimeFormat().resolvedOptions().timeZone ||
+          'UTC',
         openingTarget: form.openingTarget
           ? new Date(`${form.openingTarget}T12:00:00`).getTime()
           : undefined,
@@ -850,7 +1130,16 @@ function CreateLocation({
           .map((value) => value.trim())
           .filter(Boolean),
         triggers: { ...triggers, other: [] },
-      });
+      };
+      if (location)
+        await updateLocation({ locationId: location._id, ...values });
+      else
+        await createLocation({
+          organizationId,
+          businessId: business._id,
+          ...values,
+        });
+      onComplete();
     } catch (caught) {
       setError(errorMessage(caught));
     } finally {
@@ -874,8 +1163,11 @@ function CreateLocation({
     <OnboardingFrame
       step="3 of 4"
       eyebrow={`${organizationName} · ${business.name}`}
-      title="Configure the first location"
+      title={location ? 'Review the location' : 'Configure the first location'}
       description="The address and operational triggers shape jurisdiction and requirement research. RibbonDesk never silently assumes them."
+      currentStep={currentStep}
+      furthestStep={furthestStep}
+      onStepChange={onStepChange}
     >
       <form onSubmit={submit} className="grid gap-4">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -905,6 +1197,17 @@ function CreateLocation({
             value={form.addressLine1}
             onChange={(event) => update('addressLine1', event.target.value)}
             required
+          />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="address-line-2">
+            Suite or unit{' '}
+            <span className="text-muted-foreground">(optional)</span>
+          </Label>
+          <Input
+            id="address-line-2"
+            value={form.addressLine2}
+            onChange={(event) => update('addressLine2', event.target.value)}
           />
         </div>
         <div className="grid gap-4 sm:grid-cols-[1fr_100px_120px]">
@@ -976,22 +1279,28 @@ function CreateLocation({
           className="mt-1 h-11 bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
           disabled={pending}
         >
-          {pending ? <LoaderCircle className="animate-spin" /> : null} Detect
-          jurisdiction <ChevronRight />
+          {pending ? <LoaderCircle className="animate-spin" /> : null} Save and
+          review jurisdiction <ChevronRight />
         </Button>
       </form>
     </OnboardingFrame>
   );
 }
 
-type LocationDoc = Doc<'locations'>;
-
 function ConfirmJurisdiction({
   location,
   businessName,
+  onComplete,
+  currentStep,
+  furthestStep,
+  onStepChange,
 }: {
   location: LocationDoc;
   businessName: string;
+  onComplete: () => void;
+  currentStep: OnboardingStep;
+  furthestStep: OnboardingStep;
+  onStepChange: (step: OnboardingStep) => void;
 }) {
   const confirm = useMutation(api.locations.confirmJurisdiction);
   const [pending, setPending] = useState(false);
@@ -1013,6 +1322,7 @@ function ConfirmJurisdiction({
         coverageMode: isNyc ? 'verified_pack' : 'dynamic_research',
         coveragePackKey: isNyc ? 'nyc-food-service-v1' : undefined,
       });
+      onComplete();
     } catch (caught) {
       setError(errorMessage(caught));
     } finally {
@@ -1026,6 +1336,9 @@ function ConfirmJurisdiction({
       eyebrow={businessName}
       title="Confirm the jurisdiction"
       description="Research will not start until you confirm the detected location and coverage mode."
+      currentStep={currentStep}
+      furthestStep={furthestStep}
+      onStepChange={onStepChange}
     >
       <div className="rounded-2xl border bg-[var(--paper-strong)] p-5">
         <div className="flex items-start gap-4">
@@ -1101,7 +1414,10 @@ function CommandCenter({
       const result = await authClient.passkey.addPasskey({
         authenticatorAttachment: 'platform',
       });
-      if (result.error) throw new Error(result.error.message || 'The passkey could not be added.');
+      if (result.error)
+        throw new Error(
+          result.error.message || 'The passkey could not be added.',
+        );
       setPasskeyStatus('Passkey added');
     } catch (caught) {
       setPasskeyStatus(errorMessage(caught));
@@ -1141,8 +1457,16 @@ function CommandCenter({
               disabled={passkeyPending}
               title={passkeyStatus ?? 'Add a passkey to this signed-in account'}
             >
-              {passkeyPending ? <LoaderCircle className="animate-spin" /> : <Fingerprint />}
-              <span className="hidden lg:inline">{passkeyStatus === 'Passkey added' ? 'Passkey added' : 'Add passkey'}</span>
+              {passkeyPending ? (
+                <LoaderCircle className="animate-spin" />
+              ) : (
+                <Fingerprint />
+              )}
+              <span className="hidden lg:inline">
+                {passkeyStatus === 'Passkey added'
+                  ? 'Passkey added'
+                  : 'Add passkey'}
+              </span>
             </Button>
             <Button
               variant="ghost"
@@ -1215,7 +1539,10 @@ function CommandCenter({
               }
             />
           </nav>
-          <div id="business-summary" className="mt-8 rounded-2xl border bg-background p-4">
+          <div
+            id="business-summary"
+            className="mt-8 rounded-2xl border bg-background p-4"
+          >
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               Location
             </p>
@@ -1308,14 +1635,26 @@ function OnboardingFrame({
   eyebrow,
   title,
   description,
+  currentStep,
+  furthestStep,
+  onStepChange,
   children,
 }: {
   step: string;
   eyebrow?: string;
   title: string;
   description: string;
+  currentStep?: OnboardingStep;
+  furthestStep?: OnboardingStep;
+  onStepChange?: (step: OnboardingStep) => void;
   children: React.ReactNode;
 }) {
+  const setupSteps: Array<{ number: OnboardingStep; label: string }> = [
+    { number: 1, label: 'Workspace' },
+    { number: 2, label: 'Business' },
+    { number: 3, label: 'Location' },
+    { number: 4, label: 'Jurisdiction' },
+  ];
   return (
     <main className="auth-page min-h-screen px-5 py-10">
       <div className="mx-auto w-full max-w-2xl">
@@ -1350,6 +1689,49 @@ function OnboardingFrame({
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
             {description}
           </p>
+          {currentStep && furthestStep ? (
+            <nav
+              aria-label="Business setup progress"
+              className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4"
+            >
+              {setupSteps.map(({ number, label }) => {
+                const available = number <= furthestStep;
+                const active = number === currentStep;
+                return (
+                  <button
+                    key={number}
+                    type="button"
+                    disabled={!available || !onStepChange}
+                    aria-current={active ? 'step' : undefined}
+                    onClick={() => onStepChange?.(number)}
+                    className={`rounded-xl border px-3 py-3 text-left transition ${
+                      active
+                        ? 'border-[var(--ribbon)] bg-[var(--ribbon-soft)] text-[var(--ribbon)]'
+                        : available && onStepChange
+                          ? 'bg-white hover:border-[var(--ribbon)] hover:bg-[var(--ribbon-soft)]'
+                          : 'cursor-not-allowed bg-muted/40 text-muted-foreground opacity-60'
+                    }`}
+                  >
+                    <span className="block text-[10px] font-bold uppercase tracking-[0.16em]">
+                      Step {number}
+                    </span>
+                    <span className="mt-1 block text-xs font-semibold">
+                      {label}
+                    </span>
+                  </button>
+                );
+              })}
+            </nav>
+          ) : null}
+          {currentStep && currentStep > 1 && onStepChange ? (
+            <button
+              type="button"
+              onClick={() => onStepChange((currentStep - 1) as OnboardingStep)}
+              className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="size-4" /> Back to step {currentStep - 1}
+            </button>
+          ) : null}
           <div className="mt-7">{children}</div>
         </section>
       </div>

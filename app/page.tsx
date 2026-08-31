@@ -19,6 +19,11 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import {
+  LandingHeaderActions,
+  LandingWorkspaceButton,
+  LandingWorkspaceLink,
+} from './landing-auth-actions';
 
 const steps = [
   {
@@ -101,18 +106,7 @@ export default function Home() {
             <Link href="#use-cases">Use cases</Link>
             <Link href="#faq">FAQ</Link>
           </nav>
-          <div className="rd-header-actions">
-            <Link href="/app" className="rd-login">
-              Sign in
-            </Link>
-            <Button
-              nativeButton={false}
-              className="rd-button rd-button-primary"
-              render={<Link href="/app" />}
-            >
-              Start free
-            </Button>
-          </div>
+          <LandingHeaderActions />
         </header>
 
         <section className="rd-hero" aria-labelledby="hero-heading">
@@ -130,15 +124,7 @@ export default function Home() {
               email, evidence, and renewals.
             </p>
             <div className="rd-hero-actions">
-              <Button
-                nativeButton={false}
-                size="lg"
-                className="rd-button rd-button-primary"
-                render={<Link href="/app" />}
-              >
-                Start your real workspace
-                <ArrowRight data-icon="inline-end" />
-              </Button>
+              <LandingWorkspaceButton signedOutLabel="Start your real workspace" />
               <Button
                 nativeButton={false}
                 size="lg"
@@ -274,9 +260,9 @@ export default function Home() {
               what <em>applies.</em>
             </h2>
             <p>
-              RibbonDesk researches official sources for the business,
-              location, and activities—then shows the agency, citation,
-              confidence, dependencies, and unanswered questions.
+              RibbonDesk researches official sources for the business, location,
+              and activities—then shows the agency, citation, confidence,
+              dependencies, and unanswered questions.
             </p>
             <ul className="rd-check-list">
               <li>
@@ -422,7 +408,9 @@ export default function Home() {
 
         <section id="stay-ready" className="rd-lifecycle rd-section">
           <div className="rd-centered-heading">
-            <span className="rd-section-kicker">Opening is only the beginning</span>
+            <span className="rd-section-kicker">
+              Opening is only the beginning
+            </span>
             <h2>Stay ready after the ribbon is cut.</h2>
           </div>
           <div className="rd-lifecycle-track">
@@ -485,14 +473,7 @@ export default function Home() {
               real work, upload evidence, prepare applications, and track every
               deadline in one persistent workspace.
             </p>
-            <Button
-              nativeButton={false}
-              size="lg"
-              className="rd-button rd-button-primary"
-              render={<Link href="/app" />}
-            >
-              Start your workspace <ArrowRight data-icon="inline-end" />
-            </Button>
+            <LandingWorkspaceButton signedOutLabel="Start your workspace" />
           </div>
         </section>
 
@@ -523,17 +504,8 @@ export default function Home() {
               Build a clear opening plan and stay ready long after opening day.
             </p>
             <div className="rd-hero-actions">
-              <Button
-                nativeButton={false}
-                size="lg"
-                className="rd-button rd-button-primary"
-                render={<Link href="/app" />}
-              >
-                Create your account <ArrowRight data-icon="inline-end" />
-              </Button>
-              <Link href="/app" className="rd-text-link">
-                Open RibbonDesk <ChevronRight />
-              </Link>
+              <LandingWorkspaceButton signedOutLabel="Create your account" />
+              <LandingWorkspaceLink signedOutLabel="Open RibbonDesk" />
             </div>
           </div>
         </section>

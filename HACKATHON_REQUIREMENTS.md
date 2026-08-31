@@ -124,8 +124,8 @@ the deadline rather than discovering extra fields during the final hour.
   deployment is bound to the final public Site origin and now runs this verified
   backend source in live mode. OpenRouter, Firecrawl, and AgentMail production
   health checks pass, and the complete production AgentMail acceptance journey
-  passes through the existing public Site. Publishing the current frontend
-  source is the remaining release gate.
+  passes through the existing public Site. Authenticated organization, business,
+  and location edits are role-checked, audited, and deployed to production.
 - **Convex plugin:** Installed. The current Codex session exposes the official
   Convex skills. Recheck availability after a restart or in a new task before
   relying on it.
@@ -138,6 +138,10 @@ the deadline rather than discovering extra fields during the final hour.
   identity is persisted in `.openai/hosting.json`, and the local development
   preview and production build both run. The verified source is deployed at
   `https://ribbondesk.souravberaakagralius.chatgpt.site` with public access.
+  The landing experience detects authenticated sessions, and the saved four-step
+  onboarding flow supports revisiting completed steps before jurisdiction
+  confirmation. The Google callback gate now hydrates from identical server and
+  client markup so it cannot create a framework error overlay during startup.
   Anonymous route checks pass and the production runtime reports no errors.
 - **Public product path:** The synthetic workspace has been removed from the
   current source. `/demo` now redirects to the real passkey workspace at `/app`.

@@ -401,3 +401,18 @@ the corrected release as Sites version 7, signed out on the public `/app`, and
 retested the real Google journey. The live screen contained no Apple control;
 Google returned to authenticated workspace onboarding, and the session remained
 authenticated after a full reload. I created no organization or sample data.
+
+I made the public landing page session-aware and rebuilt onboarding as a saved,
+reversible four-step flow. An authenticated visitor now sees one clear “Open
+dashboard” action instead of sign-in/sign-up prompts; `/app` continues directly
+to the earliest incomplete setup step or the operating desk. During setup, each
+available step is visible and clickable, a Back control returns to the prior
+step, and saved organization, business, and location details reopen for editing
+without deleting or duplicating records. Organization, business, and location
+edits use authenticated, role-checked Convex mutations and immutable activity
+events. A jurisdiction-shaping location edit intentionally resets jurisdiction
+confirmation before research can proceed. While testing the route, I also found
+and removed a server/client mismatch in the Google callback gate that could
+surface React's development error overlay. Convex production deployment, strict
+TypeScript, lint, five domain tests, the production Sites build, and a local
+browser check with no hydration/error overlay all pass for this release.

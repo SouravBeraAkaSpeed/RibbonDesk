@@ -173,6 +173,44 @@ export const get = query({
   },
 });
 
+export const updateName = mutation({
+  args: { organizationId: v.id('organizations'), name: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { identity } = await requireMembership(
+      ctx,
+      args.organizationId,
+      'admin',
+    );
+    const organization = await ctx.db.get(args.organizationId);
+    if (!organization || organization.deletionStatus !== 'active') {
+      throw new ConvexError({
+        code: 'NOT_FOUND',
+        message: 'Organization not found.',
+      });
+    }
+    const name = args.name.trim();
+    if (name.length < 2 || name.length > 80) {
+      throw new ConvexError({
+        code: 'INVALID_NAME',
+        message: 'Organization names must be 2–80 characters.',
+      });
+    }
+    if (name === organization.name) return null;
+    await ctx.db.patch(args.organizationId, { name, updatedAt: Date.now() });
+    await recordActivity(ctx, {
+      organizationId: args.organizationId,
+      actorSubject: identity.tokenIdentifier,
+      action: 'organization.updated',
+      entityType: 'organization',
+      entityId: args.organizationId,
+      before: { name: organization.name },
+      after: { name },
+    });
+    return null;
+  },
+});
+
 export const listMembers = query({
   args: {
     organizationId: v.id('organizations'),

@@ -1,8 +1,11 @@
 'use client';
 
-import { ConvexBetterAuthProvider, type AuthClient } from '@convex-dev/better-auth/react';
+import {
+  ConvexBetterAuthProvider,
+  type AuthClient,
+} from '@convex-dev/better-auth/react';
 import { ConvexReactClient } from 'convex/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 import { authClient } from '@/lib/auth-client';
 
@@ -13,27 +16,32 @@ type CallbackState = 'checking' | 'ready' | 'failed';
 
 function GoogleCallbackGate({ children }: { children: React.ReactNode }) {
   const handled = useRef(false);
-  const [state, setState] = useState<CallbackState>(() => {
-    if (typeof window === 'undefined') return 'checking';
-    return new URL(window.location.href).searchParams.has('ott') ? 'checking' : 'ready';
-  });
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
+  const [state, setState] = useState<CallbackState>('checking');
+  const token = mounted
+    ? new URL(window.location.href).searchParams.get('ott')
+    : null;
 
   useEffect(() => {
-    if (handled.current) return;
+    if (!token || handled.current) return;
     handled.current = true;
 
     const url = new URL(window.location.href);
-    const token = url.searchParams.get('ott');
-    if (!token) return;
-
     url.searchParams.delete('ott');
     window.history.replaceState({}, '', url);
 
     void (async () => {
       try {
-        const result = await authClient.crossDomain.oneTimeToken.verify({ token });
+        const result = await authClient.crossDomain.oneTimeToken.verify({
+          token,
+        });
         const session = result.data?.session;
-        if (!session?.token) throw new Error('Google did not return a valid RibbonDesk session.');
+        if (!session?.token)
+          throw new Error('Google did not return a valid RibbonDesk session.');
 
         const sessionResult = await authClient.getSession({
           fetchOptions: {
@@ -41,7 +49,10 @@ function GoogleCallbackGate({ children }: { children: React.ReactNode }) {
           },
         });
         if (sessionResult.error || !sessionResult.data?.session) {
-          throw new Error(sessionResult.error?.message || 'RibbonDesk could not confirm the Google session.');
+          throw new Error(
+            sessionResult.error?.message ||
+              'RibbonDesk could not confirm the Google session.',
+          );
         }
 
         void authClient.updateSession();
@@ -51,9 +62,9 @@ function GoogleCallbackGate({ children }: { children: React.ReactNode }) {
         setState('failed');
       }
     })();
-  }, []);
+  }, [token]);
 
-  if (state === 'checking') {
+  if (!mounted || (token && state === 'checking')) {
     return (
       <main className="auth-page grid min-h-screen place-items-center px-5">
         <output className="rounded-2xl border bg-background px-5 py-4 text-sm font-medium shadow-sm">
@@ -67,9 +78,12 @@ function GoogleCallbackGate({ children }: { children: React.ReactNode }) {
     return (
       <main className="auth-page grid min-h-screen place-items-center px-5">
         <section className="w-full max-w-md rounded-3xl border bg-background p-6 shadow-sm">
-          <h1 className="font-heading text-2xl font-semibold">Google sign-in was not completed</h1>
+          <h1 className="font-heading text-2xl font-semibold">
+            Google sign-in was not completed
+          </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            The temporary sign-in link may have expired or already been used. Start Google sign-in again to create a fresh link.
+            The temporary sign-in link may have expired or already been used.
+            Start Google sign-in again to create a fresh link.
           </p>
           <button
             type="button"
@@ -86,12 +100,19 @@ function GoogleCallbackGate({ children }: { children: React.ReactNode }) {
   return children;
 }
 
-export function ConvexClientProvider({ children }: { children: React.ReactNode }) {
+export function ConvexClientProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   if (!convex) return children;
 
   return (
     <GoogleCallbackGate>
-      <ConvexBetterAuthProvider client={convex} authClient={authClient as unknown as AuthClient}>
+      <ConvexBetterAuthProvider
+        client={convex}
+        authClient={authClient as unknown as AuthClient}
+      >
         {children}
       </ConvexBetterAuthProvider>
     </GoogleCallbackGate>
