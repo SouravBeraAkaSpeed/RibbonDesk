@@ -1,22 +1,20 @@
 # Authentication operations
 
 RibbonDesk uses Better Auth on Convex. Email/password, email verification,
-password reset, and authenticated passkey enrollment are implemented. Google
-and Apple become active only when both credentials for that provider exist in
-the Convex deployment environment; secrets never reach the browser.
+password reset, authenticated passkey enrollment, and Google sign-in are
+implemented. Provider secrets never reach the browser.
 
 Current production status: Google is enabled in both Convex development and
 production. The public sign-in button, Google account chooser, exact callback
 URI, minimal `openid`, `email`, and `profile` scopes, authenticated onboarding
 redirect, and session persistence after reload have been verified end to end.
-Apple is intentionally deferred and its sign-in button remains disabled.
+Apple is intentionally deferred and is not shown on the authentication pages.
 
 ## Public production endpoints
 
 - Application origin: `https://ribbondesk.souravberaakagralius.chatgpt.site`
 - Auth server origin: `https://steady-sockeye-84.convex.site`
 - Google redirect URI: `https://steady-sockeye-84.convex.site/api/auth/callback/google`
-- Apple return URL: `https://steady-sockeye-84.convex.site/api/auth/callback/apple`
 
 The callback host is the Convex HTTP deployment, not the ChatGPT Site. This is
 required by the Convex + Better Auth cross-domain installation.
@@ -38,13 +36,16 @@ required by the Convex + Better Auth cross-domain installation.
 
 If Google keeps the consent screen in testing mode, only listed test users can
 sign in. Publish the OAuth app before opening sign-in to hackathon visitors.
-The production callback was tested with an explicitly authorized test identity;
-it returned to `/app`, opened authenticated onboarding, and survived a reload.
+The production callback uses a one-time cross-domain token. RibbonDesk disables
+the client session cache during this handoff and completes the token exchange
+before rendering authenticated or unauthenticated content, preventing a slower
+pre-callback request from restoring a stale signed-out state.
 
-## Apple OAuth setup
+## Deferred Apple OAuth
 
-Apple web sign-in requires an active Apple Developer membership and cannot be
-created through the available Codex connectors.
+Apple web sign-in is not part of the current release and no Apple control is
+rendered. The following operator notes are retained for a future release; Apple
+requires an active Apple Developer membership.
 
 1. Open [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list).
 2. Enable **Sign in with Apple** on a primary App ID.

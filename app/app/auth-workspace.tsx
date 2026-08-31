@@ -4,7 +4,6 @@ import Link from 'next/link';
 import {
   Activity,
   AlertTriangle,
-  Apple,
   ArrowLeft,
   Building2,
   CalendarClock,
@@ -249,17 +248,17 @@ function AccountEntry() {
     }
   }
 
-  async function handleSocial(provider: 'google' | 'apple') {
+  async function handleGoogle() {
     setPending(true);
     setError(null);
     try {
       const result = await authClient.signIn.social({
-        provider,
+        provider: 'google',
         callbackURL: `${window.location.origin}/app`,
         newUserCallbackURL: `${window.location.origin}/app`,
-        errorCallbackURL: `${window.location.origin}/app?authError=${provider}`,
+        errorCallbackURL: `${window.location.origin}/app?authError=google`,
       });
-      if (result.error) throw new Error(result.error.message || `${provider} sign-in failed.`);
+      if (result.error) throw new Error(result.error.message || 'Google sign-in failed.');
     } catch (caught) {
       setError(errorMessage(caught));
       setPending(false);
@@ -315,7 +314,7 @@ function AccountEntry() {
               Your business desk. Your secure sign-in.
             </h1>
             <p className="mt-3 text-sm leading-6 text-white/65">
-              Use email, Google, Apple, or a passkey you have already added.
+              Use email, Google, or a passkey you have already added.
             </p>
           </div>
           <form className="p-6" onSubmit={handleEmail}>
@@ -340,26 +339,16 @@ function AccountEntry() {
 
             {mode === 'signin' || mode === 'register' ? (
               <>
-                <div className="mt-5 grid grid-cols-2 gap-3">
+                <div className="mt-5 grid gap-3">
                   <Button
                     type="button"
                     variant="outline"
                     className="h-11"
-                    onClick={() => handleSocial('google')}
+                    onClick={handleGoogle}
                     disabled={pending || !capabilities?.google}
                     title={capabilities?.google ? 'Continue with Google' : 'Google OAuth setup is pending'}
                   >
                     <GoogleMark /> Google
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-11"
-                    onClick={() => handleSocial('apple')}
-                    disabled={pending || !capabilities?.apple}
-                    title={capabilities?.apple ? 'Continue with Apple' : 'Apple OAuth setup is pending'}
-                  >
-                    <Apple /> Apple
                   </Button>
                 </div>
                 <div className="my-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">

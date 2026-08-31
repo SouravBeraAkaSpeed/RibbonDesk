@@ -145,7 +145,7 @@ the deadline rather than discovering extra fields during the final hour.
   a separate recorded walkthrough must be captured from the real app after live
   provider credentials are configured.
 - **Authentication:** Better Auth on Convex supports verified email/password,
-  password reset, Google and Apple provider configuration, and passkeys that
+  password reset, Google sign-in, and passkeys that
   can only be enrolled from an authenticated account. AgentMail security mail
   is persisted into a bounded Convex retry queue before delivery. The automated
   authentication journey is designed to cover registration, email verification, password
@@ -153,8 +153,10 @@ the deadline rather than discovering extra fields during the final hour.
   jurisdiction confirmation, and controlled workspace cleanup. Google is
   configured in development and production; its live account chooser, exact
   callback URI, minimal identity scopes, authenticated onboarding redirect, and
-  session persistence are verified end to end. Apple is intentionally deferred
-  and remains disabled.
+  session persistence are verified end to end. The auth UI now gates the
+  one-time cross-domain callback before rendering and disables stale session
+  caching to prevent a slower signed-out response from overwriting a fresh
+  Google session. Apple is intentionally deferred and absent from auth pages.
 - **Core workspace:** Organization ownership, role enforcement, business and
   location setup, explicit jurisdiction confirmation, a real cited-requirement
   and task editor, the command center, source preview, live-only research, cited

@@ -386,3 +386,14 @@ branding asset (`public/brand/ribbondesk-google-oauth-logo.png`). The PNG is an
 exact 120 × 120 square, uses the production ink, coral, and sage brand colors,
 and is only 2 KB, satisfying Google's consent-screen recommendation and 1 MB
 upload limit without introducing a second logo direction.
+
+I removed Apple from every authentication screen because it is intentionally
+outside this release. After the owner reported that a normal browser could
+return from Google to the signed-out screen, I traced the cross-domain handoff
+and found a browser-timing risk: a slower pre-callback `get-session` response
+could outlive the one-time-token exchange and restore stale signed-out state.
+RibbonDesk now disables that client session cache and completes the one-time
+Google token exchange behind a dedicated “Finishing your Google sign-in” gate
+before mounting the authenticated application. The gate also presents a clear,
+recoverable error if a temporary token is expired or already used. Strict
+TypeScript, lint, unit tests, and the production Sites build pass.
