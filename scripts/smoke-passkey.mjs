@@ -18,7 +18,8 @@ if (!executablePath) {
 }
 
 const browser = await chromium.launch({ executablePath, headless: true });
-const context = await browser.newContext({ baseURL: process.env.SMOKE_BASE_URL ?? 'http://localhost:3000' });
+const baseURL = process.env.SMOKE_BASE_URL ?? 'http://localhost:3000';
+const context = await browser.newContext({ baseURL });
 const page = await context.newPage();
 const consoleErrors = [];
 const failedResponses = [];
@@ -146,7 +147,8 @@ try {
   await page.getByLabel('Official portal link').fill('https://nyc-business.nyc.gov/');
   const unresolvedButton = page.getByRole('button', { name: 'Mark reviewed & resolved' });
   if (await unresolvedButton.isVisible()) await unresolvedButton.click();
-  const readinessCheckboxes = page.getByRole('checkbox');
+  const evidenceSection = page.locator('section').filter({ has: page.getByRole('heading', { name: 'Build the file once. Keep the proof attached.' }) });
+  const readinessCheckboxes = evidenceSection.getByRole('checkbox');
   if ((await readinessCheckboxes.count()) < 4) throw new Error('Application readiness checklist did not render.');
   for (let index = 0; index < 4; index += 1) {
     const checkbox = readinessCheckboxes.nth(index);
@@ -191,6 +193,46 @@ try {
   await page.getByRole('button', { name: 'Upload & check' }).click();
   const rejectedCard = page.locator('article').filter({ hasText: 'synthetic-active-content.pdf' }).first();
   await rejectedCard.getByText(/active scripts, launch actions, or embedded files are not allowed/i).waitFor({ timeout: 20_000 });
+
+  const inboxSection = page.locator('section').filter({ has: page.getByRole('heading', { name: 'Agency mail becomes reviewed work.' }) });
+  const createInboxButton = inboxSection.getByRole('button', { name: 'Create case inbox' });
+  if (await createInboxButton.isVisible()) {
+    await createInboxButton.click();
+    await inboxSection.getByText('Safe replay mode').waitFor({ timeout: 20_000 });
+  }
+  await inboxSection.getByRole('heading', { name: 'Messages' }).waitFor({ timeout: 20_000 });
+
+  const observerContext = await browser.newContext({ baseURL, storageState: await context.storageState() });
+  const observerPage = await observerContext.newPage();
+  await observerPage.goto('/app', { waitUntil: 'networkidle' });
+  const observerInbox = observerPage.locator('section').filter({ has: observerPage.getByRole('heading', { name: 'Agency mail becomes reviewed work.' }) });
+  await observerInbox.getByRole('heading', { name: 'Messages' }).waitFor({ timeout: 20_000 });
+  const observerProposalCount = await observerInbox.getByRole('button', { name: 'Approve change' }).count();
+  await inboxSection.getByRole('button', { name: 'Receive test reply' }).click();
+  await observerPage.waitForFunction(
+    (count) => Array.from(document.querySelectorAll('button')).filter((button) => button.textContent?.includes('Approve change')).length > count,
+    observerProposalCount,
+    { timeout: 20_000 },
+  );
+  await observerContext.close();
+
+  const approveMessageProposal = inboxSection.getByRole('button', { name: 'Approve change' }).first();
+  await approveMessageProposal.click();
+  await inboxSection.getByText('Proposal approved. The follow-up now appears in Today.').waitFor({ timeout: 20_000 });
+
+  const outboundSubject = `Controlled agency reply ${Date.now()}`;
+  await inboxSection.getByLabel('To', { exact: true }).fill('agency@example.com');
+  await inboxSection.getByLabel('Subject', { exact: true }).fill(outboundSubject);
+  await inboxSection.getByLabel('Message', { exact: true }).fill('Attached is our controlled test response. Please confirm receipt.');
+  const attachmentChoices = inboxSection.getByRole('checkbox');
+  if (await attachmentChoices.count()) await attachmentChoices.first().click();
+  await inboxSection.getByRole('button', { name: 'Save draft' }).click();
+  await inboxSection.getByText('Draft saved. Submit it for owner/admin review when it is ready.').waitFor({ timeout: 20_000 });
+  const outboundCard = inboxSection.getByTestId('outbound-draft').filter({ hasText: outboundSubject }).first();
+  await outboundCard.getByRole('button', { name: 'Request approval' }).click();
+  await outboundCard.getByRole('button', { name: 'Approve & send' }).waitFor({ timeout: 20_000 });
+  await outboundCard.getByRole('button', { name: 'Approve & send' }).click();
+  await outboundCard.getByText('Delivery confirmed').waitFor({ timeout: 20_000 });
   if (process.env.SMOKE_SCREENSHOT) {
     await page.screenshot({ path: process.env.SMOKE_SCREENSHOT, fullPage: true });
   }
@@ -198,7 +240,7 @@ try {
   if (consoleErrors.length) {
     throw new Error(`Browser console errors:\n${consoleErrors.join('\n')}`);
   }
-  console.log('Passkey auth, cited research, approval, safe evidence upload, and versioned PDF/ZIP packet generation passed.');
+  console.log('Passkey auth, cited research, evidence and packet generation, realtime inbox proposals, and approval-gated replay delivery passed.');
 } catch (error) {
   console.error(`Smoke test stopped at ${page.url()}`);
   console.error((await page.locator('body').innerText()).slice(0, 10_000));

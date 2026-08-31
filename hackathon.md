@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-30T23:59:02Z
+- **Last updated:** 2026-08-31T00:17:04Z
 
 ## Log
 
@@ -86,7 +86,7 @@ has not yet been exercised with sponsor credentials. The browser smoke test now
 proves replay research, human approval, and realtime task creation, and Convex
 deployment, lint, TypeScript, and the production build pass again.
 
-### 2026-08-30 - working tree
+### 2026-08-30 - 7a89c7f
 I added the evidence locker and application-preparation workflow
 (`convex/documents.ts`, `convex/applications.ts`,
 `app/app/evidence-applications-panel.tsx`). I can now upload an owned file to
@@ -100,3 +100,19 @@ generated packet, confirmed it contains no embedded JavaScript, and verified
 the authenticated download bytes. The browser smoke also proves that a file
 with active PDF content is rejected. Convex deployment, lint, TypeScript, and
 the production build pass with this slice.
+
+### 2026-08-31 - working tree
+I built the location case-inbox workflow on the AgentMail component
+(`convex/inbox.ts`, `convex/http.ts`, `app/app/case-inbox-panel.tsx`). The app
+now keeps an owned inbox binding, a reactive sanitized message thread, editable
+outbound drafts, safety-checked attachments, immutable approval snapshots, and
+visible delivery states. Inbound mail is wired to a structured OpenAI
+classification action that can propose a deadline task but cannot apply it;
+owners or admins must accept or reject the proposal. Outbound delivery is also
+locked behind an owner/admin approval record. The default provider mode uses a
+clearly labeled safe replay and does not contact an external recipient; live
+AgentMail webhook, durable-send, delivery-status, and OpenAI classification
+paths are implemented but have not yet been exercised with sponsor credentials.
+The browser smoke proves the complete replay loop and observes the new proposal
+reactively in a second authenticated browser context. Convex deployment, lint,
+TypeScript, and the production build pass again.

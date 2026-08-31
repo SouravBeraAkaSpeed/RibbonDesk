@@ -56,6 +56,7 @@ export function ResearchPanel({ locationId, role }: { locationId: Id<'locations'
   const proposals = useQuery(api.proposals.list, {
     locationId,
     status: 'pending',
+    proposalType: 'requirement',
     paginationOpts: { numItems: 20, cursor: null },
   });
   const requirements = useQuery(api.requirements.list, {

@@ -36,6 +36,7 @@ import { authClient } from '@/lib/auth-client';
 
 import { ResearchPanel } from './research-panel';
 import { EvidenceApplicationsPanel } from './evidence-applications-panel';
+import { CaseInboxPanel } from './case-inbox-panel';
 
 type FormSubmitEvent = SyntheticEvent<HTMLFormElement, SubmitEvent>;
 
@@ -336,6 +337,7 @@ function CommandCenter({ organizationName, businessName, displayName, locationId
           <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><Badge className="bg-[var(--sage-soft)] text-[var(--sage)]"><Activity />Live workspace</Badge><h1 className="mt-4 font-heading text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">Good {new Date().getHours() < 12 ? 'morning' : 'afternoon'}, {displayName.split(' ')[0]}.</h1><p className="mt-2 text-muted-foreground">Here is what needs attention at {dashboard.location.name}.</p></div><Button className="bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"><Sparkles /> Ask Ribbon Assistant</Button></div>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Metric icon={CircleGauge} label="Readiness" value={`${dashboard.readiness}%`} tone="sage" /><Metric icon={AlertTriangle} label="Blockers" value={String(dashboard.blockers)} tone="amber" /><Metric icon={CheckCircle2} label="Open tasks" value={String(dashboard.counts.openTasks)} /><Metric icon={Inbox} label="Review proposals" value={String(dashboard.counts.pendingProposals)} tone="ribbon" /></div>
           <ResearchPanel locationId={locationId} role={dashboard.role} />
+          <CaseInboxPanel locationId={locationId} />
           <EvidenceApplicationsPanel locationId={locationId} />
           <div className="mt-7 grid gap-6 xl:grid-cols-[1.45fr_0.8fr]">
             <section className="rounded-[1.5rem] border bg-background p-5 sm:p-6"><div className="flex items-center justify-between"><div><p className="text-xs font-semibold uppercase tracking-[0.17em] text-muted-foreground">Next best actions</p><h2 className="mt-2 text-xl font-semibold">Today</h2></div><Badge variant="outline">Realtime</Badge></div>{today.length ? <div className="mt-5 divide-y">{today.slice(0, 8).map((task: { _id: string; title: string; priority: string; dueAt?: number }) => <div key={task._id} className="flex items-center gap-3 py-4"><span className="size-2 rounded-full bg-[var(--ribbon)]" /><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{task.title}</p><p className="mt-1 text-xs text-muted-foreground">{task.priority} priority{task.dueAt ? ` · due ${new Date(task.dueAt).toLocaleDateString()}` : ''}</p></div><ChevronRight className="size-4 text-muted-foreground" /></div>)}</div> : <EmptyPanel title="Your action queue is clear" copy="Confirmed requirements and approved proposals will produce prioritized work here." />}</section>

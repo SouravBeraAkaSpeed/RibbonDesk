@@ -29,15 +29,33 @@ const editsValidator = v.optional(
   }),
 );
 
+const proposalTypeValidator = v.union(
+  v.literal('requirement'),
+  v.literal('task'),
+  v.literal('deadline'),
+  v.literal('application_status'),
+  v.literal('inspection'),
+  v.literal('source_change'),
+  v.literal('draft_message'),
+);
+
 export const list = query({
   args: {
     locationId: v.id('locations'),
     status: v.optional(v.union(v.literal('pending'), v.literal('accepted'), v.literal('edited'), v.literal('rejected'), v.literal('superseded'))),
+    proposalType: v.optional(proposalTypeValidator),
     paginationOpts: paginationOptsValidator,
   },
   returns: paginationResultValidator(schema.doc('proposals')),
   handler: async (ctx, args) => {
     await requireLocation(ctx, args.locationId);
+    if (args.status && args.proposalType) {
+      return await ctx.db
+        .query('proposals')
+        .withIndex('by_locationId_and_type_and_status', (index) => index.eq('locationId', args.locationId).eq('proposalType', args.proposalType!).eq('status', args.status!))
+        .order('desc')
+        .paginate(args.paginationOpts);
+    }
     if (args.status) {
       return await ctx.db
         .query('proposals')

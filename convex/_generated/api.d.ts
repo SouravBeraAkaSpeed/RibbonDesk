@@ -15,6 +15,7 @@ import type * as businesses from "../businesses.js";
 import type * as dashboard from "../dashboard.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
+import type * as inbox from "../inbox.js";
 import type * as lib_permissions from "../lib/permissions.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as locations from "../locations.js";
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   dashboard: typeof dashboard;
   documents: typeof documents;
   http: typeof http;
+  inbox: typeof inbox;
   "lib/permissions": typeof lib_permissions;
   "lib/validators": typeof lib_validators;
   locations: typeof locations;

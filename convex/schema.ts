@@ -372,7 +372,10 @@ export default defineSchema({
     organizationId: v.id('organizations'),
     locationId: v.id('locations'),
     providerInboxId: v.string(),
+    providerMode: v.union(v.literal('replay'), v.literal('live')),
+    emailAddress: v.optional(v.string()),
     status: v.union(v.literal('provisioning'), v.literal('active'), v.literal('disabled'), v.literal('failed')),
+    errorMessage: v.optional(v.string()),
     createdBy: v.string(),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -380,6 +383,75 @@ export default defineSchema({
     .index('by_locationId', ['locationId'])
     .index('by_providerInboxId', ['providerInboxId'])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
+
+  caseMessages: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    inboxBindingId: v.id('inboxBindings'),
+    providerInboxId: v.string(),
+    providerMessageId: v.string(),
+    providerThreadId: v.string(),
+    direction: v.union(v.literal('inbound'), v.literal('outbound')),
+    fromAddress: v.string(),
+    toAddresses: v.array(v.string()),
+    subject: v.string(),
+    bodyText: v.string(),
+    preview: v.string(),
+    status: v.union(v.literal('received'), v.literal('needs_review'), v.literal('processed'), v.literal('sent'), v.literal('delivered'), v.literal('bounced'), v.literal('failed')),
+    aiSummary: v.optional(v.string()),
+    classification: v.optional(v.string()),
+    attachments: v.array(v.object({ fileName: v.string(), contentType: v.optional(v.string()), sizeBytes: v.optional(v.number()) })),
+    receivedAt: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_providerMessageId', ['providerMessageId'])
+    .index('by_locationId_and_receivedAt', ['locationId', 'receivedAt'])
+    .index('by_locationId_and_providerThreadId', ['locationId', 'providerThreadId'])
+    .index('by_inboxBindingId_and_receivedAt', ['inboxBindingId', 'receivedAt']),
+
+  outboundDrafts: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    inboxBindingId: v.id('inboxBindings'),
+    providerThreadId: v.optional(v.string()),
+    replyToMessageId: v.optional(v.string()),
+    toAddresses: v.array(v.string()),
+    ccAddresses: v.array(v.string()),
+    subject: v.string(),
+    bodyText: v.string(),
+    requirementId: v.optional(v.id('requirements')),
+    attachmentDocumentIds: v.array(v.id('documents')),
+    status: v.union(v.literal('draft'), v.literal('pending_approval'), v.literal('approved'), v.literal('sending'), v.literal('sent'), v.literal('delivered'), v.literal('bounced'), v.literal('failed'), v.literal('cancelled')),
+    providerOutboundId: v.optional(v.string()),
+    errorMessage: v.optional(v.string()),
+    createdBy: v.string(),
+    requestedAt: v.optional(v.number()),
+    approvedBy: v.optional(v.string()),
+    approvedAt: v.optional(v.number()),
+    sentAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
+    .index('by_locationId_and_status', ['locationId', 'status'])
+    .index('by_providerOutboundId', ['providerOutboundId']),
+
+  sendApprovals: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    outboundDraftId: v.id('outboundDrafts'),
+    approvedBy: v.string(),
+    toAddresses: v.array(v.string()),
+    ccAddresses: v.array(v.string()),
+    subject: v.string(),
+    bodyText: v.string(),
+    requirementId: v.optional(v.id('requirements')),
+    attachmentDocumentIds: v.array(v.id('documents')),
+    approvedAt: v.number(),
+  })
+    .index('by_outboundDraftId', ['outboundDraftId'])
+    .index('by_locationId_and_approvedAt', ['locationId', 'approvedAt']),
 
   messageLinks: defineTable({
     organizationId: v.id('organizations'),
@@ -436,6 +508,7 @@ export default defineSchema({
   })
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
+    .index('by_locationId_and_type_and_status', ['locationId', 'proposalType', 'status'])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
 
   notifications: defineTable({
