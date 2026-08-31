@@ -351,3 +351,17 @@ deployed the change to production Convex, and completed a live provider-health
 request successfully through the anonymous request path. Historical OpenRouter
 dashboard activity may retain its original attribution, but new backend calls
 do not send the RibbonDesk name or Site URL.
+
+I hardened authentication-email throttling after a clean end-to-end run exposed
+AgentMail `429` responses during rapid controlled sends. The AgentMail client now
+captures the provider's `Retry-After` header, and the durable Convex job schedules
+the next attempt no earlier than that provider-directed delay instead of relying
+only on a local backoff (`convex/lib/agentMailClient.ts`,
+`convex/authEmail.ts`). I also made the browser acceptance test distinguish a
+new AgentMail test-address propagation race from real user delivery by proving
+the temporary route before registration. All stale controlled jobs and inboxes
+were removed. Convex deployment, strict TypeScript, lint, domain tests, and the
+production dependency audit pass. The AgentMail send path is currently
+provider-degraded—direct and connector sends have alternated between success,
+`429`, and timeout—so I am not recording the latest full email/reset journey as
+passed even though the application queue and retry behavior are working.

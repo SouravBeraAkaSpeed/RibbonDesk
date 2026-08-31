@@ -15,10 +15,20 @@ export class AgentMailRequestError extends Error {
   constructor(
     public readonly status: number,
     public readonly safeDetail: string,
+    public readonly retryAfterMs?: number,
   ) {
     super(`AgentMail request failed (${status}): ${safeDetail}`);
     this.name = 'AgentMailRequestError';
   }
+}
+
+function retryAfterMilliseconds(value: string | null) {
+  if (!value) return undefined;
+  const seconds = Number(value);
+  if (Number.isFinite(seconds) && seconds >= 0) return Math.ceil(seconds * 1_000);
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return undefined;
+  return Math.max(0, timestamp - Date.now());
 }
 
 function requireApiKey() {
@@ -52,7 +62,11 @@ async function request<T>(path: string, options: RequestOptions): Promise<T> {
   const response = await fetch(url, { method: options.method, headers, body });
   if (!response.ok) {
     const detail = safeErrorBody(await response.text());
-    throw new AgentMailRequestError(response.status, detail || response.statusText);
+    throw new AgentMailRequestError(
+      response.status,
+      detail || response.statusText,
+      retryAfterMilliseconds(response.headers.get('retry-after')),
+    );
   }
   if (response.status === 204) return null as T;
   const responseBody = await response.text();

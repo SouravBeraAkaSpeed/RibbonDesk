@@ -62,7 +62,8 @@ API key. The `.env.example` file contains names only.
 - Registration creates no usable password session until the email is verified.
 - Verification and reset links expire after one hour.
 - AgentMail security messages are first persisted to a bounded retry queue.
-- Transient provider failures retry with backoff; token-bearing queue records
+- Transient provider failures honor AgentMail's `Retry-After` response and retry
+  with exponential backoff; token-bearing queue records
   are deleted after delivery, terminal failure, or expiry.
 - Password reset revokes the account's other sessions.
 

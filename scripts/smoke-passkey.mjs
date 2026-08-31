@@ -29,6 +29,11 @@ async function agentMail(path, options = {}) {
   if (!response.ok) {
     const error = new Error(`AgentMail test request failed with HTTP ${response.status}.`);
     error.status = response.status;
+    const retryAfter = response.headers.get('retry-after');
+    const retryAfterSeconds = retryAfter ? Number(retryAfter) : Number.NaN;
+    error.retryAfterMs = Number.isFinite(retryAfterSeconds)
+      ? Math.ceil(retryAfterSeconds * 1_000)
+      : undefined;
     throw error;
   }
   return response.status === 204 ? null : await response.json();
@@ -54,7 +59,7 @@ async function deleteControlledInbox(inboxId) {
   }
 }
 
-async function waitForSecurityLink(inboxId, subject, timeoutMs = 90_000) {
+async function waitForSecurityLink(inboxId, subject, timeoutMs = 7 * 60_000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     const listing = await agentMail(`/inboxes/${encodeURIComponent(inboxId)}/messages?limit=20`);
@@ -122,6 +127,38 @@ try {
   }
   if (!recipientInboxId) throw new Error('AgentMail did not return the controlled recipient inbox.');
   const email = recipientInboxId;
+  const routeSubject = `Route readiness ${runId}`;
+  const routeDeadline = Date.now() + 5 * 60_000;
+  while (true) {
+    try {
+      await agentMail(`/inboxes/${encodeURIComponent(recipientInboxId)}/messages/send`, {
+        method: 'POST',
+        body: {
+          to: [email],
+          subject: routeSubject,
+          text: 'Controlled delivery-route readiness check.',
+          labels: ['ribbondesk-auth-e2e'],
+        },
+      });
+      break;
+    } catch (error) {
+      if (![404, 429].includes(error.status) || Date.now() >= routeDeadline) throw error;
+      await new Promise((resolve) => setTimeout(resolve, error.retryAfterMs ?? (error.status === 429 ? 30_000 : 2_000)));
+    }
+  }
+  let routeReady = false;
+  while (Date.now() < routeDeadline) {
+    const messages = await agentMail(`/inboxes/${encodeURIComponent(recipientInboxId)}/messages?limit=20`);
+    if (messages.messages?.some((message) => message.subject === routeSubject)) {
+      routeReady = true;
+      break;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_500));
+  }
+  if (!routeReady) throw new Error('The controlled AgentMail recipient route did not become ready.');
+  // Avoid making the real verification send compete with the route probe in
+  // the API key's short rate-limit window.
+  await new Promise((resolve) => setTimeout(resolve, 65_000));
 
   await page.goto('/app', { waitUntil: 'networkidle' });
   await page.getByRole('heading', { name: 'Welcome back' }).waitFor({ timeout: 30_000 });

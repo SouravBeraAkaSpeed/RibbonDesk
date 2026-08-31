@@ -86,13 +86,15 @@ export const recordFailure = internalMutation({
     jobId: v.id('authEmailJobs'),
     retryable: v.boolean(),
     errorCode: v.string(),
+    retryAfterMs: v.optional(v.number()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     const job = await ctx.db.get('authEmailJobs', args.jobId);
     if (!job) return null;
     const attempt = job.attempts + 1;
-    const delay = RETRY_DELAYS_MS[Math.min(attempt - 1, RETRY_DELAYS_MS.length - 1)];
+    const fallbackDelay = RETRY_DELAYS_MS[Math.min(attempt - 1, RETRY_DELAYS_MS.length - 1)];
+    const delay = Math.max(fallbackDelay, args.retryAfterMs ?? 0);
     const nextAttemptAt = Date.now() + delay;
     if (!args.retryable || attempt > RETRY_DELAYS_MS.length || nextAttemptAt >= job.expiresAt) {
       await ctx.db.delete('authEmailJobs', args.jobId);
@@ -142,6 +144,7 @@ export const deliver = internalAction({
         jobId: args.jobId,
         retryable: [404, 408, 409, 429].includes(status) || status >= 500,
         errorCode: `agentmail_${status}`,
+        retryAfterMs: error instanceof AgentMailRequestError ? error.retryAfterMs : undefined,
       });
     }
     return null;

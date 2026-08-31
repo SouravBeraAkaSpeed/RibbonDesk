@@ -107,7 +107,8 @@ every protected server operation.
 6. Private data, tokens, messages, and inbox addresses are excluded from public fixtures, logs, analytics, and hackathon evidence.
 
 Verification and password-reset emails enter a bounded Convex queue. Transient
-AgentMail `404`, `409`, `429`, and server failures retry with backoff; the
+AgentMail `404`, `409`, `429`, and server failures honor `Retry-After` and retry
+with backoff; the
 token-bearing job is deleted after delivery, terminal failure, or expiry.
 
 ## Data deletion
