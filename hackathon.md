@@ -3,7 +3,7 @@
 - **Project:** RibbonDesk
 - **Event:** Convex All Gas Hackathon
 - **What it does:** A collaborative compliance operations desk that helps local businesses open and stay open by turning official requirements and agency correspondence into a live action plan.
-- **Live app:** private verification build at https://ribbondesk.souravberaakagralius.chatgpt.site (public access pending)
+- **Live app:** https://ribbondesk.souravberaakagralius.chatgpt.site
 - **Repo:** https://github.com/SouravBeraAkaSpeed/RibbonDesk
 - **Frontend:** Codex Sites
 - **Convex deployment:** https://steady-sockeye-84.convex.cloud
@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T01:32:53Z
+- **Last updated:** 2026-08-31T01:36:28Z
 
 ## Log
 
@@ -176,7 +176,7 @@ for role boundaries, requirement approval, citation safety, dependency cycles,
 reminder cadence, recurrence, and readiness math. Convex deployment, lint,
 TypeScript, unit tests, the production build, and the full browser smoke pass.
 
-### 2026-08-31 - working tree
+### 2026-08-31 - 4696e2f
 
 I created the production Convex deployment and reserved RibbonDesk's preferred
 `ribbondesk` ChatGPT Sites slug, then persisted the Sites project identity in
@@ -189,5 +189,14 @@ persisting it; live mode stays disabled until the complete provider loop can be
 tested. OpenAI and AgentMail production credentials and all controlled sponsor
 smoke tests remain pending. I deployed the exact verified source as an owner-only Site
 at `https://ribbondesk.souravberaakagralius.chatgpt.site`, then rebound the
-production auth origin and Sites metadata to that assigned URL. Public access
-remains pending an explicit approval and a signed-out verification.
+production auth origin and Sites metadata to that assigned URL. At this commit,
+public access and signed-out verification were still pending.
+
+### 2026-08-31 - working tree
+
+I published RibbonDesk for anyone on the internet after explicit approval. I
+verified the landing page, isolated demo, passkey entry, privacy, terms, and
+disclaimer routes without authentication; all returned successfully with their
+expected content. The production runtime reported no worker errors during the
+check. The authenticated product remains in replay mode until the controlled
+OpenAI, Firecrawl, and AgentMail live tests are complete.

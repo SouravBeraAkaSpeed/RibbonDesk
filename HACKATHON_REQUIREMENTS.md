@@ -117,8 +117,8 @@ the deadline rather than discovering extra fields during the final hour.
 - **Convex application:** A development deployment is active. The app has an
   indexed domain schema, authenticated queries and mutations, HTTP auth routes,
   activity events, and a realtime command-center query. The same backend code
-  is now deployed to production; live provider secrets and the final public
-  site origin are still pending.
+  is now deployed to production and bound to the final public Site origin; the
+  remaining provider secrets and live integration tests are still pending.
 - **Convex plugin:** Installed. The current Codex session exposes the official
   Convex skills. Recheck availability after a restart or in a new task before
   relying on it.
@@ -130,12 +130,12 @@ the deadline rather than discovering extra fields during the final hour.
   add-on. The preferred `ribbondesk` slug is reserved, its opaque Sites project
   identity is persisted in `.openai/hosting.json`, and the local development
   preview and production build both run. The verified source is deployed at
-  `https://ribbondesk.souravberaakagralius.chatgpt.site` with owner-only access;
-  public access and signed-out verification remain pending.
-- **Public demo:** Implemented locally with synthetic data, interactive task and
+  `https://ribbondesk.souravberaakagralius.chatgpt.site` with public access.
+  Anonymous route checks pass and the production runtime reports no errors.
+- **Public demo:** Implemented with synthetic data, interactive task and
   proposal state, responsive navigation, and no provider calls or external
-  side effects. It is present in the private production build; public access is
-  still pending.
+  side effects. It is publicly available at `/demo` and verified without
+  authentication.
 - **Authentication:** Passkey-first registration and sign-in are implemented
   with a local Better Auth Convex component. An automated virtual-authenticator
   smoke test proves registration, sign-out, sign-in, authenticated onboarding,
@@ -189,11 +189,11 @@ the deadline rather than discovering extra fields during the final hour.
   scoring. Live opt-in reminder email delivery remains pending with the live
   AgentMail smoke.
 - **Policy routes:** Privacy, terms, and the legal-information disclaimer are
-  implemented locally.
+  publicly deployed and verified without authentication.
 - **Accounts/external actions:** Luma registration is complete. Vibe Apps
   sign-in, live sponsor credentials, live provider smoke tests, the social
-  post, public Sites deployment, and submission are still pending. Production
-  Convex code is deployed in replay mode.
+  post, and submission are still pending. The public Site and production Convex
+  deployment are live in replay mode.
 
 ### Convex plugin verification and recovery
 
