@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-dimensional.png',
+        url: '/og-playful.png',
         width: 1672,
         height: 941,
         alt: 'RibbonDesk — Open right. Stay ready.',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'RibbonDesk — Open right. Stay ready.',
     description: 'From red tape to ribbon cutting—and every renewal after.',
-    images: ['/og-dimensional.png'],
+    images: ['/og-playful.png'],
   },
 };
 

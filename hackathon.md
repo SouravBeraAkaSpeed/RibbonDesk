@@ -203,11 +203,15 @@ OpenAI, Firecrawl, and AgentMail live tests are complete.
 
 ### 2026-08-31 - working tree
 
-I redesigned the complete public experience as a dimensional calm-civic studio.
-The landing page now uses a pointer-reactive 3D atmosphere, a floating live-desk
-composition, glass surfaces, layered lighting, and operational depth cues; the
-same restrained surface and motion system carries through the demo, passkey
-onboarding, authenticated workspace, and policy pages
-(`components/dimensional-scene.tsx`, `app/globals.css`, `app/`). I added a new
-3D social preview and preserved a reduced-motion path. Formatting, TypeScript,
-lint, unit tests, all six local routes, and the production build pass.
+I rebuilt the public landing experience around a spacious, friendly 3D visual
+system. The page now uses a soft peach outer frame, a generous white canvas,
+editorial typography, original 3D business-owner and storefront artwork, and
+restrained floating/parallax motion. The long-form story now explains the
+problem, guided research, daily command center, connected agency inbox,
+human-approval boundary, stay-open lifecycle, supported business types, public
+demo, and core FAQs without turning the first viewport into a dense dashboard
+(`app/page.tsx`, `app/globals.css`, `public/art/`). I also replaced the social
+preview with the same peach, indigo, coral-ribbon, and friendly 3D character
+language. The experience remains responsive and preserves the reduced-motion
+path. TypeScript, lint, unit tests, the local landing route, and the production
+build pass.
