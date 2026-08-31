@@ -112,8 +112,9 @@ the deadline rather than discovering extra fields during the final hour.
 
 - **Environment:** Codex in the ChatGPT desktop app on Windows.
 - **Repository:** Initialized on `main`, connected to the public GitHub
-  repository, and pushed through the case-inbox milestone. The recurring
-  operations slice is verified locally and awaiting its milestone push.
+  repository, and pushed through the recurring-operations milestone. The
+  grounded-assistant and source-watch slice is verified locally and awaiting
+  its milestone push.
 - **Convex application:** A development deployment is active. The app has an
   indexed domain schema, authenticated queries and mutations, HTTP auth routes,
   activity events, and a realtime command-center query. Production deployment
@@ -144,7 +145,11 @@ the deadline rather than discovering extra fields during the final hour.
   editable drafts, reviewed attachments, immutable send approvals, and delivery
   state tracking. The operating lifecycle now adds inspections, corrective
   tasks, renewal cycles, durable reminder scheduling, document-expiry reminders,
-  per-user notification state, and recurrence roll-forward.
+  per-user notification state, and recurrence roll-forward. A durable,
+  teammate-private Ribbon Assistant thread now answers from the bounded
+  workspace record without state-changing tools. Indexed weekly/monthly source
+  monitoring preserves before/after evidence and requires owner/admin review
+  before linked requirements move to needs-attention.
 - **Evidence verification:** Authenticated browser automation proves accepted
   uploads, active-content PDF rejection, evidence linking, packet generation,
   and private PDF/ZIP downloads. Both pages of a generated PDF were rendered
@@ -153,15 +158,20 @@ the deadline rather than discovering extra fields during the final hour.
   along with Agent, Workflow, and Rate Limiter. The durable Firecrawl callback
   and structured OpenAI extraction paths are implemented behind explicit live
   mode. AgentMail's signed webhook, inbound callback, durable send, and delivery
-  polling paths are also implemented. Safe replay tests prove the research and
-  inbox approval loops, including realtime observation from a second browser
-  context. Live sponsor credentials and end-to-end provider calls are not yet
-  verified.
+  polling paths are also implemented. The Agent component now stores durable
+  Ribbon Assistant threads, with direct OpenAI generation implemented behind
+  live mode. Safe replay tests prove the research, inbox, grounded-answer, and
+  source-change approval loops, including realtime observation from a second
+  browser context. Live sponsor credentials and end-to-end provider calls are
+  not yet verified.
 - **Operations verification:** Authenticated browser automation proves the
   opening-to-operating transition, a failed-inspection blocker, expiring
   evidence, a near-term in-app reminder, saved notification preferences, and
-  renewal completion that creates the next cycle. Live opt-in reminder email
-  delivery remains pending with the live AgentMail smoke.
+  renewal completion that creates the next cycle. The same smoke proves a
+  grounded Assistant answer and a replayed source change that produces
+  before/after evidence, an approval record, a needs-attention requirement, and
+  blocking review work. Live opt-in reminder email delivery remains pending
+  with the live AgentMail smoke.
 - **Policy routes:** Privacy, terms, and the legal-information disclaimer are
   implemented locally.
 - **Accounts/external actions:** Luma registration is complete. Vibe Apps

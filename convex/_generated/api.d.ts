@@ -10,6 +10,7 @@
 
 import type * as activity from "../activity.js";
 import type * as applications from "../applications.js";
+import type * as assistant from "../assistant.js";
 import type * as auth from "../auth.js";
 import type * as businesses from "../businesses.js";
 import type * as crons from "../crons.js";
@@ -25,6 +26,7 @@ import type * as organizations from "../organizations.js";
 import type * as proposals from "../proposals.js";
 import type * as requirements from "../requirements.js";
 import type * as research from "../research.js";
+import type * as sourceMonitor from "../sourceMonitor.js";
 import type * as tasks from "../tasks.js";
 
 import type {
@@ -36,6 +38,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   activity: typeof activity;
   applications: typeof applications;
+  assistant: typeof assistant;
   auth: typeof auth;
   businesses: typeof businesses;
   crons: typeof crons;
@@ -51,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   proposals: typeof proposals;
   requirements: typeof requirements;
   research: typeof research;
+  sourceMonitor: typeof sourceMonitor;
   tasks: typeof tasks;
 }>;
 

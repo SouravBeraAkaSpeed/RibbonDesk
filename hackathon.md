@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T00:32:34Z
+- **Last updated:** 2026-08-31T00:49:15Z
 
 ## Log
 
@@ -117,7 +117,7 @@ The browser smoke proves the complete replay loop and observes the new proposal
 reactively in a second authenticated browser context. Convex deployment, lint,
 TypeScript, and the production build pass again.
 
-### 2026-08-31 - working tree
+### 2026-08-31 - 5855381
 I extended the workspace from opening preparation into recurring stay-open
 operations (`convex/operations.ts`, `convex/crons.ts`,
 `app/app/operations-lifecycle-panel.tsx`). Moving a location to operating now
@@ -132,3 +132,18 @@ notification email delivery is not yet verified. The authenticated browser
 smoke proves the operating transition, failed-inspection task, dated evidence,
 near-term reminder, saved preference, and renewal roll-forward. Convex
 deployment, lint, TypeScript, and the production build pass.
+
+### 2026-08-31 - working tree
+I added Ribbon Assistant as a durable, private workspace thread grounded in
+confirmed requirements, tasks, applications, agency messages, inspections,
+renewals, and preserved source evidence (`convex/assistant.ts`,
+`app/app/assistant-sources-panel.tsx`). It cites official sources when present,
+labels uncertainty, and has no tools that can send, approve, delete, or change
+compliance state. I also added indexed weekly opening and monthly operating
+source checks with before/after snapshots and an owner/admin review gate
+(`convex/sourceMonitor.ts`, `convex/research.ts`, `convex/crons.ts`). Accepting a
+change creates blocking review work instead of silently rewriting a confirmed
+requirement. The authenticated browser smoke proves a grounded answer and the
+complete replay detection-to-approval loop; live OpenAI and Firecrawl calls
+remain pending credentials. Convex deployment, lint, TypeScript, and the
+production build pass.

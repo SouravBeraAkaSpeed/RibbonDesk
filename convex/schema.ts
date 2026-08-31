@@ -29,7 +29,11 @@ export default defineSchema({
     slug: v.string(),
     createdBy: v.string(),
     storedBytes: v.optional(v.number()),
-    deletionStatus: v.union(v.literal('active'), v.literal('queued'), v.literal('deleting')),
+    deletionStatus: v.union(
+      v.literal('active'),
+      v.literal('queued'),
+      v.literal('deleting'),
+    ),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -47,7 +51,10 @@ export default defineSchema({
   })
     .index('by_organizationId', ['organizationId'])
     .index('by_userTokenIdentifier', ['userTokenIdentifier'])
-    .index('by_organizationId_and_userTokenIdentifier', ['organizationId', 'userTokenIdentifier'])
+    .index('by_organizationId_and_userTokenIdentifier', [
+      'organizationId',
+      'userTokenIdentifier',
+    ])
     .index('by_organizationId_and_role', ['organizationId', 'role']),
 
   invitations: defineTable({
@@ -55,7 +62,12 @@ export default defineSchema({
     normalizedEmail: v.string(),
     tokenHash: v.string(),
     role: roleValidator,
-    status: v.union(v.literal('pending'), v.literal('accepted'), v.literal('revoked'), v.literal('expired')),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('accepted'),
+      v.literal('revoked'),
+      v.literal('expired'),
+    ),
     invitedBy: v.string(),
     acceptedBy: v.optional(v.string()),
     expiresAt: v.number(),
@@ -77,7 +89,10 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index('by_organizationId', ['organizationId'])
-    .index('by_organizationId_and_lifecycleStage', ['organizationId', 'lifecycleStage']),
+    .index('by_organizationId_and_lifecycleStage', [
+      'organizationId',
+      'lifecycleStage',
+    ]),
 
   locations: defineTable({
     organizationId: v.id('organizations'),
@@ -92,11 +107,21 @@ export default defineSchema({
     timezone: v.string(),
     lifecycleStage: lifecycleStageValidator,
     openingTarget: v.optional(v.number()),
-    jurisdictionStatus: v.union(v.literal('unconfirmed'), v.literal('confirmed'), v.literal('needs_review')),
+    jurisdictionStatus: v.union(
+      v.literal('unconfirmed'),
+      v.literal('confirmed'),
+      v.literal('needs_review'),
+    ),
     jurisdictionLabel: v.optional(v.string()),
     jurisdictionCountryCode: v.optional(v.string()),
-    coverageMode: v.union(v.literal('verified_pack'), v.literal('dynamic_research'), v.literal('unselected')),
+    coverageMode: v.union(
+      v.literal('verified_pack'),
+      v.literal('dynamic_research'),
+      v.literal('unselected'),
+    ),
     coveragePackKey: v.optional(v.string()),
+    lastSourceCheckAt: v.optional(v.number()),
+    nextSourceCheckAt: v.optional(v.number()),
     activities: v.array(v.string()),
     triggers: businessTriggersValidator,
     createdBy: v.string(),
@@ -105,7 +130,11 @@ export default defineSchema({
   })
     .index('by_organizationId', ['organizationId'])
     .index('by_businessId', ['businessId'])
-    .index('by_organizationId_and_lifecycleStage', ['organizationId', 'lifecycleStage']),
+    .index('by_nextSourceCheckAt', ['nextSourceCheckAt'])
+    .index('by_organizationId_and_lifecycleStage', [
+      'organizationId',
+      'lifecycleStage',
+    ]),
 
   coveragePacks: defineTable({
     key: v.string(),
@@ -113,7 +142,11 @@ export default defineSchema({
     jurisdictionLabel: v.string(),
     businessTypes: v.array(v.string()),
     version: v.number(),
-    status: v.union(v.literal('draft'), v.literal('verified'), v.literal('retired')),
+    status: v.union(
+      v.literal('draft'),
+      v.literal('verified'),
+      v.literal('retired'),
+    ),
     verifiedAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -139,7 +172,11 @@ export default defineSchema({
     organizationId: v.id('organizations'),
     locationId: v.id('locations'),
     initiatedBy: v.string(),
-    mode: v.union(v.literal('verified_pack'), v.literal('dynamic_research'), v.literal('source_refresh')),
+    mode: v.union(
+      v.literal('verified_pack'),
+      v.literal('dynamic_research'),
+      v.literal('source_refresh'),
+    ),
     providerMode: v.union(v.literal('replay'), v.literal('live')),
     status: jobStatusValidator,
     workflowId: v.optional(v.string()),
@@ -193,6 +230,7 @@ export default defineSchema({
     decidedBy: v.optional(v.string()),
   })
     .index('by_locationId_and_detectedAt', ['locationId', 'detectedAt'])
+    .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
 
   requirements: defineTable({
@@ -226,22 +264,35 @@ export default defineSchema({
     .index('by_locationId_and_sourceUrl', ['locationId', 'sourceUrl'])
     .index('by_locationId_and_deadline', ['locationId', 'deadline'])
     .index('by_organizationId_and_status', ['organizationId', 'status'])
-    .index('by_ownerTokenIdentifier_and_status', ['ownerTokenIdentifier', 'status'])
-    .searchIndex('search_title', { searchField: 'title', filterFields: ['organizationId', 'locationId', 'status'] }),
+    .index('by_ownerTokenIdentifier_and_status', [
+      'ownerTokenIdentifier',
+      'status',
+    ])
+    .searchIndex('search_title', {
+      searchField: 'title',
+      filterFields: ['organizationId', 'locationId', 'status'],
+    }),
 
   requirementEdges: defineTable({
     organizationId: v.id('organizations'),
     locationId: v.id('locations'),
     fromRequirementId: v.id('requirements'),
     toRequirementId: v.id('requirements'),
-    kind: v.union(v.literal('blocks'), v.literal('requires'), v.literal('related')),
+    kind: v.union(
+      v.literal('blocks'),
+      v.literal('requires'),
+      v.literal('related'),
+    ),
     createdBy: v.string(),
     createdAt: v.number(),
   })
     .index('by_locationId', ['locationId'])
     .index('by_fromRequirementId', ['fromRequirementId'])
     .index('by_toRequirementId', ['toRequirementId'])
-    .index('by_fromRequirementId_and_toRequirementId', ['fromRequirementId', 'toRequirementId']),
+    .index('by_fromRequirementId_and_toRequirementId', [
+      'fromRequirementId',
+      'toRequirementId',
+    ]),
 
   tasks: defineTable({
     organizationId: v.id('organizations'),
@@ -250,7 +301,12 @@ export default defineSchema({
     title: v.string(),
     description: v.optional(v.string()),
     status: taskStatusValidator,
-    priority: v.union(v.literal('blocking'), v.literal('high'), v.literal('normal'), v.literal('low')),
+    priority: v.union(
+      v.literal('blocking'),
+      v.literal('high'),
+      v.literal('normal'),
+      v.literal('low'),
+    ),
     ownerTokenIdentifier: v.optional(v.string()),
     dueAt: v.optional(v.number()),
     completedAt: v.optional(v.number()),
@@ -262,7 +318,10 @@ export default defineSchema({
     .index('by_locationId_and_status', ['locationId', 'status'])
     .index('by_locationId_and_dueAt', ['locationId', 'dueAt'])
     .index('by_requirementId', ['requirementId'])
-    .index('by_ownerTokenIdentifier_and_status', ['ownerTokenIdentifier', 'status']),
+    .index('by_ownerTokenIdentifier_and_status', [
+      'ownerTokenIdentifier',
+      'status',
+    ]),
 
   applications: defineTable({
     organizationId: v.id('organizations'),
@@ -270,11 +329,21 @@ export default defineSchema({
     requirementId: v.id('requirements'),
     name: v.string(),
     agency: v.string(),
-    status: v.union(v.literal('draft'), v.literal('ready'), v.literal('submitted'), v.literal('needs_attention'), v.literal('approved'), v.literal('denied'), v.literal('withdrawn')),
+    status: v.union(
+      v.literal('draft'),
+      v.literal('ready'),
+      v.literal('submitted'),
+      v.literal('needs_attention'),
+      v.literal('approved'),
+      v.literal('denied'),
+      v.literal('withdrawn'),
+    ),
     officialPortalUrl: v.optional(v.string()),
     requiredAttachments: v.array(v.string()),
     unresolvedQuestions: v.array(v.string()),
-    readinessChecks: v.array(v.object({ key: v.string(), label: v.string(), complete: v.boolean() })),
+    readinessChecks: v.array(
+      v.object({ key: v.string(), label: v.string(), complete: v.boolean() }),
+    ),
     submittedAt: v.optional(v.number()),
     referenceNumber: v.optional(v.string()),
     expectedResponseAt: v.optional(v.number()),
@@ -307,7 +376,11 @@ export default defineSchema({
     locationId: v.id('locations'),
     applicationId: v.id('applications'),
     version: v.number(),
-    status: v.union(v.literal('generating'), v.literal('prepared'), v.literal('failed')),
+    status: v.union(
+      v.literal('generating'),
+      v.literal('prepared'),
+      v.literal('failed'),
+    ),
     errorMessage: v.optional(v.string()),
     pdfStorageId: v.optional(v.id('_storage')),
     zipStorageId: v.optional(v.id('_storage')),
@@ -326,7 +399,14 @@ export default defineSchema({
     agency: v.string(),
     inspectionType: v.string(),
     scheduledAt: v.optional(v.number()),
-    status: v.union(v.literal('proposed'), v.literal('scheduled'), v.literal('completed'), v.literal('passed'), v.literal('failed'), v.literal('reschedule_needed')),
+    status: v.union(
+      v.literal('proposed'),
+      v.literal('scheduled'),
+      v.literal('completed'),
+      v.literal('passed'),
+      v.literal('failed'),
+      v.literal('reschedule_needed'),
+    ),
     outcome: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -341,7 +421,14 @@ export default defineSchema({
     requirementId: v.id('requirements'),
     sequence: v.number(),
     dueAt: v.number(),
-    status: v.union(v.literal('upcoming'), v.literal('due'), v.literal('in_progress'), v.literal('completed'), v.literal('overdue'), v.literal('cancelled')),
+    status: v.union(
+      v.literal('upcoming'),
+      v.literal('due'),
+      v.literal('in_progress'),
+      v.literal('completed'),
+      v.literal('overdue'),
+      v.literal('cancelled'),
+    ),
     recurrenceRule: v.string(),
     outcomeNotes: v.optional(v.string()),
     completedAt: v.optional(v.number()),
@@ -361,7 +448,13 @@ export default defineSchema({
     fileName: v.string(),
     contentType: v.string(),
     sizeBytes: v.number(),
-    status: v.union(v.literal('uploaded'), v.literal('processing'), v.literal('needs_review'), v.literal('ready'), v.literal('rejected')),
+    status: v.union(
+      v.literal('uploaded'),
+      v.literal('processing'),
+      v.literal('needs_review'),
+      v.literal('ready'),
+      v.literal('rejected'),
+    ),
     rejectionReason: v.optional(v.string()),
     classification: v.optional(v.string()),
     expiresAt: v.optional(v.number()),
@@ -380,7 +473,12 @@ export default defineSchema({
     requirementId: v.optional(v.id('requirements')),
     applicationId: v.optional(v.id('applications')),
     inspectionId: v.optional(v.id('inspections')),
-    linkType: v.union(v.literal('evidence'), v.literal('attachment'), v.literal('receipt'), v.literal('outcome')),
+    linkType: v.union(
+      v.literal('evidence'),
+      v.literal('attachment'),
+      v.literal('receipt'),
+      v.literal('outcome'),
+    ),
     createdBy: v.string(),
     createdAt: v.number(),
   })
@@ -394,7 +492,12 @@ export default defineSchema({
     providerInboxId: v.string(),
     providerMode: v.union(v.literal('replay'), v.literal('live')),
     emailAddress: v.optional(v.string()),
-    status: v.union(v.literal('provisioning'), v.literal('active'), v.literal('disabled'), v.literal('failed')),
+    status: v.union(
+      v.literal('provisioning'),
+      v.literal('active'),
+      v.literal('disabled'),
+      v.literal('failed'),
+    ),
     errorMessage: v.optional(v.string()),
     createdBy: v.string(),
     createdAt: v.number(),
@@ -417,18 +520,38 @@ export default defineSchema({
     subject: v.string(),
     bodyText: v.string(),
     preview: v.string(),
-    status: v.union(v.literal('received'), v.literal('needs_review'), v.literal('processed'), v.literal('sent'), v.literal('delivered'), v.literal('bounced'), v.literal('failed')),
+    status: v.union(
+      v.literal('received'),
+      v.literal('needs_review'),
+      v.literal('processed'),
+      v.literal('sent'),
+      v.literal('delivered'),
+      v.literal('bounced'),
+      v.literal('failed'),
+    ),
     aiSummary: v.optional(v.string()),
     classification: v.optional(v.string()),
-    attachments: v.array(v.object({ fileName: v.string(), contentType: v.optional(v.string()), sizeBytes: v.optional(v.number()) })),
+    attachments: v.array(
+      v.object({
+        fileName: v.string(),
+        contentType: v.optional(v.string()),
+        sizeBytes: v.optional(v.number()),
+      }),
+    ),
     receivedAt: v.number(),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index('by_providerMessageId', ['providerMessageId'])
     .index('by_locationId_and_receivedAt', ['locationId', 'receivedAt'])
-    .index('by_locationId_and_providerThreadId', ['locationId', 'providerThreadId'])
-    .index('by_inboxBindingId_and_receivedAt', ['inboxBindingId', 'receivedAt']),
+    .index('by_locationId_and_providerThreadId', [
+      'locationId',
+      'providerThreadId',
+    ])
+    .index('by_inboxBindingId_and_receivedAt', [
+      'inboxBindingId',
+      'receivedAt',
+    ]),
 
   outboundDrafts: defineTable({
     organizationId: v.id('organizations'),
@@ -442,7 +565,17 @@ export default defineSchema({
     bodyText: v.string(),
     requirementId: v.optional(v.id('requirements')),
     attachmentDocumentIds: v.array(v.id('documents')),
-    status: v.union(v.literal('draft'), v.literal('pending_approval'), v.literal('approved'), v.literal('sending'), v.literal('sent'), v.literal('delivered'), v.literal('bounced'), v.literal('failed'), v.literal('cancelled')),
+    status: v.union(
+      v.literal('draft'),
+      v.literal('pending_approval'),
+      v.literal('approved'),
+      v.literal('sending'),
+      v.literal('sent'),
+      v.literal('delivered'),
+      v.literal('bounced'),
+      v.literal('failed'),
+      v.literal('cancelled'),
+    ),
     providerOutboundId: v.optional(v.string()),
     errorMessage: v.optional(v.string()),
     createdBy: v.string(),
@@ -486,7 +619,10 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index('by_providerMessageId', ['providerMessageId'])
-    .index('by_locationId_and_providerThreadId', ['locationId', 'providerThreadId'])
+    .index('by_locationId_and_providerThreadId', [
+      'locationId',
+      'providerThreadId',
+    ])
     .index('by_requirementId', ['requirementId']),
 
   aiRuns: defineTable({
@@ -509,17 +645,50 @@ export default defineSchema({
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
 
+  assistantThreads: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    componentThreadId: v.string(),
+    title: v.string(),
+    status: v.union(v.literal('active'), v.literal('archived')),
+    createdBy: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_componentThreadId', ['componentThreadId'])
+    .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
+    .index('by_locationId_and_createdBy_and_createdAt', [
+      'locationId',
+      'createdBy',
+      'createdAt',
+    ]),
+
   proposals: defineTable({
     organizationId: v.id('organizations'),
     locationId: v.id('locations'),
     aiRunId: v.optional(v.id('aiRuns')),
-    proposalType: v.union(v.literal('requirement'), v.literal('task'), v.literal('deadline'), v.literal('application_status'), v.literal('inspection'), v.literal('source_change'), v.literal('draft_message')),
+    proposalType: v.union(
+      v.literal('requirement'),
+      v.literal('task'),
+      v.literal('deadline'),
+      v.literal('application_status'),
+      v.literal('inspection'),
+      v.literal('source_change'),
+      v.literal('draft_message'),
+    ),
     status: proposalStatusValidator,
     title: v.string(),
     summary: v.string(),
     payload: v.any(),
     confidence: confidenceValidator,
-    citations: v.array(v.object({ sourceSnapshotId: v.optional(v.id('sourceSnapshots')), url: v.string(), title: v.string(), excerpt: v.optional(v.string()) })),
+    citations: v.array(
+      v.object({
+        sourceSnapshotId: v.optional(v.id('sourceSnapshots')),
+        url: v.string(),
+        title: v.string(),
+        excerpt: v.optional(v.string()),
+      }),
+    ),
     requiresOwnerApproval: v.boolean(),
     decidedBy: v.optional(v.string()),
     decidedAt: v.optional(v.number()),
@@ -528,7 +697,11 @@ export default defineSchema({
   })
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status'])
-    .index('by_locationId_and_type_and_status', ['locationId', 'proposalType', 'status'])
+    .index('by_locationId_and_type_and_status', [
+      'locationId',
+      'proposalType',
+      'status',
+    ])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
 
   notifications: defineTable({
@@ -538,16 +711,30 @@ export default defineSchema({
     kind: v.string(),
     title: v.string(),
     body: v.string(),
-    urgency: v.union(v.literal('informational'), v.literal('normal'), v.literal('urgent')),
+    urgency: v.union(
+      v.literal('informational'),
+      v.literal('normal'),
+      v.literal('urgent'),
+    ),
     readAt: v.optional(v.number()),
     scheduledFor: v.optional(v.number()),
     deliveredEmailAt: v.optional(v.number()),
     dedupeKey: v.optional(v.string()),
     createdAt: v.number(),
   })
-    .index('by_userTokenIdentifier_and_createdAt', ['userTokenIdentifier', 'createdAt'])
-    .index('by_userTokenIdentifier_and_locationId_and_createdAt', ['userTokenIdentifier', 'locationId', 'createdAt'])
-    .index('by_userTokenIdentifier_and_readAt', ['userTokenIdentifier', 'readAt'])
+    .index('by_userTokenIdentifier_and_createdAt', [
+      'userTokenIdentifier',
+      'createdAt',
+    ])
+    .index('by_userTokenIdentifier_and_locationId_and_createdAt', [
+      'userTokenIdentifier',
+      'locationId',
+      'createdAt',
+    ])
+    .index('by_userTokenIdentifier_and_readAt', [
+      'userTokenIdentifier',
+      'readAt',
+    ])
     .index('by_scheduledFor', ['scheduledFor'])
     .index('by_dedupeKey', ['dedupeKey']),
 
@@ -559,7 +746,10 @@ export default defineSchema({
     digestHourLocal: v.number(),
     timezone: v.string(),
     updatedAt: v.number(),
-  }).index('by_organizationId_and_userTokenIdentifier', ['organizationId', 'userTokenIdentifier']),
+  }).index('by_organizationId_and_userTokenIdentifier', [
+    'organizationId',
+    'userTokenIdentifier',
+  ]),
 
   activityEvents: defineTable({
     organizationId: v.id('organizations'),
@@ -570,7 +760,9 @@ export default defineSchema({
     entityId: v.string(),
     before: v.optional(v.any()),
     after: v.optional(v.any()),
-    evidence: v.optional(v.array(v.object({ kind: v.string(), id: v.string() }))),
+    evidence: v.optional(
+      v.array(v.object({ kind: v.string(), id: v.string() })),
+    ),
     createdAt: v.number(),
   })
     .index('by_organizationId_and_createdAt', ['organizationId', 'createdAt'])
