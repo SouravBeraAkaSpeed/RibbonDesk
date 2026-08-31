@@ -14,7 +14,7 @@ npx convex dev --once
 npm run typecheck
 npm run lint
 npm run test:unit
-npm run test:passkey
+npm run test:auth
 npm audit --omit=dev
 ```
 
@@ -46,6 +46,9 @@ committed file, shell transcript, issue, or build log.
 - `FIRECRAWL_API_KEY`
 - `AGENTMAIL_API_KEY`
 - `AGENTMAIL_WEBHOOK_SECRET`
+- `AUTH_EMAIL_INBOX_ID`
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+- `APPLE_CLIENT_ID` and `APPLE_CLIENT_SECRET`
 - `RIBBONDESK_PROVIDER_MODE=live`
 - `SITE_URL`
 
@@ -75,7 +78,7 @@ Verify in a signed-out browser:
 
 - Landing, privacy, terms, and disclaimer routes
 - Responsive layout and social metadata
-- Passkey registration, sign-out, and sign-in
+- Verified email registration, password sign-in/reset, authenticated passkey enrollment/sign-in, and OAuth provider redirects
 - Business/location onboarding and explicit jurisdiction confirmation
 - One real official-source research run and cited proposal
 - Human acceptance reflected in a second browser session

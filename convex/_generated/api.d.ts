@@ -12,6 +12,7 @@ import type * as activity from "../activity.js";
 import type * as applications from "../applications.js";
 import type * as assistant from "../assistant.js";
 import type * as auth from "../auth.js";
+import type * as authEmail from "../authEmail.js";
 import type * as businesses from "../businesses.js";
 import type * as crons from "../crons.js";
 import type * as dashboard from "../dashboard.js";
@@ -47,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   applications: typeof applications;
   assistant: typeof assistant;
   auth: typeof auth;
+  authEmail: typeof authEmail;
   businesses: typeof businesses;
   crons: typeof crons;
   dashboard: typeof dashboard;

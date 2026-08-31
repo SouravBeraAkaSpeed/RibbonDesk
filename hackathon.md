@@ -312,3 +312,32 @@ cross-platform `build:production` gate that refuses missing, localhost, or
 non-HTTPS public URLs, and documented the exact production promotion check. I am
 rebuilding and republishing with explicit production Convex and Site origins;
 the failed passkey gate is not counted as a successful release.
+
+### 2026-09-01 - working tree
+
+I expanded authentication after reviewing the public entry experience as a real
+business user. RibbonDesk now exposes verified email/password registration and
+sign-in, one-hour email confirmation, password reset, Google and Apple provider
+slots, existing-passkey sign-in, and passkey enrollment from an authenticated
+account (`convex/auth.ts`, `app/app/auth-workspace.tsx`). I removed the old
+unauthenticated passkey-registration shortcut because it could attempt to attach
+a new credential to an account located only by an entered email address;
+passkeys can now be added only after another trusted sign-in proves account
+ownership.
+
+I created a dedicated AgentMail security inbox through the connected provider
+and configured its public inbox identifier separately in development and
+production Convex environments. Repeated controlled acceptance runs exposed
+two provider realities: brand-new AgentMail recipient routes need propagation,
+and sustained sends can return `429`. Verification and reset mail now enters an
+indexed, bounded Convex delivery queue before the auth endpoint returns. The
+queue retries transient `404`, `408`, `409`, `429`, and server failures with
+backoff and deletes the token-bearing record after delivery, terminal failure,
+or before its one-hour token expires (`convex/authEmail.ts`). TypeScript, lint,
+Convex schema deployment, and domain tests pass. The automated browser journey
+has proved verified registration, password sign-in, authenticated passkey
+enrollment, passkey sign-in, and actual security-message receipt in separate
+runs; the full single-run reset and cleanup gate is still pending after the
+current AgentMail rate limit clears. Google and Apple buttons and secure server
+configuration are implemented, but their production OAuth credentials must be
+created in the provider consoles before those two buttons can be enabled.

@@ -7,7 +7,10 @@ import { authComponent, createAuth } from './auth';
 
 const http = httpRouter();
 
-authComponent.registerRoutes(http, createAuth, { cors: true });
+authComponent.registerRoutesLazy(http, createAuth, {
+  cors: true,
+  trustedOrigins: [env.SITE_URL],
+});
 
 http.route({
   path: '/agentmail/webhook',

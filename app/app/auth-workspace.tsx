@@ -4,25 +4,31 @@ import Link from 'next/link';
 import {
   Activity,
   AlertTriangle,
+  Apple,
   ArrowLeft,
   Building2,
   CalendarClock,
   CheckCircle2,
   ChevronRight,
   CircleGauge,
+  Eye,
+  EyeOff,
   Fingerprint,
   Inbox,
-  KeyRound,
   LayoutDashboard,
   LoaderCircle,
+  LockKeyhole,
   LogOut,
+  Mail,
   MapPin,
+  RefreshCw,
   ShieldCheck,
   Sparkles,
   Users,
 } from 'lucide-react';
 import {
   type SyntheticEvent,
+  useEffect,
   useState,
   useSyncExternalStore,
 } from 'react';
@@ -80,7 +86,7 @@ export function AuthWorkspace() {
         <FullPageStatus label="Securing your desk…" />
       </AuthLoading>
       <Unauthenticated>
-        <PasskeyEntry />
+        <AccountEntry />
       </Unauthenticated>
       <Authenticated>
         <AuthenticatedDesk />
@@ -100,35 +106,142 @@ function FullPageStatus({ label }: { label: string }) {
   );
 }
 
-function PasskeyEntry() {
-  const [mode, setMode] = useState<'signin' | 'register'>('register');
+type AuthMode = 'signin' | 'register' | 'forgot' | 'reset' | 'verify';
+
+function GoogleMark() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4">
+      <path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.5-.2-2.2H12v4.3h5.4a4.6 4.6 0 0 1-2 3v2.8h3.3c1.9-1.8 2.9-4.4 2.9-7.9Z" />
+      <path fill="#34A853" d="M12 22c2.7 0 5-.9 6.7-2.4l-3.3-2.7c-.9.6-2.1 1-3.4 1a5.9 5.9 0 0 1-5.5-4.1H3.1v2.8A10 10 0 0 0 12 22Z" />
+      <path fill="#FBBC05" d="M6.5 13.8A6 6 0 0 1 6.2 12c0-.6.1-1.2.3-1.8V7.4H3.1A10 10 0 0 0 2 12c0 1.7.4 3.2 1.1 4.6l3.4-2.8Z" />
+      <path fill="#EA4335" d="M12 6.1c1.5 0 2.8.5 3.8 1.5l2.9-2.8A9.7 9.7 0 0 0 12 2a10 10 0 0 0-8.9 5.4l3.4 2.8A5.9 5.9 0 0 1 12 6.1Z" />
+    </svg>
+  );
+}
+
+function AccountEntry() {
+  const capabilities = useQuery(api.auth.getAuthCapabilities);
+  const urlParameters = new URLSearchParams(window.location.search);
+  const resetToken = urlParameters.get('token');
+  const justVerified = urlParameters.get('verified') === '1';
+  const pendingVerificationEmail = window.sessionStorage.getItem('ribbondesk.pendingVerificationEmail') ?? '';
+  const pendingResetEmail = window.sessionStorage.getItem('ribbondesk.passwordResetRequested') ?? '';
+  const [mode, setMode] = useState<AuthMode>(resetToken ? 'reset' : justVerified ? 'signin' : pendingVerificationEmail ? 'verify' : pendingResetEmail ? 'forgot' : 'signin');
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(pendingVerificationEmail || pendingResetEmail);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(justVerified ? 'Email confirmed. Sign in to open your desk.' : pendingVerificationEmail ? `A confirmation link is queued for ${pendingVerificationEmail}.` : pendingResetEmail ? 'If an account exists for that email, its reset link is queued for delivery.' : null);
 
-  async function handlePasskey(event: FormSubmitEvent) {
+  useEffect(() => {
+    if (justVerified) window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
+  }, [justVerified]);
+
+  function switchMode(next: AuthMode) {
+    if (next !== 'verify') window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
+    if (next !== 'forgot') window.sessionStorage.removeItem('ribbondesk.passwordResetRequested');
+    setMode(next);
+    setError(null);
+    setNotice(null);
+    setPassword('');
+    setConfirmPassword('');
+  }
+
+  async function handleEmail(event: FormSubmitEvent) {
     event.preventDefault();
     setPending(true);
     setError(null);
+    setNotice(null);
     try {
-      if (mode === 'signin') {
-        const result = await authClient.signIn.passkey();
-        if (result.error)
-          throw new Error(
-            result.error.message || 'This passkey could not be verified.',
-          );
-      } else {
-        const result = await authClient.passkey.addPasskey({
-          authenticatorAttachment: 'platform',
-          context: JSON.stringify({ email, name }),
+      if (mode === 'register') {
+        if (password !== confirmPassword)
+          throw new Error('The passwords do not match.');
+        window.sessionStorage.setItem('ribbondesk.pendingVerificationEmail', email);
+        const result = await authClient.signUp.email({
+          name,
+          email,
+          password,
+          callbackURL: `${window.location.origin}/app?verified=1`,
         });
-        if (result.error)
-          throw new Error(
-            result.error.message || 'This passkey could not be created.',
-          );
-        window.location.reload();
+        if (result.error) throw new Error(result.error.message || 'Account creation failed.');
+        setMode('verify');
+        setNotice(`A confirmation link is queued for ${email}.`);
+        return;
       }
+
+      if (mode === 'forgot') {
+        window.sessionStorage.setItem('ribbondesk.passwordResetRequested', email);
+        const result = await authClient.requestPasswordReset({
+          email,
+          redirectTo: `${window.location.origin}/app`,
+        });
+        if (result.error) throw new Error(result.error.message || 'The reset request failed.');
+        setNotice('If an account exists for that email, its reset link is queued for delivery.');
+        return;
+      }
+
+      if (mode === 'reset') {
+        if (!resetToken) throw new Error('This password-reset link is incomplete.');
+        if (password !== confirmPassword)
+          throw new Error('The passwords do not match.');
+        const result = await authClient.resetPassword({
+          newPassword: password,
+          token: resetToken,
+        });
+        if (result.error) throw new Error(result.error.message || 'The password could not be reset.');
+        window.history.replaceState({}, '', '/app');
+        window.sessionStorage.removeItem('ribbondesk.passwordResetRequested');
+        switchMode('signin');
+        setNotice('Password updated. Sign in with your new password.');
+        return;
+      }
+
+      const result = await authClient.signIn.email({
+        email,
+        password,
+        rememberMe: true,
+      });
+      if (result.error) {
+        if (/verif/i.test(result.error.message ?? '')) {
+          const verification = await authClient.sendVerificationEmail({
+            email,
+            callbackURL: `${window.location.origin}/app?verified=1`,
+          });
+          if (verification.error)
+            throw new Error(verification.error.message || 'The confirmation email could not be sent.');
+          window.sessionStorage.setItem('ribbondesk.pendingVerificationEmail', email);
+          setMode('verify');
+          setNotice(`A new confirmation link is queued for ${email}.`);
+          return;
+        }
+        throw new Error(result.error.message || 'The email or password was not accepted.');
+      }
+      window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
+      window.history.replaceState({}, '', '/app');
+      window.location.reload();
+    } catch (caught) {
+      if (mode === 'register')
+        window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
+      if (mode === 'forgot')
+        window.sessionStorage.removeItem('ribbondesk.passwordResetRequested');
+      setError(errorMessage(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function handlePasskey() {
+    setPending(true);
+    setError(null);
+    try {
+      const result = await authClient.signIn.passkey();
+      if (result.error)
+        throw new Error(result.error.message || 'This passkey could not be verified.');
+      window.history.replaceState({}, '', '/app');
+      window.location.reload();
     } catch (caught) {
       setError(errorMessage(caught));
     } finally {
@@ -136,9 +249,56 @@ function PasskeyEntry() {
     }
   }
 
+  async function handleSocial(provider: 'google' | 'apple') {
+    setPending(true);
+    setError(null);
+    try {
+      const result = await authClient.signIn.social({
+        provider,
+        callbackURL: `${window.location.origin}/app`,
+        newUserCallbackURL: `${window.location.origin}/app`,
+        errorCallbackURL: `${window.location.origin}/app?authError=${provider}`,
+      });
+      if (result.error) throw new Error(result.error.message || `${provider} sign-in failed.`);
+    } catch (caught) {
+      setError(errorMessage(caught));
+      setPending(false);
+    }
+  }
+
+  async function resendVerification() {
+    setPending(true);
+    setError(null);
+    try {
+      const result = await authClient.sendVerificationEmail({
+        email,
+        callbackURL: `${window.location.origin}/app?verified=1`,
+      });
+      if (result.error) throw new Error(result.error.message || 'The confirmation email could not be sent.');
+      setNotice(`A fresh confirmation link is queued for ${email}.`);
+    } catch (caught) {
+      setError(errorMessage(caught));
+    } finally {
+      setPending(false);
+    }
+  }
+
+  const isRegister = mode === 'register';
+  const isPasswordMode = mode === 'signin' || mode === 'register' || mode === 'reset';
+  const title =
+    mode === 'register'
+      ? 'Create your RibbonDesk account'
+      : mode === 'forgot'
+        ? 'Reset your password'
+        : mode === 'reset'
+          ? 'Choose a new password'
+          : mode === 'verify'
+            ? 'Confirm your email'
+            : 'Welcome back';
+
   return (
     <main className="auth-page grid min-h-screen place-items-center px-5 py-10">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-lg">
         <Link
           href="/"
           className="mb-7 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground"
@@ -152,28 +312,65 @@ function PasskeyEntry() {
               Live workspace
             </Badge>
             <h1 className="mt-5 font-heading text-3xl font-semibold tracking-[-0.035em]">
-              Your opening desk, secured by a passkey.
+              Your business desk. Your secure sign-in.
             </h1>
             <p className="mt-3 text-sm leading-6 text-white/65">
-              No password to remember. Your device confirms it is you.
+              Use email, Google, Apple, or a passkey you have already added.
             </p>
           </div>
-          <form className="p-6" onSubmit={handlePasskey}>
-            <div className="grid size-12 place-items-center rounded-2xl bg-[var(--ribbon-soft)] text-[var(--ribbon)]">
-              <Fingerprint className="size-6" />
+          <form className="p-6" onSubmit={handleEmail}>
+            <div className="flex items-center gap-3">
+              <div className="grid size-12 place-items-center rounded-2xl bg-[var(--ribbon-soft)] text-[var(--ribbon)]">
+                {mode === 'verify' ? <Mail className="size-6" /> : <LockKeyhole className="size-6" />}
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground">Secure account</p>
+                <h2 className="mt-1 text-lg font-semibold">{title}</h2>
+              </div>
             </div>
-            <h2 className="mt-5 text-lg font-semibold">
-              {mode === 'register'
-                ? 'Create your RibbonDesk account'
-                : 'Unlock your workspace'}
-            </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              {mode === 'register'
-                ? 'Use Windows Hello, Touch ID, Face ID, or your device PIN.'
-                : 'Choose the passkey already saved on this device.'}
+              {mode === 'verify'
+                ? 'Open the link in your email to activate password sign-in. The link expires in one hour.'
+                : mode === 'forgot'
+                  ? 'We will send a private, one-hour reset link if this account exists.'
+                  : isRegister
+                    ? 'Your email must be confirmed before the first sign-in.'
+                    : 'Sign in to continue the work already saved in your desk.'}
             </p>
-            {mode === 'register' ? (
-              <div className="mt-5 grid gap-4">
+
+            {mode === 'signin' || mode === 'register' ? (
+              <>
+                <div className="mt-5 grid grid-cols-2 gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-11"
+                    onClick={() => handleSocial('google')}
+                    disabled={pending || !capabilities?.google}
+                    title={capabilities?.google ? 'Continue with Google' : 'Google OAuth setup is pending'}
+                  >
+                    <GoogleMark /> Google
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-11"
+                    onClick={() => handleSocial('apple')}
+                    disabled={pending || !capabilities?.apple}
+                    title={capabilities?.apple ? 'Continue with Apple' : 'Apple OAuth setup is pending'}
+                  >
+                    <Apple /> Apple
+                  </Button>
+                </div>
+                <div className="my-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  <span className="h-px flex-1 bg-border" /> or use email <span className="h-px flex-1 bg-border" />
+                </div>
+              </>
+            ) : null}
+
+            {mode !== 'verify' ? (
+              <div className="grid gap-4">
+                {isRegister ? (
                 <div className="grid gap-2">
                   <Label htmlFor="account-name">Your name</Label>
                   <Input
@@ -186,6 +383,7 @@ function PasskeyEntry() {
                     required
                   />
                 </div>
+                ) : null}
                 <div className="grid gap-2">
                   <Label htmlFor="account-email">Work email</Label>
                   <Input
@@ -198,7 +396,61 @@ function PasskeyEntry() {
                     required
                   />
                 </div>
+                {isPasswordMode ? (
+                  <div className="grid gap-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="account-password">{mode === 'reset' ? 'New password' : 'Password'}</Label>
+                      {mode === 'signin' ? (
+                        <button type="button" onClick={() => switchMode('forgot')} className="text-xs font-medium text-[var(--ribbon)] hover:underline">
+                          Forgot password?
+                        </button>
+                      ) : null}
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id="account-password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                        autoComplete={isRegister ? 'new-password' : mode === 'signin' ? 'current-password' : 'new-password'}
+                        minLength={10}
+                        maxLength={128}
+                        required
+                        className="pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((current) => !current)}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        className="absolute inset-y-0 right-0 grid w-11 place-items-center text-muted-foreground hover:text-foreground"
+                      >
+                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    {isRegister || mode === 'reset' ? <p className="text-xs text-muted-foreground">Use at least 10 characters.</p> : null}
+                  </div>
+                ) : null}
+                {isRegister || mode === 'reset' ? (
+                  <div className="grid gap-2">
+                    <Label htmlFor="confirm-password">Confirm password</Label>
+                    <Input
+                      id="confirm-password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(event) => setConfirmPassword(event.target.value)}
+                      autoComplete="new-password"
+                      minLength={10}
+                      maxLength={128}
+                      required
+                    />
+                  </div>
+                ) : null}
               </div>
+            ) : null}
+            {notice ? (
+              <output className="mt-4 block rounded-xl bg-[var(--sage-soft)] px-3 py-2 text-sm text-[var(--sage)]">
+                {notice}
+              </output>
             ) : null}
             {error ? (
               <p
@@ -208,41 +460,43 @@ function PasskeyEntry() {
                 {error}
               </p>
             ) : null}
-            <Button
-              type="submit"
-              className="mt-6 h-11 w-full bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
-              disabled={pending}
-            >
-              {pending ? (
-                <LoaderCircle
-                  className="animate-spin"
-                  data-icon="inline-start"
-                />
+            {mode === 'verify' ? (
+              <Button type="button" variant="outline" className="mt-6 h-11 w-full" onClick={resendVerification} disabled={pending || !email}>
+                {pending ? <LoaderCircle className="animate-spin" /> : <RefreshCw />} Resend confirmation
+              </Button>
+            ) : (
+              <Button type="submit" className="mt-6 h-11 w-full bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]" disabled={pending || (isRegister && capabilities?.emailVerification === false)}>
+                {pending ? <LoaderCircle className="animate-spin" data-icon="inline-start" /> : <Mail data-icon="inline-start" />}
+                {pending
+                  ? 'Working…'
+                  : mode === 'register'
+                    ? 'Create account & verify email'
+                    : mode === 'forgot'
+                      ? 'Send reset link'
+                      : mode === 'reset'
+                        ? 'Update password'
+                        : 'Sign in with email'}
+              </Button>
+            )}
+
+            {mode === 'signin' ? (
+              <Button type="button" variant="ghost" className="mt-2 h-11 w-full" onClick={handlePasskey} disabled={pending}>
+                <Fingerprint /> Sign in with a passkey
+              </Button>
+            ) : null}
+
+            <div className="mt-4 text-center text-sm">
+              {mode === 'signin' ? (
+                <button type="button" onClick={() => switchMode('register')} className="font-medium text-[var(--ink)] hover:underline">New to RibbonDesk? Create an account</button>
+              ) : mode === 'register' ? (
+                <button type="button" onClick={() => switchMode('signin')} className="font-medium text-[var(--ink)] hover:underline">Already have an account? Sign in</button>
               ) : (
-                <KeyRound data-icon="inline-start" />
+                <button type="button" onClick={() => switchMode('signin')} className="font-medium text-[var(--ink)] hover:underline">Back to sign in</button>
               )}
-              {pending
-                ? 'Waiting for your device…'
-                : mode === 'register'
-                  ? 'Create account with a passkey'
-                  : 'Continue with a passkey'}
-            </Button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode(mode === 'register' ? 'signin' : 'register');
-                setError(null);
-              }}
-              className="mt-4 w-full text-center text-sm font-medium text-[var(--ink)] underline-offset-4 hover:underline"
-            >
-              {mode === 'register'
-                ? 'Already have an account? Sign in'
-                : 'New to RibbonDesk? Create an account'}
-            </button>
+            </div>
             <div className="mt-6 flex gap-3 rounded-xl bg-[var(--sage-soft)] p-3 text-xs leading-5 text-muted-foreground">
               <ShieldCheck className="mt-0.5 size-4 shrink-0 text-[var(--sage)]" />{' '}
-              AI suggestions and outgoing messages always require an authorized
-              human approval.
+              Email links expire in one hour. Passwords are hashed by Better Auth, and AI never receives your credentials.
             </div>
           </form>
         </section>
@@ -848,6 +1102,25 @@ function CommandCenter({
   locationId: Id<'locations'>;
 }) {
   const dashboard = useQuery(api.dashboard.getCommandCenter, { locationId });
+  const [passkeyPending, setPasskeyPending] = useState(false);
+  const [passkeyStatus, setPasskeyStatus] = useState<string | null>(null);
+
+  async function addPasskey() {
+    setPasskeyPending(true);
+    setPasskeyStatus(null);
+    try {
+      const result = await authClient.passkey.addPasskey({
+        authenticatorAttachment: 'platform',
+      });
+      if (result.error) throw new Error(result.error.message || 'The passkey could not be added.');
+      setPasskeyStatus('Passkey added');
+    } catch (caught) {
+      setPasskeyStatus(errorMessage(caught));
+    } finally {
+      setPasskeyPending(false);
+    }
+  }
+
   if (dashboard === undefined)
     return <FullPageStatus label="Assembling today’s command center…" />;
 
@@ -872,6 +1145,16 @@ function CommandCenter({
               {dashboard.role}
             </Badge>
             <span className="hidden text-sm sm:inline">{displayName}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={addPasskey}
+              disabled={passkeyPending}
+              title={passkeyStatus ?? 'Add a passkey to this signed-in account'}
+            >
+              {passkeyPending ? <LoaderCircle className="animate-spin" /> : <Fingerprint />}
+              <span className="hidden lg:inline">{passkeyStatus === 'Passkey added' ? 'Passkey added' : 'Add passkey'}</span>
+            </Button>
             <Button
               variant="ghost"
               size="icon-sm"

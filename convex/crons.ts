@@ -22,5 +22,11 @@ crons.daily(
   internal.inbox.cleanupWebhookEvents,
   {},
 );
+crons.hourly(
+  'remove expired authentication email jobs',
+  { minuteUTC: 41 },
+  internal.authEmail.cleanupExpired,
+  {},
+);
 
 export default crons;

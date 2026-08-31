@@ -20,7 +20,7 @@ By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 ## Local development
 
 Requirements: Node.js 22.13 or newer, npm, a Convex account, and a Chromium
-browser for the passkey smoke test.
+browser for the authentication smoke test.
 
 ```powershell
 git clone https://github.com/SouravBeraAkaSpeed/RibbonDesk.git
@@ -61,7 +61,7 @@ npx convex dev --once
 npm run typecheck
 npm run lint
 npm run test:unit
-npm run test:passkey
+npm run test:auth
 npm run build
 npm audit --omit=dev
 ```

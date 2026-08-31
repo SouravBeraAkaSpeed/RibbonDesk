@@ -13,6 +13,22 @@ import {
 } from './lib/validators';
 
 export default defineSchema({
+  authEmailJobs: defineTable({
+    recipient: v.string(),
+    subject: v.string(),
+    text: v.string(),
+    kind: v.union(v.literal('verification'), v.literal('password_reset')),
+    status: v.union(v.literal('queued'), v.literal('retrying')),
+    attempts: v.number(),
+    nextAttemptAt: v.number(),
+    expiresAt: v.number(),
+    lastErrorCode: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_status_and_nextAttemptAt', ['status', 'nextAttemptAt'])
+    .index('by_expiresAt', ['expiresAt']),
+
   profiles: defineTable({
     tokenIdentifier: v.string(),
     normalizedEmail: v.optional(v.string()),

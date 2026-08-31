@@ -144,10 +144,14 @@ the deadline rather than discovering extra fields during the final hour.
   Judges will evaluate the same persistent product path a business owner uses;
   a separate recorded walkthrough must be captured from the real app after live
   provider credentials are configured.
-- **Authentication:** Passkey-first registration and sign-in are implemented
-  with a local Better Auth Convex component. An automated virtual-authenticator
-  smoke test proves registration, sign-out, sign-in, authenticated onboarding,
-  jurisdiction confirmation, and access to the realtime desk.
+- **Authentication:** Better Auth on Convex supports verified email/password,
+  password reset, Google and Apple provider configuration, and passkeys that
+  can only be enrolled from an authenticated account. AgentMail security mail
+  is persisted into a bounded Convex retry queue before delivery. The automated
+  authentication journey is designed to cover registration, email verification, password
+  sign-in/reset, authenticated passkey enrollment/sign-in, onboarding,
+  jurisdiction confirmation, and controlled workspace cleanup. Google and
+  Apple production credentials remain an external console requirement.
 - **Core workspace:** Organization ownership, role enforcement, business and
   location setup, explicit jurisdiction confirmation, a real cited-requirement
   and task editor, the command center, source preview, live-only research, cited

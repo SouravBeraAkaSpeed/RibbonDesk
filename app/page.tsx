@@ -529,7 +529,7 @@ export default function Home() {
                 className="rd-button rd-button-primary"
                 render={<Link href="/app" />}
               >
-                Start with a passkey <ArrowRight data-icon="inline-end" />
+                Create your account <ArrowRight data-icon="inline-end" />
               </Button>
               <Link href="/app" className="rd-text-link">
                 Open RibbonDesk <ChevronRight />

@@ -41,7 +41,9 @@ submit them or make legal decisions for the owner.
 
 ## A complete owner journey
 
-1. **Create a passkey account.** No password is stored by RibbonDesk.
+1. **Create a verified account.** Use email/password with an AgentMail
+   confirmation link, Google, or Apple. After sign-in, add a device passkey for
+   passwordless access.
 2. **Create a protected workspace.** Name the organization, business, and first location.
 3. **Describe the real operation.** Add the address, business type, activities, and triggers such as food service, alcohol, seating, employees, construction, delivery, or signage.
 4. **Confirm the jurisdiction.** RibbonDesk detects a likely jurisdiction but requires the owner to confirm it.
@@ -87,7 +89,7 @@ Read the full [security policy](SECURITY.md) and the plain-language live
 ```mermaid
 flowchart LR
   U[Business owner and team] --> S[ChatGPT Site\nReact + Vinext]
-  S --> A[Better Auth\npasskeys]
+  S --> A[Better Auth\nemail + OAuth + passkeys]
   S <--> C[Convex\ndata + realtime + workflows + files]
   C --> F[Firecrawl\nofficial-source capture]
   C --> O[OpenRouter\nOpenAI models]
@@ -99,12 +101,15 @@ flowchart LR
 RibbonDesk uses ChatGPT Sites/Vinext, React 19, strict TypeScript, Tailwind and
 shadcn for the product surface. Convex is the single backend for data, realtime
 queries, server functions, HTTP callbacks, scheduled work, durable components,
-and file storage. Better Auth provides passkeys. Firecrawl captures official
+and file storage. Better Auth provides verified email/password, Google and
+Apple OAuth, sessions, password reset, and authenticated passkey enrollment.
+AgentMail delivers security mail through a bounded Convex retry queue. Firecrawl captures official
 sources, OpenRouter serves OpenAI models for structured extraction and grounded
 assistance, and AgentMail provides case inboxes and delivery events.
 
 See [Architecture](docs/ARCHITECTURE.md) for domains, workflows, authorization,
-provider boundaries, and failure behavior.
+provider boundaries, and failure behavior. [Authentication operations](docs/AUTHENTICATION.md)
+contains the exact Google and Apple console configuration and production callback URLs.
 
 ## Local development
 
@@ -113,7 +118,7 @@ provider boundaries, and failure behavior.
 - Node.js 22.13 or newer
 - npm
 - A Convex account and deployment
-- Google Chrome or Microsoft Edge for the virtual-passkey smoke test
+- Google Chrome or Microsoft Edge for the complete authentication smoke test
 - Optional Firecrawl, OpenRouter, and AgentMail credentials for live provider verification
 
 ```powershell
@@ -134,7 +139,10 @@ Required production values:
 - `FIRECRAWL_API_KEY`
 - `AGENTMAIL_API_KEY`
 - `AGENTMAIL_WEBHOOK_SECRET`
+- `AUTH_EMAIL_INBOX_ID`
 - `BETTER_AUTH_SECRET`
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` for Google sign-in
+- `APPLE_CLIENT_ID` and `APPLE_CLIENT_SECRET` for Apple sign-in
 - `RIBBONDESK_PROVIDER_MODE=live`
 - `SITE_URL`, `CONVEX_SITE_URL`, and the public client URLs documented in `.env.example`
 
@@ -148,7 +156,7 @@ npx convex dev --once
 npm run typecheck
 npm run lint
 npm run test:unit
-npm run test:passkey
+npm run test:auth
 npm run build
 npm audit --omit=dev
 ```
@@ -157,7 +165,9 @@ Public releases use `npm run build:production` with explicit production Site
 and Convex URLs; see [Deployment](docs/DEPLOYMENT.md). This prevents a local
 development backend URL from being baked into a public browser bundle.
 
-Controlled live-provider checks create uniquely named workspaces and resources,
+The authentication check proves verified email registration, password sign-in,
+authenticated passkey enrollment/sign-in, password reset, provider controls,
+and controlled cleanup. Controlled live-provider checks create uniquely named workspaces and resources,
 prove the real workflow, and remove their test data:
 
 ```powershell

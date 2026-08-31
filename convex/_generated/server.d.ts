@@ -33,9 +33,14 @@ type Env = {
   readonly AGENTMAIL_API_KEY: string | undefined;
   readonly AGENTMAIL_BASE_URL: string | undefined;
   readonly AGENTMAIL_WEBHOOK_SECRET: string | undefined;
+  readonly APPLE_CLIENT_ID: string | undefined;
+  readonly APPLE_CLIENT_SECRET: string | undefined;
+  readonly AUTH_EMAIL_INBOX_ID: string | undefined;
   readonly FIRECRAWL_API_KEY: string;
   readonly FIRECRAWL_API_URL: string | undefined;
   readonly FIRECRAWL_WEBHOOK_SECRET: string | undefined;
+  readonly GOOGLE_CLIENT_ID: string | undefined;
+  readonly GOOGLE_CLIENT_SECRET: string | undefined;
   readonly OPENROUTER_API_KEY: string | undefined;
   readonly OPENROUTER_MODEL_COMPLEX: string | undefined;
   readonly OPENROUTER_MODEL_FAST: string | undefined;

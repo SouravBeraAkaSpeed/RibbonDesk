@@ -7,8 +7,8 @@ without allowing automation to quietly become a regulatory decision-maker.
 
 | Layer | Responsibility |
 | --- | --- |
-| ChatGPT Site | Responsive interface, passkey ceremony, safe source viewing, optimistic interaction, and realtime subscriptions |
-| Better Auth component | Passkey registration/sign-in, sessions, and authenticated identity |
+| ChatGPT Site | Responsive interface, email/OAuth/passkey ceremonies, safe source viewing, optimistic interaction, and realtime subscriptions |
+| Better Auth component | Verified email/password, Google/Apple OAuth, authenticated passkey enrollment, sessions, and identity |
 | Convex application | Authorization, durable data, indexed queries, workflow state, files, schedules, callbacks, quotas, and audit events |
 | Firecrawl component | Durable official-source capture and progress |
 | OpenRouter | Structured OpenAI-model extraction, classification, summaries, conflicts, drafts, and grounded answers |
@@ -93,7 +93,7 @@ rewrite the owner's confirmed record.
 | Invite and change operational roles | Yes | Yes | No | No |
 | Export/delete organization or transfer ownership | Yes | No | No | No |
 
-Invitations bind to a normalized email after passkey registration. Membership,
+Invitations bind to a normalized, provider-verified account email. Membership,
 location ownership, document ownership, quotas, and role are rechecked inside
 every protected server operation.
 
@@ -105,6 +105,10 @@ every protected server operation.
 4. Source URLs are validated before retrieval and captured text is shown in a non-executing reader.
 5. Webhook signatures and provider event IDs are verified and deduplicated.
 6. Private data, tokens, messages, and inbox addresses are excluded from public fixtures, logs, analytics, and hackathon evidence.
+
+Verification and password-reset emails enter a bounded Convex queue. Transient
+AgentMail `404`, `409`, `429`, and server failures retry with backoff; the
+token-bearing job is deleted after delivery, terminal failure, or expiry.
 
 ## Data deletion
 
