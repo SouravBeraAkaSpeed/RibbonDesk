@@ -41,6 +41,11 @@ the client session cache during this handoff and completes the token exchange
 before rendering authenticated or unauthenticated content, preventing a slower
 pre-callback request from restoring a stale signed-out state.
 
+The corrected handoff is deployed on the public Site. A signed-out production
+test completed Google sign-in, returned to authenticated workspace onboarding,
+and remained authenticated after a full reload. Apple is absent from the live
+authentication screen.
+
 ## Deferred Apple OAuth
 
 Apple web sign-in is not part of the current release and no Apple control is

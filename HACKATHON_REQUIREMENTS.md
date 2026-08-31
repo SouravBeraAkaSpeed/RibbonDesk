@@ -156,7 +156,9 @@ the deadline rather than discovering extra fields during the final hour.
   session persistence are verified end to end. The auth UI now gates the
   one-time cross-domain callback before rendering and disables stale session
   caching to prevent a slower signed-out response from overwriting a fresh
-  Google session. Apple is intentionally deferred and absent from auth pages.
+  Google session. The corrected public release completed Google sign-in and
+  retained the authenticated session after reload. Apple is intentionally
+  deferred and absent from auth pages.
 - **Core workspace:** Organization ownership, role enforcement, business and
   location setup, explicit jurisdiction confirmation, a real cited-requirement
   and task editor, the command center, source preview, live-only research, cited

@@ -396,4 +396,8 @@ RibbonDesk now disables that client session cache and completes the one-time
 Google token exchange behind a dedicated “Finishing your Google sign-in” gate
 before mounting the authenticated application. The gate also presents a clear,
 recoverable error if a temporary token is expired or already used. Strict
-TypeScript, lint, unit tests, and the production Sites build pass.
+TypeScript, lint, unit tests, and the production Sites build pass. I published
+the corrected release as Sites version 7, signed out on the public `/app`, and
+retested the real Google journey. The live screen contained no Apple control;
+Google returned to authenticated workspace onboarding, and the session remained
+authenticated after a full reload. I created no organization or sample data.
