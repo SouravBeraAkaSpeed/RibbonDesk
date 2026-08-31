@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T01:28:03Z
+- **Last updated:** 2026-08-31T01:32:53Z
 
 ## Log
 
@@ -184,8 +184,10 @@ the repository (`.openai/hosting.json`). The production backend contains the
 same verified schema, indexes, components, functions, HTTP routes, and scheduled
 jobs as the development build. I generated a separate production auth secret
 without writing it to source and left provider mode on the safe replay setting;
-live OpenAI, Firecrawl, and AgentMail credentials and controlled sponsor smoke
-tests remain pending. I deployed the exact verified source as an owner-only Site
+I copied the existing Firecrawl credential into production without exposing or
+persisting it; live mode stays disabled until the complete provider loop can be
+tested. OpenAI and AgentMail production credentials and all controlled sponsor
+smoke tests remain pending. I deployed the exact verified source as an owner-only Site
 at `https://ribbondesk.souravberaakagralius.chatgpt.site`, then rebound the
 production auth origin and Sites metadata to that assigned URL. Public access
 remains pending an explicit approval and a signed-out verification.

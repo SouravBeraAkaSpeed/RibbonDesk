@@ -173,8 +173,9 @@ the deadline rather than discovering extra fields during the final hour.
   Ribbon Assistant threads, with direct OpenAI generation implemented behind
   live mode. Safe replay tests prove the research, inbox, grounded-answer, and
   source-change approval loops, including realtime observation from a second
-  browser context. Live sponsor credentials and end-to-end provider calls are
-  not yet verified.
+  browser context. The Firecrawl credential is configured in production, but
+  provider mode remains replay-only while OpenAI and AgentMail production
+  credentials and all end-to-end provider calls remain unverified.
 - **Operations verification:** Authenticated browser automation proves the
   opening-to-operating transition, a failed-inspection blocker, expiring
   evidence, a near-term in-app reminder, saved notification preferences, and
