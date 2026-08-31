@@ -129,10 +129,13 @@ the deadline rather than discovering extra fields during the final hour.
 - **Sites project:** Scaffolded with the required Sites starter and shadcn
   add-on. The preferred `ribbondesk` slug is reserved, its opaque Sites project
   identity is persisted in `.openai/hosting.json`, and the local development
-  preview and production build both run. It has not been made public.
+  preview and production build both run. The verified source is deployed at
+  `https://ribbondesk.souravberaakagralius.chatgpt.site` with owner-only access;
+  public access and signed-out verification remain pending.
 - **Public demo:** Implemented locally with synthetic data, interactive task and
   proposal state, responsive navigation, and no provider calls or external
-  side effects. Public deployment is still pending.
+  side effects. It is present in the private production build; public access is
+  still pending.
 - **Authentication:** Passkey-first registration and sign-in are implemented
   with a local Better Auth Convex component. An automated virtual-authenticator
   smoke test proves registration, sign-out, sign-in, authenticated onboarding,

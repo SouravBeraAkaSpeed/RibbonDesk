@@ -3,7 +3,7 @@
 - **Project:** RibbonDesk
 - **Event:** Convex All Gas Hackathon
 - **What it does:** A collaborative compliance operations desk that helps local businesses open and stay open by turning official requirements and agency correspondence into a live action plan.
-- **Live app:** not deployed
+- **Live app:** private verification build at https://ribbondesk.souravberaakagralius.chatgpt.site (public access pending)
 - **Repo:** https://github.com/SouravBeraAkaSpeed/RibbonDesk
 - **Frontend:** Codex Sites
 - **Convex deployment:** https://steady-sockeye-84.convex.cloud
@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** gpt-5.6-terra
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T01:38:00Z
+- **Last updated:** 2026-08-31T01:28:03Z
 
 ## Log
 
@@ -185,4 +185,7 @@ same verified schema, indexes, components, functions, HTTP routes, and scheduled
 jobs as the development build. I generated a separate production auth secret
 without writing it to source and left provider mode on the safe replay setting;
 live OpenAI, Firecrawl, and AgentMail credentials and controlled sponsor smoke
-tests remain pending. The Site is not public and no live-app URL is claimed yet.
+tests remain pending. I deployed the exact verified source as an owner-only Site
+at `https://ribbondesk.souravberaakagralius.chatgpt.site`, then rebound the
+production auth origin and Sites metadata to that assigned URL. Public access
+remains pending an explicit approval and a signed-out verification.
