@@ -15,9 +15,23 @@ npm run typecheck
 npm run lint
 npm run test:unit
 npm run test:passkey
-npm run build
 npm audit --omit=dev
 ```
+
+Set the three public production URLs explicitly, then use the fail-fast release
+build instead of packaging a development build:
+
+```powershell
+$env:NEXT_PUBLIC_CONVEX_URL='https://<production-deployment>.convex.cloud'
+$env:NEXT_PUBLIC_CONVEX_SITE_URL='https://<production-deployment>.convex.site'
+$env:NEXT_PUBLIC_SITE_URL='https://<site-slug>.<account>.chatgpt.site'
+npm run build:production
+```
+
+The release build rejects missing, localhost, or non-HTTPS public values and
+uses `NEXT_PUBLIC_SITE_URL` for canonical metadata. After building, inspect the
+client bundle to confirm it contains the production Convex host and does not
+contain the development host.
 
 Run live-provider checks only with controlled credentials and quotas. Both
 scripts create uniquely named resources and delete them after verification.

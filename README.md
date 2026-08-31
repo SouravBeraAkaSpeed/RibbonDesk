@@ -153,6 +153,10 @@ npm run build
 npm audit --omit=dev
 ```
 
+Public releases use `npm run build:production` with explicit production Site
+and Convex URLs; see [Deployment](docs/DEPLOYMENT.md). This prevents a local
+development backend URL from being baked into a public browser bundle.
+
 Controlled live-provider checks create uniquely named workspaces and resources,
 prove the real workflow, and remove their test data:
 

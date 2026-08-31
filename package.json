@@ -31,6 +31,7 @@
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build",
+    "build:production": "node scripts/build-production.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "test:passkey": "node scripts/smoke-passkey.mjs",
     "test:live-research": "node scripts/smoke-live-research.mjs",

@@ -303,3 +303,12 @@ passkey registration/sign-in/onboarding with controlled deletion, the production
 build, and the production dependency audit all pass; the audit reports zero
 known production vulnerabilities. The owner has explicitly approved public
 publication of this verified source.
+
+The first version-4 production browser gate caught a deployment-specific defect
+before I treated the release as finished: the locally packaged client bundle
+contained the development Convex URL, so the production passkey request was
+correctly rejected by CORS. I preserved the browser error evidence, added a
+cross-platform `build:production` gate that refuses missing, localhost, or
+non-HTTPS public URLs, and documented the exact production promotion check. I am
+rebuilding and republishing with explicit production Convex and Site origins;
+the failed passkey gate is not counted as a successful release.

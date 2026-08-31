@@ -66,6 +66,10 @@ npm run build
 npm audit --omit=dev
 ```
 
+`npm run build` verifies an ordinary local build. Release maintainers must use
+the explicit production-URL gate documented in `docs/DEPLOYMENT.md` before
+packaging a public Site version.
+
 Live provider tests consume external services. Run them only against controlled
 test workspaces and credentials:
 

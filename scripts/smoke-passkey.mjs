@@ -14,6 +14,15 @@ if (!executablePath) throw new Error('A Chromium browser is required for the pas
 const browser = await chromium.launch({ executablePath, headless: true });
 const context = await browser.newContext({ baseURL: process.env.SMOKE_BASE_URL ?? 'http://localhost:3000' });
 const page = await context.newPage();
+const consoleErrors = [];
+const failedResponses = [];
+
+page.on('console', (message) => {
+  if (message.type() === 'error') consoleErrors.push(message.text());
+});
+page.on('response', (response) => {
+  if (response.status() >= 400) failedResponses.push(`${response.status()} ${response.url()}`);
+});
 const cdp = await context.newCDPSession(page);
 await cdp.send('WebAuthn.enable');
 await cdp.send('WebAuthn.addVirtualAuthenticator', {
@@ -64,6 +73,8 @@ try {
   await dataControls.getByRole('button', { name: 'Queue permanent deletion' }).click();
   await page.getByRole('heading', { name: 'Name your workspace' }).waitFor({ timeout: 30_000 });
 
+  if (consoleErrors.length) throw new Error(`Browser console errors:\n${consoleErrors.join('\n')}`);
+
   console.log(JSON.stringify({
     status: 'passed',
     passkeyRegistration: true,
@@ -72,6 +83,12 @@ try {
     persistedWorkspace: true,
     controlledCleanup: true,
   }, null, 2));
+} catch (error) {
+  console.error(`Passkey smoke stopped at ${page.url()}`);
+  console.error((await page.locator('body').innerText()).slice(0, 12_000));
+  if (consoleErrors.length) console.error(consoleErrors.join('\n'));
+  if (failedResponses.length) console.error(failedResponses.join('\n'));
+  throw error;
 } finally {
   await browser.close();
 }
