@@ -539,6 +539,7 @@ export default defineSchema({
   })
     .index('by_organizationId', ['organizationId'])
     .index('by_locationId', ['locationId'])
+    .index('by_emailAddress', ['emailAddress'])
     .index('by_providerInboxId', ['providerInboxId'])
     .index('by_organizationId_and_status', ['organizationId', 'status']),
 
@@ -664,6 +665,15 @@ export default defineSchema({
       'providerThreadId',
     ])
     .index('by_requirementId', ['requirementId']),
+
+  providerWebhookEvents: defineTable({
+    provider: v.literal('agentmail'),
+    eventId: v.string(),
+    eventType: v.string(),
+    receivedAt: v.number(),
+  })
+    .index('by_provider_and_eventId', ['provider', 'eventId'])
+    .index('by_receivedAt', ['receivedAt']),
 
   aiRuns: defineTable({
     organizationId: v.id('organizations'),

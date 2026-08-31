@@ -8,7 +8,7 @@ import { v } from 'convex/values';
 
 import { components } from './_generated/api';
 import type { DataModel } from './_generated/dataModel';
-import { query } from './_generated/server';
+import { env, internalAction, query } from './_generated/server';
 import authConfig from './auth.config';
 import authSchema from './betterAuth/schema';
 
@@ -17,7 +17,7 @@ type RegistrationContext = {
   name: string;
 };
 
-const siteUrl = process.env.SITE_URL ?? 'http://localhost:3000';
+const siteUrl = env.SITE_URL ?? 'http://localhost:3000';
 
 function parseRegistrationContext(context?: string | null): RegistrationContext {
   if (!context || context.length > 1_000) {
@@ -127,6 +127,21 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
   }) satisfies BetterAuthOptions;
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => betterAuth(createAuthOptions(ctx));
+
+export const rotateKeys = internalAction({
+  args: {},
+  returns: v.array(
+    v.object({
+      id: v.string(),
+      publicKey: v.string(),
+      privateKey: v.string(),
+      createdAt: v.number(),
+      expiresAt: v.optional(v.nullable(v.number())),
+      alg: v.optional(v.string()),
+    }),
+  ),
+  handler: async (ctx) => await createAuth(ctx).api.rotateKeys(),
+});
 
 export const getCurrentUser = query({
   args: {},

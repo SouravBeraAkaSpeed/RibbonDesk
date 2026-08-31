@@ -6,7 +6,7 @@ import { ConvexError, v } from 'convex/values';
 
 import { internal } from './_generated/api';
 import type { Doc, Id } from './_generated/dataModel';
-import { internalMutation, mutation, query } from './_generated/server';
+import { env, internalMutation, mutation, query } from './_generated/server';
 import { recordActivity, requireLocation } from './lib/permissions';
 import { proposalStatusValidator } from './lib/validators';
 import schema from './schema';
@@ -18,7 +18,7 @@ const changeWithEvidenceValidator = v.object({
 });
 
 function mode(): 'replay' | 'live' {
-  return process.env.RIBBONDESK_PROVIDER_MODE === 'replay' ? 'replay' : 'live';
+  return env.RIBBONDESK_PROVIDER_MODE === 'replay' ? 'replay' : 'live';
 }
 
 async function findPendingProposal(

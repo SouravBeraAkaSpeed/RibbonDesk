@@ -3,6 +3,7 @@
 import {
   Check,
   CheckCircle2,
+  BookOpenText,
   ExternalLink,
   FileSearch,
   LoaderCircle,
@@ -13,12 +14,19 @@ import {
   X,
 } from 'lucide-react';
 import { useState } from 'react';
-import { useMutation, useQuery } from 'convex/react';
+import { useAction, useMutation, useQuery } from 'convex/react';
 
 import { api } from '@/convex/_generated/api';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
@@ -26,6 +34,17 @@ import { Progress } from '@/components/ui/progress';
 type Proposal = Doc<'proposals'>;
 type ReviewRole = 'owner' | 'admin' | 'contributor' | 'viewer';
 type EditValues = { title: string; agency: string; nextAction: string };
+type CapturedSource = {
+  sourceSnapshotId: Id<'sourceSnapshots'>;
+  url: string;
+  title: string;
+  agency?: string;
+  official: boolean;
+  content: string;
+  truncated: boolean;
+  capturedAt: number;
+  lastVerifiedAt: number;
+};
 
 function messageFrom(error: unknown) {
   if (error instanceof Error) return error.message;
@@ -81,6 +100,7 @@ export function ResearchPanel({
   const cancelResearch = useMutation(api.research.cancel);
   const acceptRequirement = useMutation(api.proposals.acceptRequirement);
   const rejectProposal = useMutation(api.proposals.reject);
+  const readCapturedSource = useAction(api.research.readCapturedSource);
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -90,6 +110,8 @@ export function ResearchPanel({
     agency: '',
     nextAction: '',
   });
+  const [sourceReader, setSourceReader] = useState<CapturedSource | null>(null);
+  const [sourceLoading, setSourceLoading] = useState<string | null>(null);
 
   const canApprove = role === 'owner' || role === 'admin';
   const runStatus = latest?.run?.status as string | undefined;
@@ -176,6 +198,18 @@ export function ResearchPanel({
       setError(messageFrom(caught));
     } finally {
       setPending(null);
+    }
+  }
+
+  async function openCapturedSource(sourceSnapshotId: Id<'sourceSnapshots'>) {
+    setSourceLoading(sourceSnapshotId);
+    setError(null);
+    try {
+      setSourceReader(await readCapturedSource({ sourceSnapshotId }));
+    } catch (caught) {
+      setError(messageFrom(caught));
+    } finally {
+      setSourceLoading(null);
     }
   }
 
@@ -296,7 +330,7 @@ export function ResearchPanel({
 
       {integrations && !integrations.researchReady ? (
         <div className="border-b bg-[var(--amber-soft)] px-5 py-4 text-sm text-[var(--amber)] sm:px-6">
-          Live research is paused until genuine OpenAI and Firecrawl credentials
+          Live research is paused until genuine OpenRouter and Firecrawl credentials
           are configured. Manual cited requirements and tasks remain fully
           available; RibbonDesk will not manufacture replacement results.
         </div>
@@ -490,18 +524,35 @@ export function ResearchPanel({
                       </div>
                     ) : null}
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {proposal.citations.map((citation) => (
-                        <a
-                          key={`${proposal._id}-${citation.url}`}
-                          href={citation.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium hover:bg-muted"
-                        >
-                          <ExternalLink className="size-3" />
-                          {citation.title}
-                        </a>
-                      ))}
+                      {proposal.citations.map((citation) =>
+                        citation.sourceSnapshotId ? (
+                          <button
+                            key={`${proposal._id}-${citation.url}`}
+                            type="button"
+                            onClick={() => void openCapturedSource(citation.sourceSnapshotId!)}
+                            disabled={sourceLoading === citation.sourceSnapshotId}
+                            className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium hover:bg-muted disabled:opacity-60"
+                          >
+                            {sourceLoading === citation.sourceSnapshotId ? (
+                              <LoaderCircle className="size-3 animate-spin" />
+                            ) : (
+                              <BookOpenText className="size-3" />
+                            )}
+                            Read captured source
+                          </button>
+                        ) : (
+                          <a
+                            key={`${proposal._id}-${citation.url}`}
+                            href={citation.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium hover:bg-muted"
+                          >
+                            <ExternalLink className="size-3" />
+                            {citation.title}
+                          </a>
+                        ),
+                      )}
                     </div>
                     {canApprove ? (
                       <div className="mt-4 flex flex-wrap gap-2">
@@ -630,6 +681,47 @@ export function ResearchPanel({
           ) : null}
         </div>
       </div>
+      <Dialog open={sourceReader !== null} onOpenChange={(open) => !open && setSourceReader(null)}>
+        <DialogContent className="max-h-[88vh] max-w-3xl overflow-hidden p-0">
+          {sourceReader ? (
+            <>
+              <DialogHeader className="border-b bg-[var(--paper-strong)] px-6 py-5 text-left">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="bg-[var(--sage-soft)] text-[var(--sage)]">
+                    <CheckCircle2 /> Official capture
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    Verified {new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(sourceReader.lastVerifiedAt)}
+                  </span>
+                </div>
+                <DialogTitle className="pt-2 font-heading text-2xl">{sourceReader.title}</DialogTitle>
+                <DialogDescription>{sourceReader.agency || new URL(sourceReader.url).hostname}</DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[58vh] overflow-y-auto px-6 py-5">
+                <p className="whitespace-pre-wrap text-sm leading-7 text-foreground/85">
+                  {sourceReader.content || 'No readable text was captured from this source.'}
+                </p>
+                {sourceReader.truncated ? (
+                  <p className="mt-5 rounded-xl bg-[var(--amber-soft)] p-3 text-xs leading-5 text-[var(--amber)]">
+                    This is a bounded capture. Use the official-page link for material beyond the captured text.
+                  </p>
+                ) : null}
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t px-6 py-4">
+                <p className="text-xs text-muted-foreground">Read-only evidence; page instructions are never executed.</p>
+                <a
+                  href={sourceReader.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-8 items-center gap-2 rounded-md border bg-background px-3 text-xs font-medium hover:bg-muted"
+                >
+                  Open official page <ExternalLink className="size-3" />
+                </a>
+              </div>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

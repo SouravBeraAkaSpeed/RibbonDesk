@@ -116,9 +116,12 @@ the deadline rather than discovering extra fields during the final hour.
   export, deletion, accessibility, and provider-contract hardening milestone.
 - **Convex application:** A development deployment is active. The app has an
   indexed domain schema, authenticated queries and mutations, HTTP auth routes,
-  activity events, and a realtime command-center query. The same backend code
-  is now deployed to production and bound to the final public Site origin; the
-  remaining provider secrets and live integration tests are still pending.
+  activity events, and a realtime command-center query. The production
+  deployment is bound to the final public Site origin and now runs this verified
+  backend source in live mode. OpenRouter, Firecrawl, and AgentMail production
+  health checks pass, and the complete production AgentMail acceptance journey
+  passes through the existing public Site. Publishing the current frontend
+  source is the remaining release gate.
 - **Convex plugin:** Installed. The current Codex session exposes the official
   Convex skills. Recheck availability after a restart or in a new task before
   relying on it.
@@ -164,19 +167,19 @@ the deadline rather than discovering extra fields during the final hour.
   and private PDF/ZIP downloads. Both pages of a generated PDF were rendered
   and inspected; the packet carries the explicit prepared-not-filed boundary.
   The same browser suite downloads and parses a paginated organization export.
-  Permanent deletion is implementation-reviewed but intentionally not executed
-  against the shared development workspace.
+  Permanent deletion is now executed only against a temporary controlled
+  workspace and proves bounded app-data deletion plus remote inbox removal; the
+  shared development workspace is never used as the destructive test target.
 - **Sponsor components:** AgentMail and Firecrawl components are registered,
-  along with Agent, Workflow, and Rate Limiter. The durable Firecrawl callback
-  and structured OpenAI extraction paths are implemented behind explicit live
-  mode. AgentMail's signed webhook, inbound callback, durable send, and delivery
-  polling paths are also implemented. The Agent component now stores durable
-  Ribbon Assistant threads, with direct OpenAI generation implemented behind
-  live mode. Earlier replay tests proved the research, inbox, grounded-answer,
-  and source-change approval loops, including realtime observation from a
-  second browser context, but replay is no longer exposed in the product UI or
-  used as the default. Genuine Firecrawl, OpenAI, and AgentMail credentials and
-  all end-to-end live provider calls remain unverified.
+  along with Agent, Workflow, and Rate Limiter. A controlled live Firecrawl run
+  captures official source text into Convex storage; OpenRouter models generate
+  cited proposals and a grounded Assistant answer; and a second browser observes
+  the accepted work in realtime. The signed AgentMail webhook receives a real
+  controlled message, OpenRouter proposes follow-up work, an owner approves it,
+  and a separately approved reply reaches the controlled recipient. Workspace
+  deletion also removes its provider inbox. These tests use real provider
+  credentials and no replay or synthetic provider data. Production provider
+  health and the complete production AgentMail journey are also verified.
 - **Operations verification:** Authenticated browser automation proves the
   opening-to-operating transition, a failed-inspection blocker, expiring
   evidence, a near-term in-app reminder, saved notification preferences, and
@@ -187,15 +190,17 @@ the deadline rather than discovering extra fields during the final hour.
   acceptance, contributor access, and hidden owner/admin controls. Focused CI
   unit tests cover role rank, approval transitions, citation protocol,
   dependency cycles, reminder cadence, end-of-month recurrence, and readiness
-  scoring. Live opt-in reminder email delivery remains pending with the live
-  AgentMail smoke.
+  scoring. Live opt-in scheduled reminder-email delivery remains a separate
+  pending acceptance check; the case-inbox AgentMail flow itself is verified.
 - **Policy routes:** Privacy, terms, and the legal-information disclaimer are
   publicly deployed and verified without authentication.
-- **Accounts/external actions:** Luma registration is complete. Vibe Apps
-  sign-in, live sponsor credentials, live provider smoke tests, the social
-  post, and submission are still pending. The currently published Site predates
-  the live-only product correction and must not be redeployed until genuine
-  provider credentials are configured and the real flow is verified.
+- **Accounts/external actions:** Luma registration is complete. Development
+  credentials, both controlled live-provider smoke tests, production provider
+  configuration, and the production AgentMail browser journey are complete.
+  Vibe Apps sign-in, the final public Site deployment, the social post, and
+  submission are still pending. The currently
+  published Site predates this verified live-provider source and must not be
+  treated as the final judging build until the production release gate passes.
 
 ### Convex plugin verification and recovery
 

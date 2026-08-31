@@ -16,5 +16,11 @@ crons.daily(
   internal.sourceMonitor.queueDueSourceRefreshes,
   {},
 );
+crons.daily(
+  'remove expired provider webhook receipts',
+  { hourUTC: 4, minuteUTC: 23 },
+  internal.inbox.cleanupWebhookEvents,
+  {},
+);
 
 export default crons;

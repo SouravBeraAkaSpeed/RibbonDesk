@@ -10,9 +10,9 @@
 - **Components:** @convex-dev/agent, @convex-dev/better-auth, @convex-dev/rate-limiter, @convex-dev/workflow, @firecrawl/firecrawl-convex, @agentmail/convex
 - **Convex features:** schema, indexes, full-text search, queries, mutations, actions, HTTP actions, scheduled functions, realtime queries, file storage
 - **Auth:** Other (Better Auth passkeys on Convex)
-- **AI models:** gpt-5.6-terra
+- **AI models:** openai/gpt-5.6-terra and openai/gpt-5.6-luna through OpenRouter
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T07:28:00Z
+- **Last updated:** 2026-08-31T17:32:00Z
 
 ## Log
 
@@ -241,5 +241,50 @@ high-contrast rendering so forms and text remain sharp. I also added a
 Convex-backed live operating plan where a real user can enter cited requirements,
 approve them with role checks, create and link tasks, and move both records
 through realtime statuses (`app/app/work-plan-panel.tsx`,
-`convex/integrations.ts`). Genuine OpenAI, Firecrawl, and AgentMail credentials
-remain the explicit blocker for end-to-end live provider verification.
+`convex/integrations.ts`). At that point, genuine OpenAI, Firecrawl, and
+AgentMail credentials remained the explicit blocker for end-to-end live
+provider verification.
+
+### 2026-08-31 - working tree
+
+I replaced the unverified provider boundary with two controlled live acceptance
+journeys. RibbonDesk now calls OpenRouter from Convex actions using
+`openai/gpt-5.6-terra` for requirement synthesis and grounded answers and
+`openai/gpt-5.6-luna` for routine classification. A real Firecrawl run captured
+official NYC guidance into owned Convex storage, produced five cited proposals,
+opened the captured text in the safe in-app source reader, accepted one through
+the owner review gate, updated a second browser in realtime, and answered a
+grounded Assistant question (`convex/lib/aiProvider.ts`,
+`scripts/smoke-live-research.mjs`).
+
+I also completed the real AgentMail loop. A location can provision its own live
+case inbox; the signed webhook preserves an inbound message; OpenRouter proposes
+a deadline task; an owner approves the proposal; the user edits a reply; and a
+separate owner/admin approval snapshot is required before AgentMail sends it.
+The controlled recipient received the reply. The test then permanently deleted
+the temporary workspace and verified that RibbonDesk removed its provider inbox
+as well (`convex/lib/agentMailClient.ts`, `convex/http.ts`, `convex/inbox.ts`,
+`convex/dataControls.ts`, `scripts/smoke-live-agentmail.mjs`).
+
+During that verification I fixed two provider-specific failures instead of
+hiding them behind replay data: RFC message IDs wrapped in angle brackets were
+being stripped by the message-body HTML sanitizer, and newly created AgentMail
+inboxes can briefly be listed before their route is available. Provider IDs now
+use a separate opaque normalizer, email addresses are canonicalized, and live
+send/deletion checks handle propagation safely. Webhook receipts are retained
+only for RibbonDesk-owned events and expire after 30 days. I also updated the
+Cloudflare runtime dependency set; the production dependency audit now reports
+zero vulnerabilities. Convex development deployment, TypeScript, lint, unit
+tests, both live sponsor journeys, and the Sites production build pass locally.
+
+I then promoted the verified Convex source to the existing production
+deployment without replacing its separate production auth secret. I configured
+production-only OpenRouter, Firecrawl, AgentMail, model, and live-mode values,
+created a production AgentMail webhook with its own signing secret, and confirmed
+all three provider health checks from production. The complete AgentMail browser
+acceptance journey also passes through the existing public Site against
+production Convex, including passkey onboarding and provider-side cleanup. The
+temporary sender and workspace were removed; no test inbox remains. The public
+Site still serves the earlier frontend commit, so publishing this current
+spacious landing page, live-only copy, safe source reader, and hardening work is
+the remaining release action.

@@ -1,6 +1,7 @@
 import { ConvexError, v } from 'convex/values';
 
-import { query } from './_generated/server';
+import { env, query } from './_generated/server';
+import { hasAiProvider } from './lib/aiProvider';
 
 function configured(value: string | undefined) {
   if (!value) return false;
@@ -12,7 +13,7 @@ export const status = query({
   args: {},
   returns: v.object({
     mode: v.union(v.literal('live'), v.literal('replay')),
-    openai: v.boolean(),
+    ai: v.boolean(),
     firecrawl: v.boolean(),
     agentmail: v.boolean(),
     researchReady: v.boolean(),
@@ -27,17 +28,17 @@ export const status = query({
       });
     }
     const mode: 'live' | 'replay' =
-      process.env.RIBBONDESK_PROVIDER_MODE === 'replay' ? 'replay' : 'live';
-    const openai = configured(process.env.OPENAI_API_KEY);
-    const firecrawl = configured(process.env.FIRECRAWL_API_KEY);
-    const agentmail = configured(process.env.AGENTMAIL_API_KEY);
+      env.RIBBONDESK_PROVIDER_MODE === 'replay' ? 'replay' : 'live';
+    const ai = hasAiProvider();
+    const firecrawl = configured(env.FIRECRAWL_API_KEY);
+    const agentmail = configured(env.AGENTMAIL_API_KEY);
     return {
       mode,
-      openai,
+      ai,
       firecrawl,
       agentmail,
-      researchReady: mode === 'live' && openai && firecrawl,
-      inboxReady: mode === 'live' && openai && agentmail,
+      researchReady: mode === 'live' && ai && firecrawl,
+      inboxReady: mode === 'live' && ai && agentmail,
     };
   },
 });

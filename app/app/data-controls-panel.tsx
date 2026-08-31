@@ -137,7 +137,7 @@ export function DataControlsPanel({
       await queueDeletion({ organizationId, confirmationName: confirmation });
       setMessage({
         tone: 'success',
-        text: 'Deletion queued. App records, stored files, inbox mappings, and Agent threads are being removed in bounded batches.',
+        text: 'Deletion queued. The live case inbox, app records, stored files, inbox mappings, and Agent threads are being removed safely.',
       });
       window.setTimeout(() => window.location.reload(), 1_200);
     } catch (error) {
@@ -166,8 +166,9 @@ export function DataControlsPanel({
       <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
         Exports are assembled through owner-authorized paginated queries.
         Deletion is an irreversible owner-only workflow that clears
-        organization-scoped app tables and Convex files in bounded batches;
-        scheduled callbacks safely no-op after their records disappear.
+        its live case inbox first, then organization-scoped app tables and
+        Convex files in bounded batches; scheduled callbacks safely no-op after
+        their records disappear.
       </p>
       {message ? (
         <p

@@ -143,9 +143,9 @@ export function AssistantSourcesPanel({
               </p>
             </div>
             <Badge variant="outline">
-              {integrations?.openai && integrations.mode === 'live'
-                ? 'Live OpenAI'
-                : 'Live OpenAI required'}
+              {integrations?.ai && integrations.mode === 'live'
+                ? 'Live OpenRouter AI'
+                : 'Live OpenRouter required'}
             </Badge>
           </div>
 
@@ -171,7 +171,7 @@ export function AssistantSourcesPanel({
                 }
                 disabled={
                   pending === 'assistant-create' ||
-                  !integrations?.openai ||
+                  !integrations?.ai ||
                   integrations.mode !== 'live'
                 }
               >
@@ -256,7 +256,7 @@ export function AssistantSourcesPanel({
                   disabled={
                     pending === 'assistant-ask' ||
                     question.trim().length < 3 ||
-                    !integrations?.openai ||
+                    !integrations?.ai ||
                     integrations.mode !== 'live'
                   }
                 >

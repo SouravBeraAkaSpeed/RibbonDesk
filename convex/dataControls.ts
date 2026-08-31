@@ -5,8 +5,9 @@ import {
 import { ConvexError, v } from 'convex/values';
 
 import { internal } from './_generated/api';
-import { internalMutation, mutation, query } from './_generated/server';
+import { internalAction, internalMutation, internalQuery, mutation, query } from './_generated/server';
 import { ribbonAgent } from './assistant';
+import { deleteAgentMailInbox } from './lib/agentMailClient';
 import { recordActivity, requireMembership } from './lib/permissions';
 
 const domainValidator = v.union(
@@ -170,9 +171,60 @@ export const queueDeletion = mutation({
       deletionStatus: 'queued',
       updatedAt: now,
     });
-    await ctx.scheduler.runAfter(0, internal.dataControls.deleteBatch, {
+    await ctx.scheduler.runAfter(0, internal.dataControls.cleanupExternalResources, {
       organizationId: organization._id,
+      attempt: 0,
     });
+    return null;
+  },
+});
+
+export const getExternalDeletionContext = internalQuery({
+  args: { organizationId: v.id('organizations') },
+  returns: v.union(
+    v.null(),
+    v.object({ providerInboxIds: v.array(v.string()) }),
+  ),
+  handler: async (ctx, args) => {
+    const organization = await ctx.db.get(args.organizationId);
+    if (!organization || organization.deletionStatus === 'active') return null;
+    const bindings = await ctx.db
+      .query('inboxBindings')
+      .withIndex('by_organizationId', (index) => index.eq('organizationId', args.organizationId))
+      .take(10);
+    return {
+      providerInboxIds: bindings
+        .filter((binding) => binding.providerMode === 'live' && !binding.providerInboxId.startsWith('provisioning:'))
+        .map((binding) => binding.providerInboxId),
+    };
+  },
+});
+
+export const cleanupExternalResources = internalAction({
+  args: { organizationId: v.id('organizations'), attempt: v.number() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const context = await ctx.runQuery(internal.dataControls.getExternalDeletionContext, {
+      organizationId: args.organizationId,
+    });
+    if (!context) return null;
+    try {
+      for (const inboxId of context.providerInboxIds) await deleteAgentMailInbox(inboxId);
+      await ctx.runMutation(internal.dataControls.deleteBatch, {
+        organizationId: args.organizationId,
+      });
+    } catch (error) {
+      console.error(
+        'External resource deletion will retry.',
+        error instanceof Error ? error.message : 'AgentMail deletion failed.',
+      );
+      const nextAttempt = Math.min(Math.max(0, Math.floor(args.attempt)) + 1, 32);
+      const delayMs = Math.min(60 * 60 * 1_000, 5_000 * 2 ** Math.min(nextAttempt, 9));
+      await ctx.scheduler.runAfter(delayMs, internal.dataControls.cleanupExternalResources, {
+        organizationId: args.organizationId,
+        attempt: nextAttempt,
+      });
+    }
     return null;
   },
 });
