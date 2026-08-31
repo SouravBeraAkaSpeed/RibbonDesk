@@ -69,7 +69,7 @@ const faqs = [
   {
     question: 'Can AI change requirements or send email by itself?',
     answer:
-      'No. AI can summarize, explain, draft, and propose. Consequential compliance changes and outbound messages require an owner or administrator to approve them.',
+      'No. AI can summarize, explain, draft, and propose. Consequential record changes and outbound messages require an owner or administrator to approve them.',
   },
   {
     question: 'What happens after the business opens?',
@@ -118,7 +118,7 @@ export default function Home() {
         <section className="rd-hero" aria-labelledby="hero-heading">
           <div className="rd-hero-copy">
             <span className="rd-eyebrow">
-              <span className="rd-live-dot" /> Compliance, made workable
+              <span className="rd-live-dot" /> Your opening, clearly organized
             </span>
             <h1 id="hero-heading">
               Open right.
@@ -157,7 +157,7 @@ export default function Home() {
 
           <div
             className="rd-hero-art"
-            aria-label="A business owner moving confidently through compliance work"
+            aria-label="A business owner moving confidently through opening work"
           >
             <span className="rd-blob rd-blob-peach" />
             <span className="rd-blob rd-blob-blue" />
@@ -255,7 +255,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="rd-research rd-section">
+        <section id="research" className="rd-research rd-section">
           <div className="rd-research-art">
             <span className="rd-blob rd-blob-yellow" />
             <Image
@@ -292,7 +292,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="rd-desk rd-section">
+        <section id="daily-desk" className="rd-desk rd-section">
           <div className="rd-centered-heading rd-centered-heading-narrow">
             <span className="rd-section-kicker">Your daily command center</span>
             <h2>See what needs you. Ignore what does not.</h2>
@@ -377,7 +377,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="rd-connected rd-section">
+        <section id="connected-inbox" className="rd-connected rd-section">
           <div className="rd-feature-copy">
             <span className="rd-section-kicker">One connected case</span>
             <h2>
@@ -420,7 +420,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="rd-lifecycle rd-section">
+        <section id="stay-ready" className="rd-lifecycle rd-section">
           <div className="rd-centered-heading">
             <span className="rd-section-kicker">Opening is only the beginning</span>
             <h2>Stay ready after the ribbon is cut.</h2>
@@ -468,7 +468,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="rd-demo-cta">
+        <section id="demo-cta" className="rd-demo-cta">
           <div className="rd-demo-art" aria-hidden="true">
             <span className="rd-demo-orb orb-one" />
             <span className="rd-demo-orb orb-two" />

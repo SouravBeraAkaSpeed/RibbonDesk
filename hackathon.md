@@ -215,3 +215,17 @@ preview with the same peach, indigo, coral-ribbon, and friendly 3D character
 language. The experience remains responsive and preserves the reduced-motion
 path. TypeScript, lint, unit tests, the local landing route, and the production
 build pass.
+
+I refined the hero trust language after reviewing the first impression. The
+opening line now says “Your opening, clearly organized” instead of leading with
+institutional compliance terminology; the detailed regulatory explanation
+remains further down the page where the product has established context.
+
+I recorded and documented the complete public evaluation journey at full HD:
+the long-form landing story, interactive demo, teammate update, task completion,
+agency inbox, human approval, requirements plan, official sources, search,
+notifications, and both passkey entry states. The recording uses 2560×1440
+source captures rendered to a sharp 1920×1080 H.264 video, with public-safe
+captions and a timestamped test report (`artifacts/flow-recording/`). The manual
+test also identified three honest demo gaps for the next slice: secondary
+workspace navigation, notification content, and stronger search results.

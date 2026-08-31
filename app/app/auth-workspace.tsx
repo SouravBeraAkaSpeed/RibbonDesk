@@ -153,7 +153,7 @@ function PasskeyEntry() {
               Private beta
             </Badge>
             <h1 className="mt-5 font-heading text-3xl font-semibold tracking-[-0.035em]">
-              Your compliance desk, secured by a passkey.
+              Your opening desk, secured by a passkey.
             </h1>
             <p className="mt-3 text-sm leading-6 text-white/65">
               No password to remember. Your device confirms it is you.
@@ -365,7 +365,7 @@ function OrganizationSetup({ displayName }: { displayName: string }) {
     <OnboardingFrame
       step="1 of 4"
       title="Name your workspace"
-      description="This is the shared desk for your businesses, locations, team, and compliance record."
+      description="This is the shared desk for your businesses, locations, team, and business-readiness record."
     >
       <form onSubmit={submit} className="grid gap-5">
         <div className="grid gap-2">
