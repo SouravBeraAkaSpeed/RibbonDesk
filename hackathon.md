@@ -436,3 +436,19 @@ the human review queue because the business's foreign-LLC status is unanswered.
 I also provisioned the location's real AgentMail case inbox and verified its
 active webhook-backed empty thread; I did not send an external message or write
 the private inbox address to this public log.
+
+I then exercised the post-onboarding owner loop entirely in production. I opened
+the captured official-source evidence inside RibbonDesk and deliberately did
+not confirm the foreign-LLC proposal because the workspace does not yet contain
+the company's formation jurisdiction. Instead, I created a dated blocking task
+to establish the New York operating entity, moved it into progress, and watched
+the Today queue update through Convex realtime subscriptions. I started the
+location's opening lifecycle, which activates its opening-stage monitoring
+cadence. A new durable Ribbon Assistant thread answered “What blocks opening?”
+from the current workspace: it identified the live task, linked an official New
+York entity lookup, and clearly separated unknown requirements from confirmed
+records. Global search returned the task by meaning and status, and the live
+AgentMail case inbox remained active with no fabricated inbound messages or
+outbound sends. This walkthrough used real production records and provider
+calls; the controlled business profile remains demonstration data authorized by
+the owner, not a claim that a government filing has occurred.
