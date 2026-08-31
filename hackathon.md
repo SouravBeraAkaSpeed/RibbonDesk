@@ -348,10 +348,14 @@ disabled. From the public production `/app` route, I verified that the Google
 button reaches Google's real account chooser using the exact
 `https://steady-sockeye-84.convex.site/api/auth/callback/google` callback and
 only the `openid`, `email`, and `profile` scopes, with no browser console errors.
-I paused before selecting the visible Google identity because that final action
-shares account data with RibbonDesk and may create a production account. Apple
-is intentionally deferred because the owner does not currently have the needed
-Apple Developer account or device.
+After receiving the owner's action-time approval, I selected the authorized
+Google identity, reviewed the first-time consent screen, and completed the live
+callback. RibbonDesk returned to the public production `/app` route as an
+authenticated user at the real four-step workspace onboarding flow. A full page
+reload preserved the authenticated session and returned to the same onboarding
+state. I stopped before creating an organization or synthetic business data.
+Apple is intentionally deferred because the owner does not currently have the
+needed Apple Developer account or device.
 
 I removed OpenRouter application attribution at the owner's request. The shared
 OpenRouter provider no longer supplies either `appName` or `appUrl`, which means

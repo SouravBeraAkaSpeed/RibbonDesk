@@ -152,8 +152,9 @@ the deadline rather than discovering extra fields during the final hour.
   sign-in/reset, authenticated passkey enrollment/sign-in, onboarding,
   jurisdiction confirmation, and controlled workspace cleanup. Google is
   configured in development and production; its live account chooser, exact
-  callback URI, and minimal identity scopes are verified. Apple is intentionally
-  deferred and remains disabled.
+  callback URI, minimal identity scopes, authenticated onboarding redirect, and
+  session persistence are verified end to end. Apple is intentionally deferred
+  and remains disabled.
 - **Core workspace:** Organization ownership, role enforcement, business and
   location setup, explicit jurisdiction confirmation, a real cited-requirement
   and task editor, the command center, source preview, live-only research, cited
