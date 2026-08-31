@@ -338,9 +338,20 @@ Convex schema deployment, and domain tests pass. The automated browser journey
 has proved verified registration, password sign-in, authenticated passkey
 enrollment, passkey sign-in, and actual security-message receipt in separate
 runs; the full single-run reset and cleanup gate is still pending after the
-current AgentMail rate limit clears. Google and Apple buttons and secure server
-configuration are implemented, but their production OAuth credentials must be
-created in the provider consoles before those two buttons can be enabled.
+current AgentMail rate limit clears. Google and Apple provider slots and secure
+server configuration are implemented.
+
+I configured the Google OAuth client credentials supplied by the owner in both
+Convex development and production without exposing either value to the client,
+repository, or logs. Both deployments now report Google enabled and Apple
+disabled. From the public production `/app` route, I verified that the Google
+button reaches Google's real account chooser using the exact
+`https://steady-sockeye-84.convex.site/api/auth/callback/google` callback and
+only the `openid`, `email`, and `profile` scopes, with no browser console errors.
+I paused before selecting the visible Google identity because that final action
+shares account data with RibbonDesk and may create a production account. Apple
+is intentionally deferred because the owner does not currently have the needed
+Apple Developer account or device.
 
 I removed OpenRouter application attribution at the owner's request. The shared
 OpenRouter provider no longer supplies either `appName` or `appUrl`, which means

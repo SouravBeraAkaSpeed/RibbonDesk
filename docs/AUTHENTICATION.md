@@ -5,6 +5,11 @@ password reset, and authenticated passkey enrollment are implemented. Google
 and Apple become active only when both credentials for that provider exist in
 the Convex deployment environment; secrets never reach the browser.
 
+Current production status: Google is enabled in both Convex development and
+production. The public sign-in button, Google account chooser, exact callback
+URI, and the minimal `openid`, `email`, and `profile` scopes have been verified.
+Apple is intentionally deferred and its sign-in button remains disabled.
+
 ## Public production endpoints
 
 - Application origin: `https://ribbondesk.souravberaakagralius.chatgpt.site`
@@ -32,6 +37,8 @@ required by the Convex + Better Auth cross-domain installation.
 
 If Google keeps the consent screen in testing mode, only listed test users can
 sign in. Publish the OAuth app before opening sign-in to hackathon visitors.
+Selecting an account and completing the production callback must be tested with
+an explicitly authorized test identity before release.
 
 ## Apple OAuth setup
 

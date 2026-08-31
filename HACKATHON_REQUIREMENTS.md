@@ -150,8 +150,10 @@ the deadline rather than discovering extra fields during the final hour.
   is persisted into a bounded Convex retry queue before delivery. The automated
   authentication journey is designed to cover registration, email verification, password
   sign-in/reset, authenticated passkey enrollment/sign-in, onboarding,
-  jurisdiction confirmation, and controlled workspace cleanup. Google and
-  Apple production credentials remain an external console requirement.
+  jurisdiction confirmation, and controlled workspace cleanup. Google is
+  configured in development and production; its live account chooser, exact
+  callback URI, and minimal identity scopes are verified. Apple is intentionally
+  deferred and remains disabled.
 - **Core workspace:** Organization ownership, role enforcement, business and
   location setup, explicit jurisdiction confirmation, a real cited-requirement
   and task editor, the command center, source preview, live-only research, cited
