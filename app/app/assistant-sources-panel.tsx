@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { useState, type SyntheticEvent } from 'react';
 import { useAction, useMutation, useQuery } from 'convex/react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
@@ -39,6 +41,65 @@ function dateTime(value?: number) {
         timeStyle: 'short',
       }).format(value)
     : 'Not checked yet';
+}
+
+function AssistantMarkdown({ children }: { children: string }) {
+  return (
+    <div className="space-y-3 text-sm leading-6 text-[var(--ink)]">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h1: ({ children: heading }) => (
+            <h3 className="pt-1 font-heading text-lg font-semibold">
+              {heading}
+            </h3>
+          ),
+          h2: ({ children: heading }) => (
+            <h3 className="pt-1 font-heading text-base font-semibold">
+              {heading}
+            </h3>
+          ),
+          h3: ({ children: heading }) => (
+            <h4 className="pt-1 text-sm font-semibold">{heading}</h4>
+          ),
+          p: ({ children: paragraph }) => <p>{paragraph}</p>,
+          ul: ({ children: items }) => (
+            <ul className="ml-5 list-disc space-y-1">{items}</ul>
+          ),
+          ol: ({ children: items }) => (
+            <ol className="ml-5 list-decimal space-y-1">{items}</ol>
+          ),
+          li: ({ children: item }) => <li className="pl-1">{item}</li>,
+          strong: ({ children: text }) => (
+            <strong className="font-semibold text-[var(--ink)]">{text}</strong>
+          ),
+          a: ({ href, children: label }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[var(--ribbon)] underline decoration-[var(--ribbon)]/35 underline-offset-2 hover:decoration-[var(--ribbon)]"
+            >
+              {label}
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          ),
+          blockquote: ({ children: quote }) => (
+            <blockquote className="border-l-2 border-[var(--ribbon)] pl-3 text-muted-foreground">
+              {quote}
+            </blockquote>
+          ),
+          code: ({ children: code }) => (
+            <code className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]">
+              {code}
+            </code>
+          ),
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
+  );
 }
 
 export function AssistantSourcesPanel({
@@ -203,12 +264,23 @@ export function AssistantSourcesPanel({
                         >
                           {assistant ? 'Ribbon Assistant' : 'You'}
                         </p>
-                        <p className="whitespace-pre-wrap">
-                          {message.text ||
-                            (message.status === 'pending'
+                        {message.text ? (
+                          assistant ? (
+                            <AssistantMarkdown>
+                              {message.text}
+                            </AssistantMarkdown>
+                          ) : (
+                            <p className="whitespace-pre-wrap">
+                              {message.text}
+                            </p>
+                          )
+                        ) : (
+                          <p>
+                            {message.status === 'pending'
                               ? 'Thinking from the workspace record…'
-                              : 'Message unavailable.')}
-                        </p>
+                              : 'Message unavailable.'}
+                          </p>
+                        )}
                       </article>
                     );
                   })

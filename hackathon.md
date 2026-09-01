@@ -452,3 +452,14 @@ AgentMail case inbox remained active with no fabricated inbound messages or
 outbound sends. This walkthrough used real production records and provider
 calls; the controlled business profile remains demonstration data authorized by
 the owner, not a claim that a government filing has occurred.
+
+I reorganized the authenticated product from one long scrolling command center
+into eight focused URL-backed workspaces: Today, Plan & research, Inbox,
+Documents, Operations, Assistant, Team, and Settings. Desktop and mobile
+navigation now perform real route changes, preserve browser history and reloads,
+highlight the active page, and render only the selected operational surface.
+Today retains readiness metrics and the live action queue; each specialist page
+gets its own title, context, and working area. I also replaced plain-text AI
+message output with safe GitHub-flavored Markdown rendering. Ribbon Assistant
+answers now show semantic headings, lists, emphasis, blockquotes, code, and
+clearly styled external links while raw HTML remains escaped.

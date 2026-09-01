@@ -11,6 +11,7 @@ import {
   readinessSummary,
   reminderCadences,
 } from '../convex/lib/domain.ts';
+import { deskSectionFromPath, deskSectionHref } from '../lib/desk-sections.ts';
 
 void test('role rank preserves approval boundaries', () => {
   assert.equal(hasMinimumRole('owner', 'admin'), true);
@@ -94,4 +95,12 @@ void test('NYC verified coverage requires a food-service business signal', () =>
     }),
     true,
   );
+});
+
+void test('dashboard sections resolve to stable URL-backed workspaces', () => {
+  assert.equal(deskSectionFromPath('/app'), 'today');
+  assert.equal(deskSectionFromPath('/app/inbox'), 'inbox');
+  assert.equal(deskSectionFromPath('/app/not-a-section'), 'today');
+  assert.equal(deskSectionHref('today'), '/app');
+  assert.equal(deskSectionHref('assistant'), '/app/assistant');
 });

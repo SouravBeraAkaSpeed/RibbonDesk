@@ -59,18 +59,23 @@ submit them or make legal decisions for the owner.
 
 ## Product capabilities
 
-| Area | What users can do |
-| --- | --- |
-| Today | See overdue, blocking, waiting-on-agency, upcoming, and informational work in priority order |
-| Research | Run durable official-source capture, watch progress live, inspect safe source snapshots, and recover partial/failed runs |
-| Requirements | Review cited AI proposals, resolve conflicts, manage dependencies, assign owners, and confirm statuses |
-| Tasks and evidence | Create work, attach private files, link evidence, set expirations, and track completion in realtime |
-| Applications | Collect reusable answers, track attachments and readiness, use official portal links, and record external outcomes |
-| Case inbox | Provision an inbox, receive signed webhooks, link threads to work, approve proposed updates, and approve outbound delivery |
-| Inspections and renewals | Record outcomes, corrective actions, recurrence, reminders, and future deadlines |
-| Ribbon Assistant | Ask grounded questions about the current workspace and receive cited, proposal-only help |
-| Team | Invite members and enforce owner, admin, contributor, and viewer boundaries server-side |
-| Data controls | Search, receive notifications, export the organization, and permanently delete it |
+The authenticated desk is divided into URL-backed workspaces for Today, Plan &
+research, Inbox, Documents, Operations, Assistant, Team, and Settings. Sidebar,
+mobile navigation, browser history, reloads, and shared links all preserve the
+active workspace instead of scrolling through one oversized dashboard.
+
+| Area                     | What users can do                                                                                                          |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| Today                    | See overdue, blocking, waiting-on-agency, upcoming, and informational work in priority order                               |
+| Research                 | Run durable official-source capture, watch progress live, inspect safe source snapshots, and recover partial/failed runs   |
+| Requirements             | Review cited AI proposals, resolve conflicts, manage dependencies, assign owners, and confirm statuses                     |
+| Tasks and evidence       | Create work, attach private files, link evidence, set expirations, and track completion in realtime                        |
+| Applications             | Collect reusable answers, track attachments and readiness, use official portal links, and record external outcomes         |
+| Case inbox               | Provision an inbox, receive signed webhooks, link threads to work, approve proposed updates, and approve outbound delivery |
+| Inspections and renewals | Record outcomes, corrective actions, recurrence, reminders, and future deadlines                                           |
+| Ribbon Assistant         | Ask grounded questions about the current workspace and receive cited, proposal-only help                                   |
+| Team                     | Invite members and enforce owner, admin, contributor, and viewer boundaries server-side                                    |
+| Data controls            | Search, receive notifications, export the organization, and permanently delete it                                          |
 
 ## Trust model
 

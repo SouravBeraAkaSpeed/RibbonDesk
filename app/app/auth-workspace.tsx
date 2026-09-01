@@ -1,17 +1,19 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   Activity,
   AlertTriangle,
   ArrowLeft,
-  Building2,
+  Bot,
   CalendarClock,
   CheckCircle2,
   ChevronRight,
   CircleGauge,
   Eye,
   EyeOff,
+  FileText,
   Fingerprint,
   Inbox,
   LayoutDashboard,
@@ -21,9 +23,11 @@ import {
   Mail,
   MapPin,
   RefreshCw,
+  Settings2,
   ShieldCheck,
   Sparkles,
   Users,
+  type LucideIcon,
 } from 'lucide-react';
 import {
   type SyntheticEvent,
@@ -48,6 +52,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authClient } from '@/lib/auth-client';
+import {
+  deskSectionFromPath,
+  deskSectionHref,
+  type DeskSection,
+} from '@/lib/desk-sections';
 
 import { ResearchPanel } from './research-panel';
 import { EvidenceApplicationsPanel } from './evidence-applications-panel';
@@ -1412,6 +1421,8 @@ function CommandCenter({
   displayName: string;
   locationId: Id<'locations'>;
 }) {
+  const pathname = usePathname();
+  const activeSection = deskSectionFromPath(pathname);
   const dashboard = useQuery(api.dashboard.getCommandCenter, { locationId });
   const [passkeyPending, setPasskeyPending] = useState(false);
   const [passkeyStatus, setPasskeyStatus] = useState<string | null>(null);
@@ -1437,6 +1448,108 @@ function CommandCenter({
 
   if (dashboard === undefined)
     return <FullPageStatus label="Assembling today’s command center…" />;
+  const role = dashboard.role;
+
+  const navigation: Array<{
+    section: DeskSection;
+    label: string;
+    icon: LucideIcon;
+    badge?: number;
+  }> = [
+    { section: 'today', label: 'Today', icon: LayoutDashboard },
+    {
+      section: 'plan',
+      label: 'Plan & research',
+      icon: CircleGauge,
+      badge: dashboard.counts.pendingProposals,
+    },
+    { section: 'inbox', label: 'Inbox', icon: Inbox },
+    { section: 'documents', label: 'Documents', icon: FileText },
+    { section: 'operations', label: 'Operations', icon: CalendarClock },
+    { section: 'assistant', label: 'Assistant', icon: Bot },
+    { section: 'team', label: 'Team', icon: Users },
+    { section: 'settings', label: 'Settings', icon: Settings2 },
+  ];
+  const pageCopy: Record<
+    DeskSection,
+    { eyebrow: string; title: string; description: string }
+  > = {
+    today: {
+      eyebrow: 'Live workspace',
+      title: `Good ${new Date().getHours() < 12 ? 'morning' : 'afternoon'}, ${displayName.split(' ')[0]}.`,
+      description: `Here is what needs attention at ${dashboard.location.name}.`,
+    },
+    plan: {
+      eyebrow: 'Plan & research',
+      title: 'Turn official guidance into a clear opening plan.',
+      description:
+        'Run cited research, inspect captured evidence, and decide every proposal before it enters the operating record.',
+    },
+    inbox: {
+      eyebrow: 'Agency inbox',
+      title: 'Keep every agency conversation attached to the case.',
+      description:
+        'Receive real messages, review AI-proposed updates, and approve outbound communication deliberately.',
+    },
+    documents: {
+      eyebrow: 'Evidence & applications',
+      title: 'Build the file once. Keep the proof attached.',
+      description:
+        'Store evidence, connect it to requirements, and prepare versioned application packets without losing context.',
+    },
+    operations: {
+      eyebrow: 'Opening operations',
+      title: 'Run inspections, deadlines, and renewals from one timeline.',
+      description:
+        'Move from opening into operation while preserving every decision, outcome, reminder, and recurring obligation.',
+    },
+    assistant: {
+      eyebrow: 'Grounded assistant',
+      title: 'Ask the desk, not the open web.',
+      description:
+        'Get answers grounded in this location’s reviewed sources and live operating record, with uncertainty kept visible.',
+    },
+    team: {
+      eyebrow: 'Team access',
+      title: 'Give the right people deliberate authority.',
+      description:
+        'Invite collaborators, choose roles, and keep consequential approvals with owners and admins.',
+    },
+    settings: {
+      eyebrow: 'Workspace settings',
+      title: 'Control account security and workspace data.',
+      description:
+        'Manage passkeys, export the operating record, and access owner-only data controls.',
+    },
+  };
+  const activeCopy = pageCopy[activeSection];
+
+  function renderActiveWorkspace() {
+    switch (activeSection) {
+      case 'plan':
+        return <ResearchPanel locationId={locationId} role={role} />;
+      case 'inbox':
+        return <CaseInboxPanel locationId={locationId} />;
+      case 'documents':
+        return <EvidenceApplicationsPanel locationId={locationId} />;
+      case 'operations':
+        return <OperationsLifecyclePanel locationId={locationId} />;
+      case 'assistant':
+        return <AssistantSourcesPanel locationId={locationId} role={role} />;
+      case 'team':
+        return <TeamPanel organizationId={organizationId} role={role} />;
+      case 'settings':
+        return (
+          <DataControlsPanel
+            organizationId={organizationId}
+            organizationName={organizationName}
+            role={role}
+          />
+        );
+      default:
+        return <WorkPlanPanel locationId={locationId} role={role} />;
+    }
+  }
 
   return (
     <main className="depth-app-shell min-h-screen text-[var(--ink)]">
@@ -1488,65 +1601,19 @@ function CommandCenter({
           </div>
         </div>
       </header>
-      <div className="mx-auto grid max-w-[1440px] md:grid-cols-[220px_1fr]">
-        <aside className="depth-rail hidden min-h-[calc(100vh-4rem)] border-r bg-background p-4 md:block">
+      <div className="mx-auto grid max-w-[1440px] md:grid-cols-[232px_1fr]">
+        <aside className="depth-rail sticky top-16 hidden h-[calc(100vh-4rem)] border-r bg-background p-4 md:block">
           <nav className="grid gap-1 text-sm">
-            <DeskNav
-              icon={LayoutDashboard}
-              label="Today"
-              active
-              onClick={() =>
-                document
-                  .querySelector('#today')
-                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
-            />
-            <DeskNav
-              icon={CircleGauge}
-              label="Plan"
-              onClick={() =>
-                document
-                  .querySelector('#research')
-                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
-            />
-            <DeskNav
-              icon={Inbox}
-              label="Inbox"
-              badge={dashboard.counts.pendingProposals}
-              onClick={() =>
-                document
-                  .querySelector('#case-inbox')
-                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
-            />
-            <DeskNav
-              icon={CalendarClock}
-              label="Calendar"
-              onClick={() =>
-                document
-                  .querySelector('#operations')
-                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
-            />
-            <DeskNav
-              icon={Building2}
-              label="Business"
-              onClick={() =>
-                document
-                  .querySelector('#business-summary')
-                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
-            />
-            <DeskNav
-              icon={Users}
-              label="Team"
-              onClick={() =>
-                document
-                  .querySelector('#team')
-                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
-            />
+            {navigation.map((item) => (
+              <DeskNav
+                key={item.section}
+                icon={item.icon}
+                label={item.label}
+                href={deskSectionHref(item.section)}
+                active={activeSection === item.section}
+                badge={item.badge}
+              />
+            ))}
           </nav>
           <div
             id="business-summary"
@@ -1562,78 +1629,108 @@ function CommandCenter({
           </div>
         </aside>
         <section className="min-w-0 px-4 py-6 sm:px-6 lg:px-10 lg:py-9">
+          <nav
+            aria-label="Workspace pages"
+            className="-mx-1 mb-6 flex gap-2 overflow-x-auto px-1 pb-2 md:hidden"
+          >
+            {navigation.map((item) => (
+              <Link
+                key={item.section}
+                href={deskSectionHref(item.section)}
+                aria-current={
+                  activeSection === item.section ? 'page' : undefined
+                }
+                className={`shrink-0 rounded-full border px-3 py-2 text-xs font-semibold ${
+                  activeSection === item.section
+                    ? 'border-[var(--ribbon)] bg-[var(--ribbon-soft)] text-[var(--ribbon)]'
+                    : 'bg-background text-muted-foreground'
+                }`}
+              >
+                {item.label}
+                {item.badge ? ` · ${item.badge}` : ''}
+              </Link>
+            ))}
+          </nav>
           <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
             <div>
               <Badge className="bg-[var(--sage-soft)] text-[var(--sage)]">
                 <Activity />
-                Live workspace
+                {activeCopy.eyebrow}
               </Badge>
               <h1 className="mt-4 font-heading text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">
-                Good {new Date().getHours() < 12 ? 'morning' : 'afternoon'},{' '}
-                {displayName.split(' ')[0]}.
+                {activeCopy.title}
               </h1>
               <p className="mt-2 text-muted-foreground">
-                Here is what needs attention at {dashboard.location.name}.
+                {activeCopy.description}
               </p>
             </div>
-            <Button
-              className="bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
-              onClick={() =>
-                document
-                  .querySelector('#ribbon-assistant')
-                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
-            >
-              <Sparkles /> Ask Ribbon Assistant
-            </Button>
+            {activeSection === 'today' ? (
+              <Button
+                nativeButton={false}
+                className="bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
+                render={<Link href="/app/assistant" />}
+              >
+                <Sparkles /> Ask Ribbon Assistant
+              </Button>
+            ) : null}
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Metric
-              icon={CircleGauge}
-              label="Readiness"
-              value={`${dashboard.readiness}%`}
-              tone="sage"
-            />
-            <Metric
-              icon={AlertTriangle}
-              label="Blockers"
-              value={String(dashboard.blockers)}
-              tone="amber"
-            />
-            <Metric
-              icon={CheckCircle2}
-              label="Open tasks"
-              value={String(dashboard.counts.openTasks)}
-            />
-            <Metric
-              icon={Inbox}
-              label="Review proposals"
-              value={String(dashboard.counts.pendingProposals)}
-              tone="ribbon"
-            />
+          {activeSection === 'today' ? (
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <Metric
+                icon={CircleGauge}
+                label="Readiness"
+                value={`${dashboard.readiness}%`}
+                tone="sage"
+              />
+              <Metric
+                icon={AlertTriangle}
+                label="Blockers"
+                value={String(dashboard.blockers)}
+                tone="amber"
+              />
+              <Metric
+                icon={CheckCircle2}
+                label="Open tasks"
+                value={String(dashboard.counts.openTasks)}
+              />
+              <Metric
+                icon={Inbox}
+                label="Review proposals"
+                value={String(dashboard.counts.pendingProposals)}
+                tone="ribbon"
+              />
+            </div>
+          ) : null}
+          <div key={activeSection} className="min-h-[calc(100vh-15rem)]">
+            {renderActiveWorkspace()}
           </div>
-          <WorkPlanPanel locationId={locationId} role={dashboard.role} />
-          <ResearchPanel locationId={locationId} role={dashboard.role} />
-          <CaseInboxPanel locationId={locationId} />
-          <EvidenceApplicationsPanel locationId={locationId} />
-          <OperationsLifecyclePanel locationId={locationId} />
-          <AssistantSourcesPanel
-            locationId={locationId}
-            role={dashboard.role}
-          />
-          <TeamPanel organizationId={organizationId} role={dashboard.role} />
-          <DataControlsPanel
-            organizationId={organizationId}
-            organizationName={organizationName}
-            role={dashboard.role}
-          />
         </section>
       </div>
       <nav className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t bg-background px-2 py-2 md:hidden">
-        <MobileNav icon={LayoutDashboard} label="Today" active target="today" />
-        <MobileNav icon={CircleGauge} label="Plan" target="research" />
-        <MobileNav icon={Inbox} label="Inbox" target="case-inbox" />
-        <MobileNav icon={Building2} label="More" target="operations" />
+        <MobileNav
+          icon={LayoutDashboard}
+          label="Today"
+          href="/app"
+          active={activeSection === 'today'}
+        />
+        <MobileNav
+          icon={CircleGauge}
+          label="Plan"
+          href="/app/plan"
+          active={activeSection === 'plan'}
+        />
+        <MobileNav
+          icon={Inbox}
+          label="Inbox"
+          href="/app/inbox"
+          active={activeSection === 'inbox'}
+        />
+        <MobileNav
+          icon={CalendarClock}
+          label="More"
+          href="/app/operations"
+          active={!['today', 'plan', 'inbox'].includes(activeSection)}
+        />
       </nav>
     </main>
   );
@@ -1763,17 +1860,18 @@ function DeskNav({
   label,
   active,
   badge,
-  onClick,
+  href,
 }: {
-  icon: typeof LayoutDashboard;
+  icon: LucideIcon;
   label: string;
   active?: boolean;
   badge?: number;
-  onClick?: () => void;
+  href: string;
 }) {
   return (
-    <button
-      onClick={onClick}
+    <Link
+      href={href}
+      aria-current={active ? 'page' : undefined}
       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-left ${active ? 'bg-[var(--ribbon-soft)] font-semibold text-[var(--ribbon)]' : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'}`}
     >
       <Icon className="size-4" />
@@ -1783,32 +1881,29 @@ function DeskNav({
           {badge}
         </span>
       ) : null}
-    </button>
+    </Link>
   );
 }
 function MobileNav({
   icon: Icon,
   label,
   active,
-  target,
+  href,
 }: {
-  icon: typeof LayoutDashboard;
+  icon: LucideIcon;
   label: string;
   active?: boolean;
-  target: string;
+  href: string;
 }) {
   return (
-    <button
-      onClick={() =>
-        document
-          .querySelector(`#${target}`)
-          ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
+    <Link
+      href={href}
+      aria-current={active ? 'page' : undefined}
       className={`grid place-items-center gap-1 text-[10px] ${active ? 'font-semibold text-[var(--ribbon)]' : 'text-muted-foreground'}`}
     >
       <Icon className="size-5" />
       {label}
-    </button>
+    </Link>
   );
 }
 function Metric({
@@ -1817,7 +1912,7 @@ function Metric({
   value,
   tone,
 }: {
-  icon: typeof LayoutDashboard;
+  icon: LucideIcon;
   label: string;
   value: string;
   tone?: 'sage' | 'amber' | 'ribbon';
