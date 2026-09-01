@@ -118,29 +118,6 @@ function FullPageStatus({ label }: { label: string }) {
 
 type AuthMode = 'signin' | 'register' | 'forgot' | 'reset' | 'verify';
 
-function GoogleMark() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="size-4">
-      <path
-        fill="#4285F4"
-        d="M21.6 12.2c0-.7-.1-1.5-.2-2.2H12v4.3h5.4a4.6 4.6 0 0 1-2 3v2.8h3.3c1.9-1.8 2.9-4.4 2.9-7.9Z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 22c2.7 0 5-.9 6.7-2.4l-3.3-2.7c-.9.6-2.1 1-3.4 1a5.9 5.9 0 0 1-5.5-4.1H3.1v2.8A10 10 0 0 0 12 22Z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M6.5 13.8A6 6 0 0 1 6.2 12c0-.6.1-1.2.3-1.8V7.4H3.1A10 10 0 0 0 2 12c0 1.7.4 3.2 1.1 4.6l3.4-2.8Z"
-      />
-      <path
-        fill="#EA4335"
-        d="M12 6.1c1.5 0 2.8.5 3.8 1.5l2.9-2.8A9.7 9.7 0 0 0 12 2a10 10 0 0 0-8.9 5.4l3.4 2.8A5.9 5.9 0 0 1 12 6.1Z"
-      />
-    </svg>
-  );
-}
-
 function AccountEntry() {
   const capabilities = useQuery(api.auth.getAuthCapabilities);
   const urlParameters = new URLSearchParams(window.location.search);
@@ -320,24 +297,6 @@ function AccountEntry() {
     }
   }
 
-  async function handleGoogle() {
-    setPending(true);
-    setError(null);
-    try {
-      const result = await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: `${window.location.origin}/app`,
-        newUserCallbackURL: `${window.location.origin}/app`,
-        errorCallbackURL: `${window.location.origin}/app?authError=google`,
-      });
-      if (result.error)
-        throw new Error(result.error.message || 'Google sign-in failed.');
-    } catch (caught) {
-      setError(errorMessage(caught));
-      setPending(false);
-    }
-  }
-
   async function resendVerification() {
     setPending(true);
     setError(null);
@@ -391,7 +350,8 @@ function AccountEntry() {
               Your business desk. Your secure sign-in.
             </h1>
             <p className="mt-3 text-sm leading-6 text-white/65">
-              Use email, Google, or a passkey you have already added.
+              Use your verified email and password, or a passkey you have
+              already added.
             </p>
           </div>
           <form className="p-6" onSubmit={handleEmail}>
@@ -419,31 +379,6 @@ function AccountEntry() {
                     ? 'Your email must be confirmed before the first sign-in.'
                     : 'Sign in to continue the work already saved in your desk.'}
             </p>
-
-            {mode === 'signin' || mode === 'register' ? (
-              <>
-                <div className="mt-5 grid gap-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="h-11"
-                    onClick={handleGoogle}
-                    disabled={pending || !capabilities?.google}
-                    title={
-                      capabilities?.google
-                        ? 'Continue with Google'
-                        : 'Google OAuth setup is pending'
-                    }
-                  >
-                    <GoogleMark /> Google
-                  </Button>
-                </div>
-                <div className="my-5 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  <span className="h-px flex-1 bg-border" /> or use email{' '}
-                  <span className="h-px flex-1 bg-border" />
-                </div>
-              </>
-            ) : null}
 
             {mode !== 'verify' ? (
               <div className="grid gap-4">

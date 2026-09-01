@@ -1,14 +1,14 @@
 # Authentication operations
 
-RibbonDesk uses Better Auth on Convex. Email/password, email verification,
-password reset, authenticated passkey enrollment, and Google sign-in are
-implemented. Provider secrets never reach the browser.
+RibbonDesk uses Better Auth on Convex. The public release supports
+email/password, email verification, password reset, authenticated passkey
+enrollment, and existing-passkey sign-in. Provider secrets never reach the
+browser.
 
-Current production status: Google is enabled in both Convex development and
-production. The public sign-in button, Google account chooser, exact callback
-URI, minimal `openid`, `email`, and `profile` scopes, authenticated onboarding
-redirect, and session persistence after reload have been verified end to end.
-Apple is intentionally deferred and is not shown on the authentication pages.
+Current production policy: no social-login control is rendered. Google remains
+configured only for maintainer-controlled regression testing and Apple is
+deferred. A release fails its authentication gate if either provider appears on
+the public sign-in or registration screen.
 
 ## Public production endpoints
 
@@ -19,7 +19,7 @@ Apple is intentionally deferred and is not shown on the authentication pages.
 The callback host is the Convex HTTP deployment, not the ChatGPT Site. This is
 required by the Convex + Better Auth cross-domain installation.
 
-## Google OAuth setup
+## Private Google OAuth regression setup
 
 1. Open [Google Cloud credentials](https://console.cloud.google.com/apis/credentials)
    and select or create the RibbonDesk project.
@@ -34,17 +34,16 @@ required by the Convex + Better Auth cross-domain installation.
    `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. A maintainer must then set both
    values separately on development and production Convex deployments.
 
-If Google keeps the consent screen in testing mode, only listed test users can
-sign in. Publish the OAuth app before opening sign-in to hackathon visitors.
+Keep the consent screen in testing mode and limit it to maintainer accounts.
+Do not publish the OAuth app for the hackathon release; Google is not a public
+RibbonDesk authentication method.
 The production callback uses a one-time cross-domain token. RibbonDesk disables
 the client session cache during this handoff and completes the token exchange
 before rendering authenticated or unauthenticated content, preventing a slower
 pre-callback request from restoring a stale signed-out state.
 
-The corrected handoff is deployed on the public Site. A signed-out production
-test completed Google sign-in, returned to authenticated workspace onboarding,
-and remained authenticated after a full reload. Apple is absent from the live
-authentication screen.
+The cross-domain handoff remains covered as an operator-only regression path,
+but the public Site intentionally provides no way to initiate it.
 
 ## Deferred Apple OAuth
 
@@ -83,10 +82,34 @@ API key. The `.env.example` file contains names only.
 
 ## Passkeys
 
-Passkeys are optional. A user first proves account ownership with verified
-email, Google, or Apple, then chooses **Add passkey** inside the authenticated
+Passkeys are optional. A user first proves account ownership with a verified
+email and password, then chooses **Add passkey** inside the authenticated
 workspace. Unauthenticated passkey enrollment is deliberately disabled.
 Existing passkeys remain available on the sign-in screen.
+
+## Judge account
+
+Judges receive one dedicated owner-level email/password account in the private
+submission notes. The account uses an isolated workspace and a controlled
+AgentMail inbox so email verification is real. Its email address and password
+must never be placed in the README, public Site, issue tracker, commit history,
+CI variables, screenshots, or `hackathon.md`.
+
+Provision or replace the account from a trusted maintainer machine:
+
+```powershell
+$env:JUDGE_ACCOUNT_PASSWORD='<private value of at least 14 characters>'
+$env:JUDGE_BASE_URL='https://ribbondesk.souravberaakagralius.chatgpt.site'
+npm run provision:judge
+Remove-Item Env:JUDGE_ACCOUNT_PASSWORD
+```
+
+The script creates and verifies a real account, grants ownership by creating a
+new organization, and prepares a NYC café workspace without running paid
+research or sending external mail. It prints the controlled inbox address but
+never prints the password. Supply both values only in the hackathon platform's
+private judge instructions. Rotate the password or delete the workspace after
+judging.
 
 ## Release checks
 
@@ -96,6 +119,6 @@ npm run test:auth
 
 The controlled test uses a temporary AgentMail recipient and virtual WebAuthn
 authenticator, verifies real message receipt, exercises password and passkey
-sign-in, resets the password, deletes the test workspace, and removes the
-temporary inbox. Provider `429` responses are treated as a failed acceptance
-gate, not as success.
+sign-in, asserts that Google and Apple are absent, resets the password, deletes
+the test workspace, and removes the temporary inbox. Provider `429` responses
+are treated as a failed acceptance gate, not as success.

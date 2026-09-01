@@ -47,8 +47,8 @@ committed file, shell transcript, issue, or build log.
 - `AGENTMAIL_API_KEY`
 - `AGENTMAIL_WEBHOOK_SECRET`
 - `AUTH_EMAIL_INBOX_ID`
-- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
-- `APPLE_CLIENT_ID` and `APPLE_CLIENT_SECRET`
+- `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` only when maintainers are
+  running private OAuth tests; no social provider is rendered publicly
 - `RIBBONDESK_PROVIDER_MODE=live`
 - `SITE_URL`
 
@@ -78,7 +78,8 @@ Verify in a signed-out browser:
 
 - Landing, privacy, terms, and disclaimer routes
 - Responsive layout and social metadata
-- Verified email registration, password sign-in/reset, authenticated passkey enrollment/sign-in, and OAuth provider redirects
+- Verified email registration, password sign-in/reset, authenticated passkey
+  enrollment/sign-in, and absence of Google/Apple controls
 - Business/location onboarding and explicit jurisdiction confirmation
 - One real official-source research run and cited proposal
 - Human acceptance reflected in a second browser session

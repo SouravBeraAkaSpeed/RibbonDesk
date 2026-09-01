@@ -472,3 +472,19 @@ rendered with semantic headings, a list, emphasis, and a clickable New York
 Department of State source; the raw Markdown markers were absent. The production
 console reported no errors. Strict TypeScript, lint, seven domain tests, the
 production Sites build, and the dependency audit also pass.
+
+I changed the release authentication policy after deciding that a public Google
+button would create unnecessary consent-screen and domain-verification friction
+for judges. The public account surface now offers only verified email/password
+and existing passkeys; neither Google nor Apple is rendered on sign-in or
+registration. The controlled authentication test now fails if either social
+provider reappears. I kept the already-proven Google callback configuration only
+as a maintainer regression path, not a public product promise.
+
+I also added a repeatable judge-account provisioner. It creates a real verified
+owner account through the production email-confirmation path, prepares an
+isolated NYC café workspace, and deliberately does not spend research credits or
+send external mail. The provisioner never prints the password. The account
+address and password belong only in the submission platform's private judge
+instructions; I will not put them in this public log, source, screenshots, or
+repository history.

@@ -7,8 +7,8 @@ without allowing automation to quietly become a regulatory decision-maker.
 
 | Layer | Responsibility |
 | --- | --- |
-| ChatGPT Site | Responsive interface, email/OAuth/passkey ceremonies, safe source viewing, optimistic interaction, and realtime subscriptions |
-| Better Auth component | Verified email/password, Google/Apple OAuth, authenticated passkey enrollment, sessions, and identity |
+| ChatGPT Site | Responsive interface, verified-email/passkey ceremonies, safe source viewing, optimistic interaction, and realtime subscriptions |
+| Better Auth component | Verified email/password, authenticated passkey enrollment, sessions, and identity |
 | Convex application | Authorization, durable data, indexed queries, workflow state, files, schedules, callbacks, quotas, and audit events |
 | Firecrawl component | Durable official-source capture and progress |
 | OpenRouter | Structured OpenAI-model extraction, classification, summaries, conflicts, drafts, and grounded answers |

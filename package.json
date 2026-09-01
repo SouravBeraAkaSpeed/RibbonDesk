@@ -35,6 +35,7 @@
     "start": "wrangler dev --config dist/server/wrangler.json",
     "test:auth": "node scripts/smoke-passkey.mjs",
     "test:passkey": "npm run test:auth",
+    "provision:judge": "node scripts/provision-judge-account.mjs",
     "test:live-research": "node scripts/smoke-live-research.mjs",
     "test:live-agentmail": "node scripts/smoke-live-agentmail.mjs",
     "test:unit": "node --experimental-strip-types --test tests/domain.test.ts",
