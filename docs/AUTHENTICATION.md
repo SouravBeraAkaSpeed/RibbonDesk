@@ -104,6 +104,12 @@ npm run provision:judge
 Remove-Item Env:JUDGE_ACCOUNT_PASSWORD
 ```
 
+When the AgentMail plan has no free inbox slot, set
+`JUDGE_ACCOUNT_EMAIL` to a maintainer-controlled inbox before running the
+provisioner. If a run was interrupted after account creation, also set
+`JUDGE_ACCOUNT_EXISTING=1`; the script signs in and resumes the saved onboarding
+step instead of creating duplicate data.
+
 The script creates and verifies a real account, grants ownership by creating a
 new organization, and prepares a NYC café workspace without running paid
 research or sending external mail. It prints the controlled inbox address but

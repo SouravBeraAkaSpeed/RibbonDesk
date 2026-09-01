@@ -488,3 +488,21 @@ send external mail. The provisioner never prints the password. The account
 address and password belong only in the submission platform's private judge
 instructions; I will not put them in this public log, source, screenshots, or
 repository history.
+
+I published the social-login-free account surface as ChatGPT Sites version 11
+from commit `c0f7bd1`. The release archive came from the verified production
+build, and the Site deployment succeeded at the existing public URL. I then
+used the real production registration and AgentMail confirmation path to create
+the private judge owner account. I resumed its saved onboarding after correcting
+two stale button labels in the provisioner, and completed an isolated
+“RibbonDesk Judge Workspace” with a NYC café profile. No password or controlled
+inbox address is recorded here.
+
+AgentMail reported that the current plan's three inbox slots are occupied. I
+reused the maintainer-controlled security inbox only as the judge account's
+verified identity; I did not delete or remap any existing location inbox. As a
+result, judges can exercise the complete authenticated workspace, research,
+review, task, document, application, operations, Assistant, team, export, and
+deletion flows, but provisioning another live case inbox will remain visibly
+blocked by the provider quota until the owner frees a slot or upgrades the
+AgentMail plan.

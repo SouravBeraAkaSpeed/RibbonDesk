@@ -64,7 +64,9 @@ async function waitForVerificationLink(inboxId, timeoutMs = 10 * 60_000) {
       `/inboxes/${encodeURIComponent(inboxId)}/messages?limit=20`,
     );
     const message = listing.messages?.find(
-      (candidate) => candidate.subject === 'Verify your RibbonDesk email',
+      (candidate) =>
+        candidate.subject === 'Verify your RibbonDesk email' &&
+        candidate.to?.includes(inboxId),
     );
     if (message?.thread_id) {
       const thread = await agentMail(
@@ -128,54 +130,72 @@ try {
     throw new Error('Refusing to provision while Google is publicly visible.');
   }
 
-  await page
-    .getByRole('button', { name: 'New to RibbonDesk? Create an account' })
-    .click();
-  await page.getByLabel('Your name').fill('RibbonDesk Hackathon Judge');
-  await page.getByLabel('Work email').fill(email);
-  await page.getByLabel('Password', { exact: true }).fill(judgePassword);
-  await page.getByLabel('Confirm password').fill(judgePassword);
-  await page
-    .getByRole('button', { name: 'Create account & verify email' })
-    .click();
-  await page
-    .getByRole('heading', { name: 'Confirm your email' })
-    .waitFor({ timeout: 30_000 });
+  if (process.env.JUDGE_ACCOUNT_EXISTING === '1') {
+    await page.getByLabel('Work email').fill(email);
+    await page.getByLabel('Password', { exact: true }).fill(judgePassword);
+    await page.getByRole('button', { name: 'Sign in with email' }).click();
+    await page
+      .getByRole('button', { name: 'Sign out' })
+      .waitFor({ timeout: 30_000 });
+  } else {
+    await page
+      .getByRole('button', { name: 'New to RibbonDesk? Create an account' })
+      .click();
+    await page.getByLabel('Your name').fill('RibbonDesk Hackathon Judge');
+    await page.getByLabel('Work email').fill(email);
+    await page.getByLabel('Password', { exact: true }).fill(judgePassword);
+    await page.getByLabel('Confirm password').fill(judgePassword);
+    await page
+      .getByRole('button', { name: 'Create account & verify email' })
+      .click();
+    await page
+      .getByRole('heading', { name: 'Confirm your email' })
+      .waitFor({ timeout: 30_000 });
 
-  const verificationUrl = await waitForVerificationLink(email);
-  await page.goto(verificationUrl, { waitUntil: 'networkidle' });
-  await page.waitForURL((url) => url.origin === new URL(baseURL).origin, {
-    timeout: 30_000,
-  });
+    const verificationUrl = await waitForVerificationLink(email);
+    await page.goto(verificationUrl, { waitUntil: 'networkidle' });
+    await page.waitForURL((url) => url.origin === new URL(baseURL).origin, {
+      timeout: 30_000,
+    });
+  }
+
+  if (
+    process.env.JUDGE_ACCOUNT_EXISTING !== '1' &&
+    (await page.getByRole('heading', { name: 'Welcome back' }).isVisible())
+  ) {
+    await page.getByLabel('Work email').fill(email);
+    await page.getByLabel('Password', { exact: true }).fill(judgePassword);
+    await page.getByRole('button', { name: 'Sign in with email' }).click();
+    await page
+      .getByRole('button', { name: 'Sign out' })
+      .waitFor({ timeout: 30_000 });
+  }
 
   const workspaceHeading = page.getByRole('heading', {
     name: 'Name your workspace',
   });
-  try {
-    await workspaceHeading.waitFor({ timeout: 8_000 });
-  } catch {
+  if (await workspaceHeading.isVisible()) {
     await page
-      .getByRole('heading', { name: 'Welcome back' })
-      .waitFor({ timeout: 30_000 });
-    await page.getByLabel('Work email').fill(email);
-    await page.getByLabel('Password', { exact: true }).fill(judgePassword);
-    await page.getByRole('button', { name: 'Sign in with email' }).click();
-    await workspaceHeading.waitFor({ timeout: 30_000 });
+      .getByLabel('Organization name')
+      .fill('RibbonDesk Judge Workspace');
+    await page.getByRole('button', { name: 'Create workspace' }).click();
   }
 
-  await page.getByLabel('Organization name').fill('RibbonDesk Judge Workspace');
-  await page.getByRole('button', { name: 'Create workspace' }).click();
-  await page
-    .getByRole('heading', { name: 'Tell me about the business' })
-    .waitFor({ timeout: 30_000 });
-  await page.getByLabel('Business name').fill('Harborlight Cafe & Market');
-  await page
-    .getByLabel('Business type')
-    .fill('Cafe, bakery, and neighborhood market');
-  await page.getByRole('button', { name: 'Save business' }).click();
-  await page
-    .getByRole('heading', { name: 'Configure the first location' })
-    .waitFor({ timeout: 30_000 });
+  const businessHeading = page.getByRole('heading', {
+    name: 'Tell me about the business',
+  });
+  if (await businessHeading.isVisible()) {
+    await page.getByLabel('Business name').fill('Harborlight Cafe & Market');
+    await page
+      .getByLabel('Business type')
+      .fill('Cafe, bakery, and neighborhood market');
+    await page.getByRole('button', { name: 'Save and continue' }).click();
+  }
+
+  const locationHeading = page.getByRole('heading', {
+    name: 'Configure the first location',
+  });
+  await locationHeading.waitFor({ timeout: 30_000 });
   await page.getByLabel('Street address').fill('115 Broadway');
   await page.getByLabel('City').fill('New York');
   await page.getByLabel('State/region').fill('NY');
@@ -185,7 +205,9 @@ try {
     .fill(
       'prepare and sell coffee, baked goods, packaged food, indoor seating, employees, storefront signage, and local delivery',
     );
-  await page.getByRole('button', { name: 'Detect jurisdiction' }).click();
+  await page
+    .getByRole('button', { name: 'Save and review jurisdiction' })
+    .click();
   await page.getByRole('button', { name: 'Confirm and open my desk' }).click();
   await page
     .getByRole('button', { name: 'Sign out' })

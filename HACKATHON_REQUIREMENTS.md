@@ -142,7 +142,7 @@ the deadline rather than discovering extra fields during the final hour.
   onboarding flow supports revisiting completed steps before jurisdiction
   confirmation. The Google callback gate now hydrates from identical server and
   client markup so it cannot create a framework error overlay during startup.
-  Sites version 10 is the current production release. An authenticated production
+  Sites version 11 is the current production release. An authenticated production
   walkthrough verified session-aware landing actions, reversible saved setup,
   dynamic coverage for a non-food NYC office, a live cited research proposal,
   and an active AgentMail case inbox without sending external mail. The operating
@@ -165,9 +165,12 @@ the deadline rather than discovering extra fields during the final hour.
   sign-in/reset, authenticated passkey enrollment/sign-in, onboarding,
   jurisdiction confirmation, and controlled workspace cleanup. Google remains
   an operator-only regression configuration and Apple is deferred. A dedicated
-  verified owner account and isolated workspace can be provisioned for judges;
-  its credentials are confined to private submission notes and never committed
-  or rendered on the public Site.
+  verified owner account and isolated workspace have been provisioned for
+  judges; the production email confirmation and full four-step onboarding both
+  completed. Its credentials are confined to private submission notes and never
+  committed or rendered on the public Site. AgentMail's current three-inbox plan
+  is full, so creating an additional judge case inbox requires removing an
+  existing owner-approved inbox or upgrading the provider plan.
 - **Core workspace:** Organization ownership, role enforcement, business and
   location setup, explicit jurisdiction confirmation, a real cited-requirement
   and task editor, the command center, source preview, live-only research, cited
