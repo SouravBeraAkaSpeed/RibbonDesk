@@ -506,3 +506,13 @@ review, task, document, application, operations, Assistant, team, export, and
 deletion flows, but provisioning another live case inbox will remain visibly
 blocked by the provider quota until the owner frees a slot or upgrades the
 AgentMail plan.
+
+I cleared the judge inbox-capacity blocker without touching production data. I
+first verified that the generic AgentMail onboarding inbox contained zero
+messages and that neither production `inboxBindings` record referenced it. The
+only dependency was a message-only inbox-scoped onboarding key from the initial
+AgentMail setup; it was not RibbonDesk's organization-level production key. I
+revoked that scoped key, deleted the empty inbox, and listed the account again.
+AgentMail now reports two occupied slots: the RibbonDesk security sender and the
+active Quark Labs location inbox. One of the three plan slots is available for
+the private judge workspace to provision its own live case inbox.

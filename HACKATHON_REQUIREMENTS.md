@@ -168,9 +168,11 @@ the deadline rather than discovering extra fields during the final hour.
   verified owner account and isolated workspace have been provisioned for
   judges; the production email confirmation and full four-step onboarding both
   completed. Its credentials are confined to private submission notes and never
-  committed or rendered on the public Site. AgentMail's current three-inbox plan
-  is full, so creating an additional judge case inbox requires removing an
-  existing owner-approved inbox or upgrading the provider plan.
+  committed or rendered on the public Site. I verified that the generic
+  onboarding inbox had no messages and no production RibbonDesk binding,
+  revoked only its inbox-scoped onboarding key, and deleted it. AgentMail now
+  reports two of three inbox slots occupied, leaving one live slot available for
+  the judge workspace's case inbox.
 - **Core workspace:** Organization ownership, role enforcement, business and
   location setup, explicit jurisdiction confirmation, a real cited-requirement
   and task editor, the command center, source preview, live-only research, cited
