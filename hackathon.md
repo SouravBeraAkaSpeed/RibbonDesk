@@ -463,3 +463,12 @@ gets its own title, context, and working area. I also replaced plain-text AI
 message output with safe GitHub-flavored Markdown rendering. Ribbon Assistant
 answers now show semantic headings, lists, emphasis, blockquotes, code, and
 clearly styled external links while raw HTML remains escaped.
+
+I published this reorganization as ChatGPT Sites version 10 from commit
+`67dcc72`. In a signed-in production browser I verified all eight sidebar links,
+their distinct URLs and focused work surfaces, browser Back from Plan to Today,
+and a direct reload of `/app/assistant`. The previously stored assistant answer
+rendered with semantic headings, a list, emphasis, and a clickable New York
+Department of State source; the raw Markdown markers were absent. The production
+console reported no errors. Strict TypeScript, lint, seven domain tests, the
+production Sites build, and the dependency audit also pass.

@@ -142,11 +142,15 @@ the deadline rather than discovering extra fields during the final hour.
   onboarding flow supports revisiting completed steps before jurisdiction
   confirmation. The Google callback gate now hydrates from identical server and
   client markup so it cannot create a framework error overlay during startup.
-  Sites version 9 is the current production release. An authenticated production
+  Sites version 10 is the current production release. An authenticated production
   walkthrough verified session-aware landing actions, reversible saved setup,
   dynamic coverage for a non-food NYC office, a live cited research proposal,
-  and an active AgentMail case inbox without sending external mail.
-  Anonymous route checks pass and the production runtime reports no errors.
+  and an active AgentMail case inbox without sending external mail. The operating
+  desk is split into eight URL-backed workspaces whose links, browser history,
+  and direct reloads were verified in production. Existing Ribbon Assistant
+  output renders as safe semantic Markdown with a working official-source link
+  instead of exposing Markdown syntax. Production runtime checks report no
+  browser errors.
 - **Public product path:** The synthetic workspace has been removed from the
   current source. `/demo` now redirects to the real passkey workspace at `/app`.
   Judges will evaluate the same persistent product path a business owner uses;
