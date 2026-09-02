@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** openai/gpt-5.6-terra and openai/gpt-5.6-luna through OpenRouter
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-09-02T08:26:06Z
+- **Last updated:** 2026-09-02T08:46:18Z
 
 ## Log
 
@@ -579,3 +579,12 @@ retryable AgentMail inbox provisioning. Ten focused domain tests, strict
 TypeScript, lint, the production build, and the production dependency audit pass.
 The repository and public Site contain no provider keys, private account data,
 inbox addresses, or third-party portal credentials.
+
+### 2026-09-02 - guided-journey sidebar containment
+
+I corrected a responsive layout defect in the journey home where long upcoming
+step names could give the fixed sidebar an oversized intrinsic width and push
+its cards beyond the viewport. Both grid tracks and cards now have explicit
+shrink boundaries, the sidebar contains its children, and titles wrap inside
+the available width instead of stretching the page. Strict TypeScript and lint
+pass for the fix before production packaging.

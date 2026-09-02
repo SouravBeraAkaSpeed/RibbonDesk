@@ -444,7 +444,7 @@ function JourneyHome({
         </Button>
       </div>
       <Progress value={journey.journey.progressPercent} className="mt-7 h-2" />
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="mt-8 grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,340px)]">
         <CurrentStepCard step={journey.currentStep} />
         <NextSteps
           steps={journey.steps}
@@ -518,7 +518,7 @@ function ResearchProgress({ journey }: { journey: Doc<'journeys'> }) {
 
 function CurrentStepCard({ step }: { step: JourneyStep }) {
   return (
-    <article className="journey-current-card relative overflow-hidden rounded-[2rem] border bg-background p-6 shadow-[0_24px_80px_rgba(25,39,62,.08)] sm:p-9">
+    <article className="journey-current-card relative min-w-0 overflow-hidden rounded-[2rem] border bg-background p-6 shadow-[0_24px_80px_rgba(25,39,62,.08)] sm:p-9">
       <div className="absolute right-[-3rem] top-[-3rem] size-40 rounded-full bg-[var(--ribbon-soft)] blur-2xl" />
       <div className="relative">
         <div className="flex flex-wrap items-center gap-2">
@@ -584,29 +584,29 @@ function NextSteps({
     )
     .slice(0, 5);
   return (
-    <aside className="rounded-[2rem] border bg-[var(--paper)] p-5 sm:p-6">
-      <div className="flex items-center justify-between">
+    <aside className="min-w-0 max-w-full self-start overflow-hidden rounded-[2rem] border bg-[var(--paper)] p-5 sm:p-6">
+      <div className="flex min-w-0 items-center justify-between gap-3">
         <h2 className="font-heading text-2xl font-semibold">Coming up</h2>
         <Link
           href="/app/roadmap"
-          className="text-sm font-semibold text-[var(--ribbon-dark)] hover:underline"
+          className="shrink-0 text-sm font-semibold text-[var(--ribbon-dark)] hover:underline"
         >
           See route
         </Link>
       </div>
-      <div className="mt-5 grid gap-3">
+      <div className="mt-5 grid min-w-0 gap-3">
         {upcoming.length ? (
           upcoming.map((step, index) => (
             <Link
               key={step._id}
               href={`/app/step/${step._id}`}
-              className="group flex gap-3 rounded-2xl border bg-background p-4 transition hover:-translate-y-0.5 hover:shadow-sm"
+              className="group flex w-full min-w-0 max-w-full items-start gap-3 overflow-hidden rounded-2xl border bg-background p-4 transition hover:-translate-y-0.5 hover:shadow-sm"
             >
               <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[var(--paper)] text-xs font-semibold text-muted-foreground">
                 {index + 2}
               </span>
-              <span className="min-w-0">
-                <span className="block truncate font-semibold group-hover:text-[var(--ribbon-dark)]">
+              <span className="min-w-0 flex-1">
+                <span className="block break-words font-semibold leading-snug group-hover:text-[var(--ribbon-dark)]">
                   {step.title}
                 </span>
                 <span className="mt-1 block text-xs text-muted-foreground">
