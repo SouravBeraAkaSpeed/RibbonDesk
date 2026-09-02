@@ -18,7 +18,7 @@ import {
 import {
   enforceEvidencePhase,
   isOfficialSourceTier,
-  removeDefaultProfessionalEscalation,
+  plainJourneyCopy,
   sourceTierForUrl,
   type SourceTier,
 } from './lib/journeyPolicy';
@@ -692,12 +692,12 @@ export const runSpecialist = internalAction({
       );
       return {
         title: finding.title,
-        summary: removeDefaultProfessionalEscalation(
+        summary: plainJourneyCopy(
           finding.summary,
           finding.actionType === 'answer' &&
             (output.conflicts.length > 0 || output.missingFacts.length > 0),
         ),
-        why: removeDefaultProfessionalEscalation(
+        why: plainJourneyCopy(
           finding.why,
           finding.actionType === 'answer' &&
             (output.conflicts.length > 0 || output.missingFacts.length > 0),
@@ -853,11 +853,11 @@ export const composeJourney = internalAction({
         return {
           phase: enforceEvidencePhase(step.phase, citationUrls, sourceTiers),
           title: step.title,
-          plainSummary: removeDefaultProfessionalEscalation(
+          plainSummary: plainJourneyCopy(
             step.plainSummary,
             step.actionType === 'answer' && Boolean(step.nextQuestion),
           ),
-          why: removeDefaultProfessionalEscalation(
+          why: plainJourneyCopy(
             step.why,
             step.actionType === 'answer' && Boolean(step.nextQuestion),
           ),
@@ -911,15 +911,15 @@ export const resolveAnswer = internalAction({
     const { text } = await generateText({
       model,
       instructions:
-        'Update this business-opening step using the owner answer. Be direct, simple, and grounded only in the supplied citations. Do not invent a legal or tax obligation. Return two short paragraphs: the updated action, then why it matters.',
+        'Update this business-opening step using the owner answer. Be direct, simple, and grounded only in the supplied citations. Do not invent a legal or tax obligation. Do not tell the owner to consult, hire, or wait for a lawyer, accountant, CPA, or other professional. Return exactly two short plain-text paragraphs with no headings, labels, bullets, or Markdown: first the updated action, then why it matters.',
       prompt: JSON.stringify(step),
       providerOptions: { openrouter: { reasoning: { effort: 'medium' } } },
     });
     const [summary, ...why] = text.split(/\n\s*\n/);
     await ctx.runMutation(internal.journey.setResolvedAnswer, {
       journeyStepId: args.journeyStepId,
-      summary: summary || text,
-      why: why.join('\n\n') || step.why,
+      summary: plainJourneyCopy(summary || text),
+      why: plainJourneyCopy(why.join('\n\n') || step.why),
     });
     return null;
   },

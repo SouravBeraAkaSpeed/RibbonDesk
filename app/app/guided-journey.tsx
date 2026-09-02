@@ -72,6 +72,17 @@ function readableError(error: unknown) {
   return 'Something went wrong. Please try again.';
 }
 
+function compactEvidence(value: string, max = 420) {
+  const plain = value
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+    .replace(/\*\*|__/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return plain.length > max ? `${plain.slice(0, max - 1).trimEnd()}…` : plain;
+}
+
 const legacyRoutes: Record<string, string> = {
   '/app/plan': '/app',
   '/app/assistant': '/app',
@@ -1568,7 +1579,7 @@ function ProviderRow({
             )}
           </div>
           <p className="mt-1 line-clamp-2 text-sm leading-6 text-muted-foreground">
-            {description}
+            {compactEvidence(description, 300)}
           </p>
           {priceSummary ? (
             <p className="mt-2 text-xs font-semibold text-[var(--ink)]">
@@ -1725,7 +1736,7 @@ function SourcesCard({ citations }: { citations: JourneyStep['citations'] }) {
             </span>
             {citation.excerpt ? (
               <span className="mt-2 block text-sm leading-6 text-muted-foreground">
-                {citation.excerpt}
+                {compactEvidence(citation.excerpt)}
               </span>
             ) : null}
             <span className="mt-2 block text-xs font-semibold text-[var(--sage)]">

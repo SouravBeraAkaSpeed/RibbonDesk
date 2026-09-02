@@ -86,3 +86,13 @@ export function removeDefaultProfessionalEscalation(
     'RibbonDesk checked this step against the cited public sources so you can act with the evidence beside you.'
   );
 }
+
+export function plainJourneyCopy(value: string, allowEscalation = false) {
+  return removeDefaultProfessionalEscalation(value, allowEscalation)
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+    .replace(/\*\*|__/g, '')
+    .replace(/^\s*(?:updated action|why it matters)\s*:\s*/i, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+}

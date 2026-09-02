@@ -15,6 +15,7 @@ import { deskSectionFromPath, deskSectionHref } from '../lib/desk-sections.ts';
 import {
   enforceEvidencePhase,
   permitsPortalCapture,
+  plainJourneyCopy,
   removeDefaultProfessionalEscalation,
   sourceTierForUrl,
 } from '../convex/lib/journeyPolicy.ts';
@@ -168,5 +169,11 @@ void test('journey copy removes default professional escalation', () => {
       true,
     ),
     'A lawyer should resolve this ownership conflict.',
+  );
+  assert.equal(
+    plainJourneyCopy(
+      '**Updated action:** Form the LLC. New York recommends legal advice.',
+    ),
+    'Form the LLC.',
   );
 });
