@@ -15,6 +15,7 @@ import { deskSectionFromPath, deskSectionHref } from '../lib/desk-sections.ts';
 import {
   enforceEvidencePhase,
   permitsPortalCapture,
+  removeDefaultProfessionalEscalation,
   sourceTierForUrl,
 } from '../convex/lib/journeyPolicy.ts';
 
@@ -148,4 +149,24 @@ void test('journey source tiers and banking privacy rules are deterministic', ()
   assert.equal(sourceTierForUrl('http://example.com'), null);
   assert.equal(permitsPortalCapture('government_portal'), true);
   assert.equal(permitsPortalCapture('banking'), false);
+});
+
+void test('journey copy removes default professional escalation', () => {
+  assert.equal(
+    removeDefaultProfessionalEscalation(
+      'Choose the structure before filing. New York recommends getting legal and financial advice.',
+    ),
+    'Choose the structure before filing.',
+  );
+  assert.match(
+    removeDefaultProfessionalEscalation('Ask a lawyer before doing anything.'),
+    /RibbonDesk checked this step/,
+  );
+  assert.equal(
+    removeDefaultProfessionalEscalation(
+      'A lawyer should resolve this ownership conflict.',
+      true,
+    ),
+    'A lawyer should resolve this ownership conflict.',
+  );
 });
