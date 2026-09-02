@@ -750,6 +750,7 @@ function StepWorkspace({
   step: JourneyStep;
   allSteps: JourneyStep[];
 }) {
+  const router = useRouter();
   const startStep = useMutation(api.journey.startStep);
   const completeStep = useMutation(api.journey.completeStep);
   const skipStep = useMutation(api.journey.skipOptionalStep);
@@ -798,11 +799,20 @@ function StepWorkspace({
     setError(null);
     try {
       await task();
+      return true;
     } catch (caught) {
       setError(readableError(caught));
+      return false;
     } finally {
       setPending(null);
     }
+  }
+
+  async function finishAndAdvance(
+    label: 'complete' | 'skip',
+    task: () => Promise<unknown>,
+  ) {
+    if (await run(label, task)) router.push('/app');
   }
 
   async function openPortal(url: string) {
@@ -1071,7 +1081,7 @@ function StepWorkspace({
                 <Button
                   className="rounded-full bg-[var(--ribbon)] text-white hover:bg-[var(--ribbon-dark)]"
                   onClick={() =>
-                    run('complete', () =>
+                    void finishAndAdvance('complete', () =>
                       completeStep({ journeyStepId: step._id }),
                     )
                   }
@@ -1092,7 +1102,9 @@ function StepWorkspace({
                     variant="ghost"
                     className="rounded-full"
                     onClick={() =>
-                      run('skip', () => skipStep({ journeyStepId: step._id }))
+                      void finishAndAdvance('skip', () =>
+                        skipStep({ journeyStepId: step._id }),
+                      )
                     }
                   >
                     Skip for now

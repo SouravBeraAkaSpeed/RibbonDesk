@@ -143,17 +143,13 @@ the deadline rather than discovering extra fields during the final hour.
   confirmation. Current verified source replaces heavy terminology with plain
   Yes, No, and Not sure questions, then automatically starts the live guided
   journey. The Google callback gate hydrates from identical server and client
-  markup so it cannot create a framework error overlay during startup. Sites
-  version 11 remains the current public release until this guided-journey source
-  is promoted. An authenticated production
-  walkthrough verified session-aware landing actions, reversible saved setup,
-  dynamic coverage for a non-food NYC office, a live cited research proposal,
-  and an active AgentMail case inbox without sending external mail. The operating
-  desk is split into eight URL-backed workspaces whose links, browser history,
-  and direct reloads were verified in production. Existing Ribbon Assistant
-  output renders as safe semantic Markdown with a working official-source link
-  instead of exposing Markdown syntax. Production runtime checks report no
-  browser errors.
+  markup so it cannot create a framework error overlay during startup. The
+  guided journey is deployed publicly. An authenticated production walkthrough
+  verified session-aware landing actions, reversible saved setup, a live
+  eight-step route for a New York software consultancy, plain-language AI Legal
+  Guide output, official-page frame fallback, evidence display, and realtime
+  advancement to the next action. Production runtime checks report no browser
+  errors.
 - **Public product path:** The synthetic workspace has been removed from the
   current source. `/demo` now redirects to the real passkey workspace at `/app`.
   Judges will evaluate the same persistent product path a business owner uses;
@@ -236,11 +232,10 @@ the deadline rather than discovering extra fields during the final hour.
   publicly deployed and verified without authentication.
 - **Accounts/external actions:** Luma registration is complete. Development
   credentials, both controlled live-provider smoke tests, production provider
-  configuration, and the production AgentMail browser journey are complete.
-  Vibe Apps sign-in, the final public Site deployment, the social post, and
-  submission are still pending. The currently
-  published Site predates this verified live-provider source and must not be
-  treated as the final judging build until the production release gate passes.
+  configuration, the production AgentMail browser journey, the guided-journey
+  production release, and a real Northstar-style Exa/Firecrawl/Terra/Luna route
+  are complete. Vibe Apps sign-in, the final sub-three-minute recording, the
+  social post, and submission are still pending.
 
 ### Convex plugin verification and recovery
 

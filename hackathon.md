@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** openai/gpt-5.6-terra and openai/gpt-5.6-luna through OpenRouter
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-08-31T17:32:00Z
+- **Last updated:** 2026-09-02T08:26:06Z
 
 ## Log
 
@@ -548,3 +548,34 @@ bundle contains the production Convex origin and no development-deployment
 reference. This entry records verified source and build evidence; production
 promotion and the real Northstar-style provider run remain the next release
 gate.
+
+### 2026-09-02 - guided journey production verification
+
+I promoted the guided-journey frontend and backend to the existing public Site
+and production Convex deployment, then completed the Northstar Consulting
+acceptance scenario using an authenticated production account. The owner entered
+a New York software-consulting profile in ordinary language and watched the
+durable workflow move through live discovery, official-source capture, legal and
+money/tax checking, route construction, and citation validation. Exa discovered
+the current sources, Firecrawl captured the official evidence, GPT-5.6 Terra ran
+the two specialist reviews, and GPT-5.6 Luna published an eight-step route. A
+temporary Firecrawl requests-per-minute `429` was shown honestly, retried by the
+workflow, and recovered without replacing the result with synthetic data.
+
+I verified that the first focused step explains what to do, why it matters,
+expected time and cost, preparation needs, responsible AI guide, and source
+evidence without exposing raw Markdown or a default instruction to hire a
+professional. The portal preflight correctly kept a frame-blocked official page
+out of an iframe and preserved a direct secure-window fallback. After the owner
+answered the one missing formation question, the AI Legal Guide returned a
+concise, evidence-backed plain-language conclusion. Completing that step updated
+progress to 13 percent and selected the next action. The final navigation patch
+returns the owner directly to `/app` after completing or skipping a step so the
+next action appears without an extra Back click.
+
+The release also includes deterministic source-tier enforcement, banking-screen
+restrictions, professional-escalation removal, concise evidence previews, and
+retryable AgentMail inbox provisioning. Ten focused domain tests, strict
+TypeScript, lint, the production build, and the production dependency audit pass.
+The repository and public Site contain no provider keys, private account data,
+inbox addresses, or third-party portal credentials.
