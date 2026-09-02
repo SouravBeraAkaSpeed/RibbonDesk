@@ -193,9 +193,13 @@ export const completeProcessing = internalMutation({
   handler: async (ctx, args) => {
     const document = await ctx.db.get(args.documentId);
     if (!document || document.status !== 'processing') return null;
-    const now = Date.now();
-    if (args.accepted) {
-      await ctx.db.patch(args.documentId, { status: 'needs_review', rejectionReason: undefined, updatedAt: now });
+      const now = Date.now();
+      if (args.accepted) {
+        await ctx.db.patch(args.documentId, {
+          status: document.classification === 'Portal screenshot' ? 'ready' : 'needs_review',
+          rejectionReason: undefined,
+          updatedAt: now,
+        });
     } else {
       const organization = await ctx.db.get(document.organizationId);
       await ctx.storage.delete(document.storageId);
@@ -210,7 +214,14 @@ export const completeProcessing = internalMutation({
       entityType: 'document',
       entityId: args.documentId,
       before: { status: document.status },
-      after: { status: args.accepted ? 'needs_review' : 'rejected', reason: args.reason },
+        after: {
+          status: args.accepted
+            ? document.classification === 'Portal screenshot'
+              ? 'ready'
+              : 'needs_review'
+            : 'rejected',
+          reason: args.reason,
+        },
     });
     return null;
   },

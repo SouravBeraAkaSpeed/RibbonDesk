@@ -43,6 +43,7 @@ committed file, shell transcript, issue, or build log.
 
 - `BETTER_AUTH_SECRET`
 - `OPENROUTER_API_KEY`
+- `EXA_API_KEY`
 - `FIRECRAWL_API_KEY`
 - `AGENTMAIL_API_KEY`
 - `AGENTMAIL_WEBHOOK_SECRET`
@@ -81,9 +82,12 @@ Verify in a signed-out browser:
 - Verified email registration, password sign-in/reset, authenticated passkey
   enrollment/sign-in, and absence of Google/Apple controls
 - Business/location onboarding and explicit jurisdiction confirmation
-- One real official-source research run and cited proposal
-- Human acceptance reflected in a second browser session
-- Grounded Assistant answer using the workspace record
+- One complete Exa → Firecrawl → Terra legal/tax → Luna journey run
+- Must-do versus Smart-to-consider evidence classification
+- Current-step, roadmap, proof upload, portal preflight, and direct-window fallback
+- Grounded specialist answer using the current step and saved citations
+- Explicit screen-share preview and banking capture refusal
+- Step completion reflected in a second browser session
 - One controlled AgentMail inbound event, approved proposal, approved reply, and delivery state
 - Export and bounded workspace deletion, including provider cleanup
 

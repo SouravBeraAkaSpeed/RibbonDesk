@@ -25,7 +25,7 @@ export function LandingHeaderActions() {
           className="rd-button rd-button-primary"
           render={<Link href="/app" />}
         >
-          Open dashboard
+          Continue my journey
         </Button>
       </div>
     );
@@ -49,7 +49,7 @@ export function LandingHeaderActions() {
 
 export function LandingWorkspaceButton({
   signedOutLabel,
-  signedInLabel = 'Continue to dashboard',
+  signedInLabel = 'Continue my journey',
 }: {
   signedOutLabel: string;
   signedInLabel?: string;
@@ -72,7 +72,7 @@ export function LandingWorkspaceButton({
 
 export function LandingWorkspaceLink({
   signedOutLabel,
-  signedInLabel = 'Open dashboard',
+  signedInLabel = 'Open my journey',
 }: {
   signedOutLabel: string;
   signedInLabel?: string;

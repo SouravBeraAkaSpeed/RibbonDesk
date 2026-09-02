@@ -185,15 +185,15 @@ try {
     name: 'Tell me about the business',
   });
   if (await businessHeading.isVisible()) {
-    await page.getByLabel('Business name').fill('Harborlight Cafe & Market');
+    await page.getByLabel('Business name').fill('Northstar Consulting');
     await page
       .getByLabel('Business type')
-      .fill('Cafe, bakery, and neighborhood market');
+      .fill('Software consulting and website development');
     await page.getByRole('button', { name: 'Save and continue' }).click();
   }
 
   const locationHeading = page.getByRole('heading', {
-    name: 'Configure the first location',
+    name: 'Tell us where you will work',
   });
   await locationHeading.waitFor({ timeout: 30_000 });
   await page.getByLabel('Street address').fill('115 Broadway');
@@ -201,17 +201,34 @@ try {
   await page.getByLabel('State/region').fill('NY');
   await page.getByLabel('Postal code').fill('10006');
   await page
-    .getByLabel('Business activities')
+    .getByLabel('What will your business actually do?')
     .fill(
-      'prepare and sell coffee, baked goods, packaged food, indoor seating, employees, storefront signage, and local delivery',
+      'software consulting, website development, technical strategy, and client training',
     );
+  const answers = [
+    ['Hire people?', 'Not sure'],
+    ['Build or renovate a space?', 'No'],
+    ['Prepare or serve food?', 'No'],
+    ['Sell or serve alcohol?', 'No'],
+    ['Put up an outside sign?', 'No'],
+    ['Have customers sit at your location?', 'No'],
+    ['Deliver products or services?', 'No'],
+    ['Use materials that need special care?', 'No'],
+    ['Offer a service that may need a license?', 'Not sure'],
+  ];
+  for (const [question, answer] of answers) {
+    await page
+      .getByRole('group', { name: question })
+      .getByRole('button', { name: answer })
+      .click();
+  }
   await page
-    .getByRole('button', { name: 'Save and review jurisdiction' })
+    .getByRole('button', { name: 'Save and check my location' })
     .click();
-  await page.getByRole('button', { name: 'Confirm and open my desk' }).click();
   await page
-    .getByRole('button', { name: 'Sign out' })
-    .waitFor({ timeout: 30_000 });
+    .getByRole('button', { name: 'Confirm and build my route' })
+    .click();
+  await page.getByText('Building your route').waitFor({ timeout: 30_000 });
 
   if (failedResponses.some((entry) => entry.startsWith('500 '))) {
     throw new Error(`Server failures observed:\n${failedResponses.join('\n')}`);

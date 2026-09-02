@@ -36,6 +36,7 @@ type Env = {
   readonly APPLE_CLIENT_ID: string | undefined;
   readonly APPLE_CLIENT_SECRET: string | undefined;
   readonly AUTH_EMAIL_INBOX_ID: string | undefined;
+  readonly EXA_API_KEY: string | undefined;
   readonly FIRECRAWL_API_KEY: string;
   readonly FIRECRAWL_API_URL: string | undefined;
   readonly FIRECRAWL_WEBHOOK_SECRET: string | undefined;

@@ -139,10 +139,13 @@ the deadline rather than discovering extra fields during the final hour.
   preview and production build both run. The verified source is deployed at
   `https://ribbondesk.souravberaakagralius.chatgpt.site` with public access.
   The landing experience detects authenticated sessions, and the saved four-step
-  onboarding flow supports revisiting completed steps before jurisdiction
-  confirmation. The Google callback gate now hydrates from identical server and
-  client markup so it cannot create a framework error overlay during startup.
-  Sites version 11 is the current production release. An authenticated production
+  onboarding flow supports revisiting completed steps before location
+  confirmation. Current verified source replaces heavy terminology with plain
+  Yes, No, and Not sure questions, then automatically starts the live guided
+  journey. The Google callback gate hydrates from identical server and client
+  markup so it cannot create a framework error overlay during startup. Sites
+  version 11 remains the current public release until this guided-journey source
+  is promoted. An authenticated production
   walkthrough verified session-aware landing actions, reversible saved setup,
   dynamic coverage for a non-food NYC office, a live cited research proposal,
   and an active AgentMail case inbox without sending external mail. The operating
@@ -174,9 +177,15 @@ the deadline rather than discovering extra fields during the final hour.
   reports two of three inbox slots occupied, leaving one live slot available for
   the judge workspace's case inbox.
 - **Core workspace:** Organization ownership, role enforcement, business and
-  location setup, explicit jurisdiction confirmation, a real cited-requirement
-  and task editor, the command center, source preview, live-only research, cited
-  proposal review, approval-gated task creation, safe evidence uploads, document
+  location setup, explicit location confirmation, and a versioned guided journey
+  are implemented. Exa discovery, Firecrawl evidence capture, Terra legal and
+  money/tax reviews, and Luna route composition publish one current action plus
+  a compact roadmap. Must-do steps require official evidence; professional and
+  commercial sources cannot silently create obligations. Focused step pages add
+  specialist chat, official-first completion options, protected embed fallback,
+  previewed screen sharing, banking exclusions, safe proof uploads, linked real
+  records, and an explicit after-opening transition. The earlier cited-requirement
+  and task editor remains available as the internal operating record. Document
   expiry capture, reusable application answers, readiness checks, and versioned
   PDF/ZIP application packets are deployed to development. A location-owned
   case inbox now adds sanitized reactive threads, AI-proposed deadline work,
@@ -207,7 +216,9 @@ the deadline rather than discovering extra fields during the final hour.
   controlled message, OpenRouter proposes follow-up work, an owner approves it,
   and a separately approved reply reaches the controlled recipient. Workspace
   deletion also removes its provider inbox. These tests use real provider
-  credentials and no replay or synthetic provider data. Production provider
+  credentials and no replay or synthetic provider data. The current guided
+  workflow also adds server-only Exa discovery and separate Terra/Luna roles;
+  all four provider keys are configured in development and production. Production provider
   health and the complete production AgentMail journey are also verified.
 - **Operations verification:** Authenticated browser automation proves the
   opening-to-operating transition, a failed-inspection blocker, expiring

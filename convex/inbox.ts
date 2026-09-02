@@ -211,23 +211,38 @@ async function insertReplayMessage(
 export const provision = mutation({
   args: { locationId: v.id('locations') },
   returns: v.id('inboxBindings'),
-  handler: async (ctx, args) => {
-    const { identity, location } = await requireLocation(ctx, args.locationId, 'admin');
-    const existing = await ctx.db.query('inboxBindings').withIndex('by_locationId', (index) => index.eq('locationId', args.locationId)).unique();
-    if (existing) return existing._id;
-    const now = Date.now();
-    const mode = providerMode();
+    handler: async (ctx, args) => {
+      const { identity, location } = await requireLocation(ctx, args.locationId, 'admin');
+      const existing = await ctx.db.query('inboxBindings').withIndex('by_locationId', (index) => index.eq('locationId', args.locationId)).unique();
+      const now = Date.now();
+      const mode = providerMode();
     if (
       mode === 'live' &&
       (!env.AGENTMAIL_API_KEY || !hasAiProvider())
     ) {
       throw new ConvexError({
         code: 'LIVE_PROVIDERS_NOT_CONFIGURED',
-        message:
-          'A live case inbox needs genuine AgentMail and OpenRouter credentials. No synthetic inbox was created.',
-      });
-    }
-    const bindingId = await ctx.db.insert('inboxBindings', {
+          message:
+            'A live case inbox needs genuine AgentMail and OpenRouter credentials. No synthetic inbox was created.',
+        });
+      }
+      if (existing) {
+        if (existing.status === 'failed' && mode === 'live') {
+          await ctx.db.patch(existing._id, {
+            providerInboxId: `provisioning:${args.locationId}`,
+            providerMode: 'live',
+            emailAddress: undefined,
+            status: 'provisioning',
+            errorMessage: undefined,
+            updatedAt: now,
+          });
+          await ctx.scheduler.runAfter(0, internal.inbox.provisionLive, {
+            inboxBindingId: existing._id,
+          });
+        }
+        return existing._id;
+      }
+      const bindingId = await ctx.db.insert('inboxBindings', {
       organizationId: location.organizationId,
       locationId: args.locationId,
       providerInboxId: `provisioning:${args.locationId}`,

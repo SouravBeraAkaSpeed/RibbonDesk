@@ -12,6 +12,11 @@ import {
   reminderCadences,
 } from '../convex/lib/domain.ts';
 import { deskSectionFromPath, deskSectionHref } from '../lib/desk-sections.ts';
+import {
+  enforceEvidencePhase,
+  permitsPortalCapture,
+  sourceTierForUrl,
+} from '../convex/lib/journeyPolicy.ts';
 
 void test('role rank preserves approval boundaries', () => {
   assert.equal(hasMinimumRole('owner', 'admin'), true);
@@ -103,4 +108,44 @@ void test('dashboard sections resolve to stable URL-backed workspaces', () => {
   assert.equal(deskSectionFromPath('/app/not-a-section'), 'today');
   assert.equal(deskSectionHref('today'), '/app');
   assert.equal(deskSectionHref('assistant'), '/app/assistant');
+});
+
+void test('journey policy reserves must-do steps for official evidence', () => {
+  const tiers = new Map([
+    ['https://dos.ny.gov/form-corporation', 'official_explanatory' as const],
+    [
+      'https://law.cornell.edu/helpful-summary',
+      'professional_reference' as const,
+    ],
+  ]);
+  assert.equal(
+    enforceEvidencePhase(
+      'must',
+      ['https://dos.ny.gov/form-corporation'],
+      tiers,
+    ),
+    'must',
+  );
+  assert.equal(
+    enforceEvidencePhase(
+      'must',
+      ['https://law.cornell.edu/helpful-summary'],
+      tiers,
+    ),
+    'smart',
+  );
+});
+
+void test('journey source tiers and banking privacy rules are deterministic', () => {
+  assert.equal(
+    sourceTierForUrl('https://www.irs.gov/businesses'),
+    'official_explanatory',
+  );
+  assert.equal(
+    sourceTierForUrl('https://law.cornell.edu/wex'),
+    'professional_reference',
+  );
+  assert.equal(sourceTierForUrl('http://example.com'), null);
+  assert.equal(permitsPortalCapture('government_portal'), true);
+  assert.equal(permitsPortalCapture('banking'), false);
 });

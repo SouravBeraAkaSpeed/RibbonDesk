@@ -48,7 +48,6 @@ import type { Doc, Id } from '@/convex/_generated/dataModel';
 import { hasVerifiedNycFoodServicePack } from '@/convex/lib/domain';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authClient } from '@/lib/auth-client';
@@ -67,9 +66,11 @@ import { TeamPanel } from './team-panel';
 import { WorkspaceSearch } from './workspace-search';
 import { DataControlsPanel } from './data-controls-panel';
 import { WorkPlanPanel } from './work-plan-panel';
+import { GuidedJourneyShell } from './guided-journey';
 
 type FormSubmitEvent = SyntheticEvent<HTMLFormElement, SubmitEvent>;
 type OnboardingStep = 1 | 2 | 3 | 4;
+type TriggerAnswer = 'yes' | 'no' | 'not_sure';
 
 function errorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
@@ -1034,16 +1035,21 @@ function CreateLocation({
   const [activities, setActivities] = useState(
     location?.activities.join(', ') ?? '',
   );
-  const [triggers, setTriggers] = useState({
-    employees: location?.triggers.employees ?? false,
-    construction: location?.triggers.construction ?? false,
-    food: location?.triggers.food ?? false,
-    alcohol: location?.triggers.alcohol ?? false,
-    signage: location?.triggers.signage ?? false,
-    seating: location?.triggers.seating ?? false,
-    delivery: location?.triggers.delivery ?? false,
-    hazardousMaterials: location?.triggers.hazardousMaterials ?? false,
-    regulatedServices: location?.triggers.regulatedServices ?? false,
+  const existingAnswer = (
+    key: keyof NonNullable<LocationDoc['triggerAnswers']>,
+  ): TriggerAnswer =>
+    location?.triggerAnswers?.[key] ??
+    (location ? (location.triggers[key] ? 'yes' : 'no') : 'not_sure');
+  const [triggerAnswers, setTriggerAnswers] = useState({
+    employees: existingAnswer('employees'),
+    construction: existingAnswer('construction'),
+    food: existingAnswer('food'),
+    alcohol: existingAnswer('alcohol'),
+    signage: existingAnswer('signage'),
+    seating: existingAnswer('seating'),
+    delivery: existingAnswer('delivery'),
+    hazardousMaterials: existingAnswer('hazardousMaterials'),
+    regulatedServices: existingAnswer('regulatedServices'),
   });
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1075,7 +1081,19 @@ function CreateLocation({
           .split(',')
           .map((value) => value.trim())
           .filter(Boolean),
-        triggers: { ...triggers, other: [] },
+        triggerAnswers,
+        triggers: {
+          employees: triggerAnswers.employees === 'yes',
+          construction: triggerAnswers.construction === 'yes',
+          food: triggerAnswers.food === 'yes',
+          alcohol: triggerAnswers.alcohol === 'yes',
+          signage: triggerAnswers.signage === 'yes',
+          seating: triggerAnswers.seating === 'yes',
+          delivery: triggerAnswers.delivery === 'yes',
+          hazardousMaterials: triggerAnswers.hazardousMaterials === 'yes',
+          regulatedServices: triggerAnswers.regulatedServices === 'yes',
+          other: [],
+        },
       };
       if (location)
         await updateLocation({ locationId: location._id, ...values });
@@ -1093,24 +1111,67 @@ function CreateLocation({
     }
   }
 
-  const triggerLabels: Array<[keyof typeof triggers, string]> = [
-    ['employees', 'Hiring employees'],
-    ['construction', 'Construction or renovation'],
-    ['food', 'Preparing or serving food'],
-    ['alcohol', 'Selling alcohol'],
-    ['signage', 'Installing exterior signs'],
-    ['seating', 'Customer seating'],
-    ['delivery', 'Delivery service'],
-    ['hazardousMaterials', 'Hazardous materials'],
-    ['regulatedServices', 'Licensed or regulated services'],
+  const triggerChoices: Array<{
+    key: keyof typeof triggerAnswers;
+    label: string;
+    example: string;
+  }> = [
+    {
+      key: 'employees',
+      label: 'Hire people?',
+      example: 'Employees, interns, or paid helpers.',
+    },
+    {
+      key: 'construction',
+      label: 'Build or renovate a space?',
+      example: 'Construction, plumbing, electrical work, or major repairs.',
+    },
+    {
+      key: 'food',
+      label: 'Prepare or serve food?',
+      example: 'Meals, drinks, packaged food, catering, or samples.',
+    },
+    {
+      key: 'alcohol',
+      label: 'Sell or serve alcohol?',
+      example: 'Beer, wine, liquor, or alcoholic tastings.',
+    },
+    {
+      key: 'signage',
+      label: 'Put up an outside sign?',
+      example: 'A storefront sign, awning, banner, or sidewalk sign.',
+    },
+    {
+      key: 'seating',
+      label: 'Have customers sit at your location?',
+      example: 'Indoor seating, sidewalk tables, or a waiting area.',
+    },
+    {
+      key: 'delivery',
+      label: 'Deliver products or services?',
+      example: 'Your own drivers, couriers, or delivery platforms.',
+    },
+    {
+      key: 'hazardousMaterials',
+      label: 'Use materials that need special care?',
+      example: 'Chemicals, fuel, medical waste, or compressed gas.',
+    },
+    {
+      key: 'regulatedServices',
+      label: 'Offer a service that may need a license?',
+      example:
+        'Legal, medical, childcare, beauty, finance, or construction work.',
+    },
   ];
 
   return (
     <OnboardingFrame
       step="3 of 4"
       eyebrow={`${organizationName} · ${business.name}`}
-      title={location ? 'Review the location' : 'Configure the first location'}
-      description="The address and operational triggers shape jurisdiction and requirement research. RibbonDesk never silently assumes them."
+      title={
+        location ? 'Check your business details' : 'Tell us where you will work'
+      }
+      description="Your answers help RibbonDesk check the right city, state, and federal sources. Choose “I’m not sure” whenever you need help."
       currentStep={currentStep}
       furthestStep={furthestStep}
       onStepChange={onStepChange}
@@ -1187,12 +1248,14 @@ function CreateLocation({
           </div>
         </div>
         <div className="grid gap-2">
-          <Label htmlFor="activities">Business activities</Label>
+          <Label htmlFor="activities">
+            What will your business actually do?
+          </Label>
           <Input
             id="activities"
             value={activities}
             onChange={(event) => setActivities(event.target.value)}
-            placeholder="Coffee service, baked goods, sidewalk seating"
+            placeholder="For example: software consulting, website design, and training"
           />
           <p className="text-xs text-muted-foreground">
             Separate activities with commas.
@@ -1200,22 +1263,48 @@ function CreateLocation({
         </div>
         <fieldset className="grid gap-3 rounded-2xl border p-4">
           <legend className="px-1 text-sm font-semibold">
-            Regulatory triggers
+            Will your business do any of these things?
           </legend>
+          <p className="text-sm leading-6 text-muted-foreground">
+            These answers change which steps belong in your route.
+          </p>
           <div className="grid gap-3 sm:grid-cols-2">
-            {triggerLabels.map(([key, label]) => (
-              <label key={key} className="flex items-center gap-3 text-sm">
-                <Checkbox
-                  checked={triggers[key]}
-                  onCheckedChange={(checked) =>
-                    setTriggers((current) => ({
-                      ...current,
-                      [key]: checked === true,
-                    }))
-                  }
-                />{' '}
-                {label}
-              </label>
+            {triggerChoices.map(({ key, label, example }) => (
+              <div key={key} className="rounded-xl border bg-background p-3">
+                <p className="text-sm font-semibold">{label}</p>
+                <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">
+                  {example}
+                </p>
+                <fieldset className="mt-3 grid grid-cols-3 gap-1">
+                  <legend className="sr-only">{label}</legend>
+                  {(
+                    [
+                      ['yes', 'Yes'],
+                      ['no', 'No'],
+                      ['not_sure', 'Not sure'],
+                    ] as const
+                  ).map(([value, copy]) => (
+                    <Button
+                      key={value}
+                      type="button"
+                      size="sm"
+                      variant={
+                        triggerAnswers[key] === value ? 'default' : 'outline'
+                      }
+                      aria-pressed={triggerAnswers[key] === value}
+                      onClick={() =>
+                        setTriggerAnswers((current) => ({
+                          ...current,
+                          [key]: value,
+                        }))
+                      }
+                      className="h-8 px-2 text-[11px]"
+                    >
+                      {copy}
+                    </Button>
+                  ))}
+                </fieldset>
+              </div>
             ))}
           </div>
         </fieldset>
@@ -1226,7 +1315,7 @@ function CreateLocation({
           disabled={pending}
         >
           {pending ? <LoaderCircle className="animate-spin" /> : null} Save and
-          review jurisdiction <ChevronRight />
+          check my location <ChevronRight />
         </Button>
       </form>
     </OnboardingFrame>
@@ -1251,6 +1340,7 @@ function ConfirmJurisdiction({
   onStepChange: (step: OnboardingStep) => void;
 }) {
   const confirm = useMutation(api.locations.confirmJurisdiction);
+  const startResearch = useMutation(api.journey.startResearch);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const hasVerifiedPack = hasVerifiedNycFoodServicePack({
@@ -1273,6 +1363,7 @@ function ConfirmJurisdiction({
         coverageMode: hasVerifiedPack ? 'verified_pack' : 'dynamic_research',
         coveragePackKey: hasVerifiedPack ? 'nyc-food-service-v1' : undefined,
       });
+      await startResearch({ locationId: location._id, refresh: true });
       onComplete();
     } catch (caught) {
       setError(errorMessage(caught));
@@ -1285,8 +1376,8 @@ function ConfirmJurisdiction({
     <OnboardingFrame
       step="4 of 4"
       eyebrow={businessName}
-      title="Confirm the jurisdiction"
-      description="Research will not start until you confirm the detected location and coverage mode."
+      title="Confirm where your business will operate"
+      description="We will use this location to check the right official sources and build a route made for your business."
       currentStep={currentStep}
       furthestStep={furthestStep}
       onStepChange={onStepChange}
@@ -1298,7 +1389,7 @@ function ConfirmJurisdiction({
           </div>
           <div>
             <p className="text-sm text-muted-foreground">
-              Detected jurisdiction
+              Rules we’ll check for
             </p>
             <p className="mt-1 text-lg font-semibold">{jurisdiction}</p>
           </div>
@@ -1307,24 +1398,24 @@ function ConfirmJurisdiction({
       <div className="mt-4 rounded-2xl border p-5">
         <Badge variant={hasVerifiedPack ? 'default' : 'outline'}>
           {hasVerifiedPack
-            ? 'Verified coverage pack'
-            : 'Dynamic cited research'}
+            ? 'NYC food-service starting library'
+            : 'Live source research'}
         </Badge>
         <h3 className="mt-3 font-semibold">
           {hasVerifiedPack
-            ? 'NYC food-service opening pack'
-            : 'Research this business and location'}
+            ? 'A faster start for NYC food businesses'
+            : 'Build my personal business route'}
         </h3>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           {hasVerifiedPack
-            ? 'Starts from a maintained official-source pack. Every result still stays reviewable.'
-            : 'RibbonDesk will research official sources and label all results “review required” until you confirm them.'}
+            ? 'RibbonDesk starts with its maintained NYC source library, then checks the live pages again for your business.'
+            : 'RibbonDesk checks current government sources, then its AI Legal Guide and AI Money & Tax Guide build your steps in the right order.'}
         </p>
       </div>
-      <div className="mt-4 flex gap-3 rounded-xl bg-[var(--amber-soft)] p-3 text-xs leading-5 text-muted-foreground">
-        <AlertTriangle className="mt-0.5 size-4 shrink-0 text-[var(--amber)]" />{' '}
-        RibbonDesk organizes information; it does not provide legal advice or
-        file applications for you.
+      <div className="mt-4 flex gap-3 rounded-xl bg-[var(--sage-soft)] p-3 text-xs leading-5 text-muted-foreground">
+        <Sparkles className="mt-0.5 size-4 shrink-0 text-[var(--sage)]" />{' '}
+        RibbonDesk provides AI guidance based on cited public information. It is
+        not a law firm, accounting firm, or government agency.
       </div>
       {error ? (
         <div className="mt-4">
@@ -1337,7 +1428,7 @@ function ConfirmJurisdiction({
         disabled={pending}
       >
         {pending ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />}{' '}
-        Confirm and open my desk
+        Confirm and build my route
       </Button>
     </OnboardingFrame>
   );
@@ -1379,6 +1470,18 @@ function CommandCenter({
     } finally {
       setPasskeyPending(false);
     }
+  }
+
+  if (process.env.NEXT_PUBLIC_GUIDED_JOURNEY !== '0') {
+    return (
+      <GuidedJourneyShell
+        organizationId={organizationId}
+        organizationName={organizationName}
+        businessName={businessName}
+        displayName={displayName}
+        locationId={locationId}
+      />
+    );
   }
 
   if (dashboard === undefined)

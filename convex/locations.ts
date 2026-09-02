@@ -12,6 +12,7 @@ import {
   requireMembership,
 } from './lib/permissions';
 import {
+  businessTriggerAnswersValidator,
   businessTriggersValidator,
   lifecycleStageValidator,
 } from './lib/validators';
@@ -40,6 +41,7 @@ export const create = mutation({
     openingTarget: v.optional(v.number()),
     activities: v.array(v.string()),
     triggers: businessTriggersValidator,
+    triggerAnswers: v.optional(businessTriggerAnswersValidator),
   },
   returns: v.id('locations'),
   handler: async (ctx, args) => {
@@ -93,6 +95,7 @@ export const create = mutation({
         .map((activity) => activity.trim())
         .filter(Boolean),
       triggers: args.triggers,
+      triggerAnswers: args.triggerAnswers,
       createdBy: identity.tokenIdentifier,
       createdAt: now,
       updatedAt: now,
@@ -174,6 +177,7 @@ export const updateProfile = mutation({
     openingTarget: v.optional(v.number()),
     activities: v.array(v.string()),
     triggers: businessTriggersValidator,
+    triggerAnswers: v.optional(businessTriggerAnswersValidator),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
@@ -205,6 +209,7 @@ export const updateProfile = mutation({
         ...args.triggers,
         other: args.triggers.other.map((value) => value.trim()).filter(Boolean),
       },
+      triggerAnswers: args.triggerAnswers,
     };
     if (
       !next.name ||
@@ -228,7 +233,9 @@ export const updateProfile = mutation({
       next.postalCode !== location.postalCode ||
       next.countryCode !== location.countryCode ||
       JSON.stringify(next.activities) !== JSON.stringify(location.activities) ||
-      JSON.stringify(next.triggers) !== JSON.stringify(location.triggers);
+      JSON.stringify(next.triggers) !== JSON.stringify(location.triggers) ||
+      JSON.stringify(next.triggerAnswers) !==
+        JSON.stringify(location.triggerAnswers);
     const now = Date.now();
     await ctx.db.patch(args.locationId, {
       ...next,

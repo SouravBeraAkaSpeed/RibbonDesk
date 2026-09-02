@@ -2,13 +2,21 @@ import { defineSchema, defineTable } from 'convex/server';
 import { v } from 'convex/values';
 
 import {
+  businessTriggerAnswersValidator,
   businessTriggersValidator,
   confidenceValidator,
+  journeyActionTypeValidator,
+  journeyGuideValidator,
+  journeyPhaseValidator,
+  journeyResearchStageValidator,
+  journeyStatusValidator,
+  journeyStepStatusValidator,
   jobStatusValidator,
   lifecycleStageValidator,
   proposalStatusValidator,
   requirementStatusValidator,
   roleValidator,
+  sourceTierValidator,
   taskStatusValidator,
 } from './lib/validators';
 
@@ -145,6 +153,7 @@ export default defineSchema({
     nextSourceCheckAt: v.optional(v.number()),
     activities: v.array(v.string()),
     triggers: businessTriggersValidator,
+    triggerAnswers: v.optional(businessTriggerAnswersValidator),
     createdBy: v.string(),
     createdAt: v.number(),
     updatedAt: v.number(),
@@ -221,6 +230,159 @@ export default defineSchema({
     .index('by_locationId_and_createdAt', ['locationId', 'createdAt'])
     .index('by_locationId_and_status', ['locationId', 'status']),
 
+  journeys: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    version: v.number(),
+    status: journeyStatusValidator,
+    researchStage: journeyResearchStageValidator,
+    currentStepId: v.optional(v.id('journeySteps')),
+    workflowId: v.optional(v.string()),
+    progressPercent: v.number(),
+    errorMessage: v.optional(v.string()),
+    createdBy: v.string(),
+    startedAt: v.number(),
+    readyAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_organizationId', ['organizationId'])
+    .index('by_locationId_and_version', ['locationId', 'version'])
+    .index('by_locationId_and_status', ['locationId', 'status']),
+
+  journeySteps: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    journeyId: v.id('journeys'),
+    phase: journeyPhaseValidator,
+    order: v.number(),
+    title: v.string(),
+    plainSummary: v.string(),
+    why: v.string(),
+    guide: journeyGuideValidator,
+    actionType: journeyActionTypeValidator,
+    status: journeyStepStatusValidator,
+    timeEstimate: v.optional(v.string()),
+    costSummary: v.optional(v.string()),
+    requiredInfo: v.array(v.string()),
+    citations: v.array(
+      v.object({
+        url: v.string(),
+        title: v.string(),
+        excerpt: v.optional(v.string()),
+        official: v.boolean(),
+        sourceTier: v.optional(sourceTierValidator),
+      }),
+    ),
+    nextQuestion: v.optional(v.string()),
+    userAnswer: v.optional(v.string()),
+    screenAnalysis: v.optional(v.string()),
+    officialPortalUrl: v.optional(v.string()),
+    requirementId: v.optional(v.id('requirements')),
+    taskId: v.optional(v.id('tasks')),
+    applicationId: v.optional(v.id('applications')),
+    completedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_organizationId', ['organizationId'])
+    .index('by_journeyId_and_order', ['journeyId', 'order'])
+    .index('by_locationId_and_status', ['locationId', 'status'])
+    .index('by_locationId_and_phase_and_order', [
+      'locationId',
+      'phase',
+      'order',
+    ]),
+
+  specialistReviews: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    journeyId: v.id('journeys'),
+    specialist: v.union(v.literal('legal'), v.literal('money_tax')),
+    conclusion: v.string(),
+    evidenceGrade: v.union(
+      v.literal('controlling'),
+      v.literal('official'),
+      v.literal('reference'),
+      v.literal('insufficient'),
+    ),
+    confidence: confidenceValidator,
+    citations: v.array(
+      v.object({
+        url: v.string(),
+        title: v.string(),
+        excerpt: v.optional(v.string()),
+        official: v.boolean(),
+        sourceTier: v.optional(sourceTierValidator),
+      }),
+    ),
+    missingFacts: v.array(v.string()),
+    conflicts: v.array(v.string()),
+    findings: v.array(
+      v.object({
+        title: v.string(),
+        summary: v.string(),
+        why: v.string(),
+        phase: journeyPhaseValidator,
+        actionType: journeyActionTypeValidator,
+        timeEstimate: v.optional(v.string()),
+        costSummary: v.optional(v.string()),
+        requiredInfo: v.array(v.string()),
+        citationUrls: v.array(v.string()),
+        nextQuestion: v.optional(v.string()),
+        officialPortalUrl: v.optional(v.string()),
+      }),
+    ),
+    model: v.string(),
+    promptVersion: v.string(),
+    createdAt: v.number(),
+  })
+    .index('by_organizationId', ['organizationId'])
+    .index('by_journeyId_and_specialist', ['journeyId', 'specialist'])
+    .index('by_locationId_and_createdAt', ['locationId', 'createdAt']),
+
+  serviceOptions: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    journeyId: v.id('journeys'),
+    journeyStepId: v.optional(v.id('journeySteps')),
+    kind: v.union(v.literal('official'), v.literal('commercial')),
+    name: v.string(),
+    url: v.string(),
+    description: v.string(),
+    priceSummary: v.optional(v.string()),
+    sourceTitle: v.string(),
+    capturedAt: v.number(),
+    embedStatus: v.union(
+      v.literal('unknown'),
+      v.literal('allowed'),
+      v.literal('blocked'),
+    ),
+  })
+    .index('by_organizationId', ['organizationId'])
+    .index('by_journeyId_and_kind', ['journeyId', 'kind'])
+    .index('by_journeyStepId_and_kind', ['journeyStepId', 'kind'])
+    .index('by_locationId_and_capturedAt', ['locationId', 'capturedAt']),
+
+  portalVisits: defineTable({
+    organizationId: v.id('organizations'),
+    locationId: v.id('locations'),
+    journeyStepId: v.id('journeySteps'),
+    url: v.string(),
+    mode: v.union(v.literal('embedded'), v.literal('external')),
+    status: v.union(
+      v.literal('opened'),
+      v.literal('completed'),
+      v.literal('abandoned'),
+    ),
+    openedBy: v.string(),
+    openedAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index('by_organizationId', ['organizationId'])
+    .index('by_journeyStepId_and_openedAt', ['journeyStepId', 'openedAt'])
+    .index('by_locationId_and_openedAt', ['locationId', 'openedAt']),
+
   sourceSnapshots: defineTable({
     organizationId: v.id('organizations'),
     locationId: v.id('locations'),
@@ -230,6 +392,7 @@ export default defineSchema({
     title: v.string(),
     agency: v.optional(v.string()),
     official: v.boolean(),
+    sourceTier: v.optional(sourceTierValidator),
     contentHash: v.string(),
     excerpt: v.optional(v.string()),
     storageId: v.optional(v.id('_storage')),
@@ -522,6 +685,7 @@ export default defineSchema({
     requirementId: v.optional(v.id('requirements')),
     applicationId: v.optional(v.id('applications')),
     inspectionId: v.optional(v.id('inspections')),
+    journeyStepId: v.optional(v.id('journeySteps')),
     linkType: v.union(
       v.literal('evidence'),
       v.literal('attachment'),
@@ -534,7 +698,8 @@ export default defineSchema({
     .index('by_organizationId', ['organizationId'])
     .index('by_documentId', ['documentId'])
     .index('by_requirementId', ['requirementId'])
-    .index('by_applicationId', ['applicationId']),
+    .index('by_applicationId', ['applicationId'])
+    .index('by_journeyStepId', ['journeyStepId']),
 
   inboxBindings: defineTable({
     organizationId: v.id('organizations'),

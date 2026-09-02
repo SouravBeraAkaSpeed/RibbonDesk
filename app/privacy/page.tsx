@@ -20,7 +20,7 @@ export default function PrivacyPage() {
         {
           title: 'Why the data is used',
           paragraphs: [
-            'RibbonDesk uses workspace data to organize requirements, prepare application materials, surface deadlines, coordinate a team, and generate reviewable AI proposals. Compliance-impacting proposals do not become confirmed records without human approval.',
+            'RibbonDesk uses workspace data to research current public sources, build a step-by-step business journey, explain legal and tax topics, prepare materials, surface deadlines, and keep files and messages connected to the right step. Filings, payments, attestations, and external sends always require your deliberate action.',
           ],
         },
         {
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
         {
           title: 'Service providers',
           paragraphs: [
-            'Convex provides the backend, authentication storage, and realtime data layer. Better Auth manages authentication logic. OpenAI models accessed through OpenRouter, Firecrawl, AgentMail, and ChatGPT Sites support specific product workflows. AgentMail also delivers verification and password-reset messages. Secrets stay in server environments and are never placed in the public client or build log.',
+            'Convex provides the backend, authentication storage, and realtime data layer. Better Auth manages authentication logic. OpenAI models accessed through OpenRouter, Exa, Firecrawl, AgentMail, and ChatGPT Sites support specific product workflows. AgentMail also delivers verification and password-reset messages. Secrets stay in server environments and are never placed in the public client or build log.',
           ],
         },
       ]}

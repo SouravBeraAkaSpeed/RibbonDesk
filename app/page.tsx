@@ -28,22 +28,22 @@ import {
 const steps = [
   {
     number: '01',
-    title: 'Tell us about the business',
-    copy: 'Location, activities, build-out, employees, signage, food, alcohol, seating, and the details that change what applies.',
+    title: 'Answer simple questions',
+    copy: 'Tell RibbonDesk what you want to open, where it will operate, and what it will actually do. “I’m not sure” is always an option.',
     icon: Building2,
     tone: 'blue',
   },
   {
     number: '02',
-    title: 'Review cited requirements',
-    copy: 'RibbonDesk researches official sources and proposes requirements, fees, dependencies, conflicts, and open questions.',
+    title: 'AI builds your route',
+    copy: 'For 5–10 minutes, RibbonDesk checks current government sources and runs dedicated legal and money-and-tax reviews.',
     icon: FileCheck2,
     tone: 'coral',
   },
   {
     number: '03',
-    title: 'Run everything from one desk',
-    copy: 'Own the tasks, evidence, agency email, applications, inspections, and renewals—with people approving every important change.',
+    title: 'Follow one step at a time',
+    copy: 'See what to do now, why it matters, what it may cost, what you need, and where the answer came from.',
     icon: Sparkles,
     tone: 'sage',
   },
@@ -64,17 +64,17 @@ const faqs = [
   {
     question: 'Is RibbonDesk only for NYC restaurants?',
     answer:
-      'No. RibbonDesk is designed for any local business. NYC cafés and restaurants are simply the first verified coverage pack; other locations use dynamic, cited research that is clearly marked for review.',
+      'No. RibbonDesk researches the business and location you enter. Its NYC food-service source library gives those businesses a faster start, but the guided research flow works for other businesses and places too.',
   },
   {
-    question: 'Does RibbonDesk submit applications for me?',
+    question: 'Do I need to understand legal or tax language?',
     answer:
-      'RibbonDesk prepares and tracks application packets, attachments, receipts, and outcomes. It does not autonomously submit forms to government portals.',
+      'No. The AI Legal Guide and AI Money & Tax Guide turn cited public information into a plain-language conclusion and explain exactly what it means for your business.',
   },
   {
-    question: 'Can AI change requirements or send email by itself?',
+    question: 'Can RibbonDesk file, pay, or sign for me?',
     answer:
-      'No. AI can summarize, explain, draft, and propose. Consequential record changes and outbound messages require an owner or administrator to approve them.',
+      'No. RibbonDesk guides you beside the official website, keeps your work organized, and can draft messages. You make every filing, payment, signature, attestation, and external send yourself.',
   },
   {
     question: 'What happens after the business opens?',
@@ -121,7 +121,8 @@ export default function Home() {
             </h1>
             <p>
               One live desk for permits, applications, inspections, agency
-              email, evidence, and renewals.
+              email, evidence, and renewals—turned into one clear step at a
+              time.
             </p>
             <div className="rd-hero-actions">
               <LandingWorkspaceButton signedOutLabel="Start your real workspace" />
@@ -136,8 +137,8 @@ export default function Home() {
               </Button>
             </div>
             <p className="rd-hero-note">
-              <ShieldCheck aria-hidden="true" /> Official-source citations ·
-              Human-approved AI
+              <ShieldCheck aria-hidden="true" /> Live official sources · AI
+              legal and tax guides
             </p>
           </div>
 
@@ -164,8 +165,8 @@ export default function Home() {
             <div className="rd-float-card rd-float-next">
               <CircleCheckBig />
               <span>
-                Next best action
-                <strong>Review permit</strong>
+                Your current step
+                <strong>Choose a business name</strong>
               </span>
             </div>
           </div>
@@ -173,9 +174,9 @@ export default function Home() {
 
         <section className="rd-signal-bar" aria-label="RibbonDesk capabilities">
           {[
-            ['Cited & current', ShieldCheck],
-            ['One live record', FileText],
-            ['Realtime teamwork', Users],
+            ['Real source research', ShieldCheck],
+            ['One step at a time', FileText],
+            ['AI legal & tax guides', Users],
             ['Ready after opening', BellRing],
           ].map(([label, Icon]) => (
             <span key={label as string}>
@@ -192,12 +193,12 @@ export default function Home() {
             </h2>
             <div>
               <p>
-                Requirements are scattered across agency sites, forms, PDFs,
-                email, deadlines, and portals. RibbonDesk turns that mess into
-                one clear operating record.
+                Government guidance, registrations, tax questions, forms, email,
+                deadlines, and portals are scattered everywhere. RibbonDesk
+                researches them and builds the route for you.
               </p>
               <Link href="/app" className="rd-text-link">
-                Build your operating desk <ArrowRight />
+                Build your guided route <ArrowRight />
               </Link>
             </div>
           </div>
@@ -255,24 +256,24 @@ export default function Home() {
           <div className="rd-feature-copy">
             <span className="rd-section-kicker">Research with receipts</span>
             <h2>
-              Know exactly
+              Let the guides learn
               <br />
-              what <em>applies.</em>
+              what <em>matters.</em>
             </h2>
             <p>
-              RibbonDesk researches official sources for the business, location,
-              and activities—then shows the agency, citation, confidence,
-              dependencies, and unanswered questions.
+              Exa finds focused evidence, Firecrawl saves the authoritative
+              pages, and dedicated AI legal and tax guides double-check the
+              answer before your journey appears.
             </p>
             <ul className="rd-check-list">
               <li>
-                <Check /> Source URL and captured evidence
+                <Check /> Current source URL and saved evidence
               </li>
               <li>
-                <Check /> Conflicts become review items
+                <Check /> Only official sources create must-do steps
               </li>
               <li>
-                <Check /> Nothing is confirmed without you
+                <Check /> One simple question when a fact is missing
               </li>
             </ul>
           </div>
@@ -280,11 +281,11 @@ export default function Home() {
 
         <section id="daily-desk" className="rd-desk rd-section">
           <div className="rd-centered-heading rd-centered-heading-narrow">
-            <span className="rd-section-kicker">Your daily command center</span>
-            <h2>See what needs you. Ignore what does not.</h2>
+            <span className="rd-section-kicker">Your guided journey</span>
+            <h2>Do the next useful thing. Nothing more.</h2>
             <p>
-              Blockers, deadlines, agency replies, evidence, and the next best
-              action—ordered by what matters to opening.
+              Your current step, its reason, source, files, messages, and AI
+              guide stay together. The full roadmap remains one click away.
             </p>
           </div>
 
@@ -293,40 +294,37 @@ export default function Home() {
               <Brand />
               <div className="rd-mini-nav">
                 <span className="active">
-                  <Sparkles /> Today
+                  <Sparkles /> Journey
                 </span>
                 <span>
-                  <FileCheck2 /> Plan
+                  <FileCheck2 /> Roadmap
                 </span>
                 <span>
-                  <Inbox /> Inbox <b>2</b>
-                </span>
-                <span>
-                  <FileText /> Documents
+                  <Inbox /> More <b>2</b>
                 </span>
               </div>
             </div>
             <div className="rd-window-main">
               <div className="rd-window-heading">
                 <div>
-                  <span>Tuesday, September 14</span>
-                  <h3>Good morning, Alex.</h3>
+                  <span>Northstar Consulting · New York</span>
+                  <h3>Your next step is ready.</h3>
                 </div>
                 <div className="rd-readiness-pill">
-                  <span>Opening readiness</span>
-                  <strong>68%</strong>
+                  <span>Route progress</span>
+                  <strong>2 of 11</strong>
                 </div>
               </div>
               <div className="rd-today-grid">
                 <div className="rd-next-action">
-                  <span className="rd-card-label">Next best action</span>
+                  <span className="rd-card-label">Must do before opening</span>
                   <div className="rd-action-icon">
                     <FileCheck2 />
                   </div>
-                  <h4>Review food service permit</h4>
-                  <p>Application packet is ready for owner approval.</p>
+                  <h4>Form the New York business</h4>
+                  <p>Create the legal business before tax and hiring steps.</p>
                   <button type="button">
-                    Review packet <ChevronRight />
+                    Open this step <ChevronRight />
                   </button>
                 </div>
                 <div className="rd-mini-stack">
@@ -335,8 +333,8 @@ export default function Home() {
                       <MessageSquareText />
                     </span>
                     <span>
-                      <small>Agency inbox</small>
-                      <strong>2 replies need you</strong>
+                      <small>Why it matters</small>
+                      <strong>Creates the legal company</strong>
                     </span>
                   </div>
                   <div className="rd-mini-signal">
@@ -344,8 +342,8 @@ export default function Home() {
                       <CalendarDays />
                     </span>
                     <span>
-                      <small>Next deadline</small>
-                      <strong>Certificate · Sep 18</strong>
+                      <small>Expected time</small>
+                      <strong>About 15–30 minutes</strong>
                     </span>
                   </div>
                   <div className="rd-mini-signal">
@@ -353,8 +351,8 @@ export default function Home() {
                       <ShieldCheck />
                     </span>
                     <span>
-                      <small>Source monitor</small>
-                      <strong>All official sources current</strong>
+                      <small>Evidence</small>
+                      <strong>New York official source</strong>
                     </span>
                   </div>
                 </div>
@@ -372,12 +370,12 @@ export default function Home() {
               already <em>connected.</em>
             </h2>
             <p>
-              Every message can stay linked to its requirement, task,
-              attachment, deadline, and responsible teammate. Ribbon Assistant
-              summarizes the reply and prepares a proposal for review.
+              Give a government office your optional RibbonDesk inbox. New
+              replies can stay linked to the right journey step, while the AI
+              explains the message and drafts your response.
             </p>
             <div className="rd-human-note">
-              <ShieldCheck /> AI drafts. Owners and admins approve.
+              <ShieldCheck /> You approve every external send.
             </div>
           </div>
           <div className="rd-inbox-scene">
@@ -398,9 +396,9 @@ export default function Home() {
               </p>
               <div className="rd-proposal-row">
                 <span>
-                  <Sparkles /> Proposal ready
+                  <Sparkles /> Step update ready
                 </span>
-                <button type="button">Review proposal</button>
+                <button type="button">See what changed</button>
               </div>
             </article>
           </div>
@@ -440,8 +438,8 @@ export default function Home() {
             <span className="rd-section-kicker">Built for local business</span>
             <h2>One desk. Many kinds of opening.</h2>
             <p>
-              NYC cafés and restaurants are our first verified coverage pack—not
-              the limit of the product.
+              From a consulting studio to a café, RibbonDesk researches a route
+              around the business and place you enter.
             </p>
           </div>
           <div className="rd-business-cloud">
@@ -467,11 +465,11 @@ export default function Home() {
           </div>
           <div className="rd-demo-copy">
             <span className="rd-section-kicker">Your data, your desk</span>
-            <h2>Build the live operating record for your business.</h2>
+            <h2>Let RibbonDesk build your opening route.</h2>
             <p>
-              Create your business and location, add cited requirements, assign
-              real work, upload evidence, prepare applications, and track every
-              deadline in one persistent workspace.
+              Answer ordinary questions, wait while live research runs, then
+              follow one evidence-backed step at a time through opening day and
+              the responsibilities that come after it.
             </p>
             <LandingWorkspaceButton signedOutLabel="Start your workspace" />
           </div>
@@ -513,8 +511,8 @@ export default function Home() {
         <footer className="rd-footer">
           <Brand />
           <p>
-            RibbonDesk organizes information and workflows. It does not provide
-            legal advice or submit applications on your behalf.
+            RibbonDesk provides AI guidance based on cited public information.
+            It is not a law firm, accounting firm, or government agency.
           </p>
           <div>
             <Link href="/privacy">Privacy</Link>

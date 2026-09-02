@@ -27,13 +27,14 @@ export const metadata: Metadata = {
     template: '%s · RibbonDesk',
   },
   description:
-    'One live desk for permits, applications, inspections, agency email, evidence, and renewals.',
+    'An evidence-backed AI guide that researches and walks business owners through opening and staying ready, one clear step at a time.',
   icons: {
     icon: '/icon.svg',
   },
   openGraph: {
     title: 'RibbonDesk — Open right. Stay ready.',
-    description: 'From red tape to ribbon cutting—and every renewal after.',
+    description:
+      'AI-researched business opening guidance, one cited step at a time.',
     type: 'website',
     images: [
       {
@@ -47,7 +48,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'RibbonDesk — Open right. Stay ready.',
-    description: 'From red tape to ribbon cutting—and every renewal after.',
+    description:
+      'AI-researched business opening guidance, one cited step at a time.',
     images: ['/og-playful.png'],
   },
 };

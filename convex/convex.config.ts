@@ -24,6 +24,7 @@ const app = defineApp({
     OPENROUTER_API_KEY: v.optional(v.string()),
     OPENROUTER_MODEL_COMPLEX: v.optional(v.string()),
     OPENROUTER_MODEL_FAST: v.optional(v.string()),
+    EXA_API_KEY: v.optional(v.string()),
     RIBBONDESK_PROVIDER_MODE: v.optional(v.string()),
     SITE_URL: v.string(),
   },

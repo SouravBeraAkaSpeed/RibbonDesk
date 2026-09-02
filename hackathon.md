@@ -516,3 +516,35 @@ revoked that scoped key, deleted the empty inbox, and listed the account again.
 AgentMail now reports two occupied slots: the RibbonDesk security sender and the
 active Quark Labs location inbox. One of the three plan slots is available for
 the private judge workspace to provision its own live case inbox.
+
+I rebuilt the authenticated product around a guided AI journey instead of a
+module dashboard. Onboarding now asks plain Yes, No, or Not sure questions and
+starts one durable live route automatically after the owner confirms where the
+business will operate. The Convex workflow uses Exa for focused discovery,
+Firecrawl for durable evidence, GPT-5.6 Terra for separate legal and money/tax
+reviews, and GPT-5.6 Luna to publish an ordered plain-language route. Only
+official evidence can create a Must-do step; professional references can
+explain, and captured commercial pages appear only as neutral optional help.
+Daily quota is reserved before research starts so a route cannot consume its
+first AI calls and then strand the owner halfway through.
+
+The primary `/app` surface now shows one current action, a compact roadmap, and
+the responsible AI guide. A focused step keeps its reason, expected time and
+cost, preparation list, citations, official-first completion choices, linked
+files, applications, and AgentMail messages together. The adaptive portal
+companion embeds only allowlisted public HTTPS pages that permit framing and
+falls back to a direct window for redirects, blocked frames, logins, or finance.
+Screen sharing requires browser permission plus a preview-and-confirm step;
+banking pages and banking screenshots are always excluded. Owners can attach
+real proof, complete or skip appropriate work, and explicitly continue into the
+after-opening route without losing the opening record. Failed live inbox
+provisioning can now be retried after a provider quota or credential issue.
+
+The new source passes nine focused unit tests, strict TypeScript, lint, a Convex
+development push, a zero-production-vulnerability dependency audit, and the
+ChatGPT Sites production build. I inspected the local landing and account-entry
+routes in the in-app browser with no console errors or visual blur. The release
+bundle contains the production Convex origin and no development-deployment
+reference. This entry records verified source and build evidence; production
+promotion and the real Northstar-style provider run remain the next release
+gate.

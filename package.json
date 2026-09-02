@@ -1,7 +1,7 @@
 {
   "name": "ribbondesk",
   "version": "0.1.0",
-  "description": "A cited, human-reviewed operating desk that helps local businesses open right and stay ready.",
+  "description": "An evidence-backed AI guide that researches and walks local business owners through opening and staying ready, one clear step at a time.",
   "private": true,
   "license": "MIT",
   "author": {
@@ -17,9 +17,11 @@
   },
   "keywords": [
     "local-business",
+    "guided-journey",
     "permits",
     "convex",
     "firecrawl",
+    "exa",
     "agentmail",
     "openrouter",
     "passkeys",

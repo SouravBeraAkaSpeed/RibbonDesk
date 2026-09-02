@@ -2,7 +2,7 @@
   <img src="./public/icon.svg" width="72" height="72" alt="RibbonDesk logo" />
   <h1>RibbonDesk</h1>
   <p><strong>Open right. Stay ready.</strong></p>
-  <p>One live desk for official-source research, requirements, tasks, evidence, agency email, applications, inspections, and renewals.</p>
+  <p>An evidence-backed AI guide that builds and walks an owner through a personal business-opening route, one clear step at a time.</p>
 
   <p>
     <a href="https://ribbondesk.souravberaakagralius.chatgpt.site"><strong>Open the live app</strong></a>
@@ -24,20 +24,21 @@
 
 ## What RibbonDesk does
 
-RibbonDesk helps a local business owner understand what must be done to open a
-business and keep it running. The owner describes the business and its location;
-RibbonDesk researches official sources, proposes a cited plan for human review,
-organizes the work, turns agency email into reviewed follow-up actions, and keeps
-renewals and inspections visible after opening.
+RibbonDesk helps a first-time owner understand what to do to open a business and
+keep it running. The owner answers ordinary questions; RibbonDesk searches live
+sources, saves authoritative evidence, runs dedicated AI legal and money-and-tax
+checks, and builds a personal route in the right order. The product then keeps
+the current step, its explanation, official portal, files, messages, and AI guide
+together.
 
-NYC cafés and restaurants are the first verified coverage pack. Any business in
-any location can run dynamic official-source research. Unsupported, uncertain,
-or conflicting results stay visibly marked for review rather than being
-presented as settled guidance.
+NYC cafés and restaurants have the first maintained source library, but they are
+not the product limit. Any business and location can start live Exa and Firecrawl
+research. Only official evidence can create a must-do step. A missing or
+conflicting fact becomes one simple question instead of a guessed answer.
 
-RibbonDesk is an information organizer and work tracker, not a law firm or a
-government filing service. It prepares and tracks applications; it does not
-submit them or make legal decisions for the owner.
+RibbonDesk provides AI guidance based on cited public information. It is not a
+law firm, accounting firm, or government agency. It does not file, pay, sign,
+attest, impersonate an owner, or store third-party portal credentials.
 
 ## A complete owner journey
 
@@ -45,43 +46,43 @@ submit them or make legal decisions for the owner.
    confirmation link. After sign-in, add a device passkey for
    passwordless access.
 2. **Create a protected workspace.** Name the organization, business, and first location.
-3. **Describe the real operation.** Add the address, business type, activities, and triggers such as food service, alcohol, seating, employees, construction, delivery, or signage.
-4. **Confirm the jurisdiction.** RibbonDesk detects a likely jurisdiction but requires the owner to confirm it.
-5. **Approve source research.** The owner sees the trusted domains and starts a live Firecrawl run.
-6. **Review cited proposals.** OpenRouter models extract possible permits, registrations, inspections, fees, dependencies, deadlines, and open questions. Every proposal keeps its source evidence and confidence.
-7. **Keep people in control.** The owner accepts, edits, rejects, or marks each proposal not applicable. AI output never silently becomes a requirement.
-8. **Run the opening plan.** Confirmed requirements become assignable tasks with deadlines, blockers, dependencies, status, notes, and evidence.
-9. **Prepare applications.** Reuse business answers, track attachments, inspect readiness, follow the official portal link, and record an external submission receipt and outcome.
-10. **Work from one case inbox.** Provision a location-owned AgentMail inbox, receive agency mail, review the AI summary and proposed changes, edit a reply, and require owner/admin approval before it is sent.
-11. **Coordinate in realtime.** Invite teammates as owner, admin, contributor, or viewer; assign work; search the workspace; and see changes in another browser immediately.
-12. **Stay ready after opening.** Move the location to operating mode and track renewals, inspections, notices, document expirations, corrective actions, reminders, and meaningful source changes.
+3. **Describe the real operation in plain language.** Add the address and activities, then answer “Will your business do any of these things?” with Yes, No, or Not sure.
+4. **Confirm where the business operates.** RibbonDesk shows the city, state or region, and country it will use before research begins.
+5. **Let the live research run.** Exa discovers relevant sources, Firecrawl stores authoritative pages, GPT-5.6 Terra performs legal and money-and-tax reviews, and GPT-5.6 Luna sequences the journey. Progress updates live and survives leaving the page.
+6. **Follow the ready-made route.** Steps are grouped into Must do before opening, Smart to consider, and After opening. Each explains the action, reason, time, cost, preparation, and evidence.
+7. **Complete one outside action with the guide beside it.** An official route appears first. Sites that permit framing open beside the step; blocked or login-protected sites open directly without losing progress.
+8. **Ask for help in context.** The Journey Guide, AI Legal Guide, or AI Money & Tax Guide answers from that step and its sources. Markdown is rendered safely instead of exposed as syntax.
+9. **Share only what you choose.** With explicit browser permission, preview and confirm a portal screenshot before the Journey Guide sees it; PNG/JPEG upload is the fallback. Banking screens are never accepted.
+10. **Keep proof and communication connected.** Attach a receipt or approval to the step. An optional AgentMail inbox links government correspondence and approval-gated drafts to the same work.
+11. **Coordinate in realtime.** Invite teammates as owner, admin, contributor, or viewer; search existing records; and see route changes across connected sessions.
+12. **Continue after opening.** Confirm that the business is operating to unlock renewals, annual filings, inspections, notices, expirations, and recurring work on the same journey.
 13. **Retain control of the data.** Export the organization record or queue permanent deletion of app records, stored files, scheduled work, and the remote case inbox.
 
 ## Product capabilities
 
-The authenticated desk is divided into URL-backed workspaces for Today, Plan &
-research, Inbox, Documents, Operations, Assistant, Team, and Settings. Sidebar,
-mobile navigation, browser history, reloads, and shared links all preserve the
-active workspace instead of scrolling through one oversized dashboard.
+The primary authenticated experience is the guided journey, not a module
+dashboard. `/app` shows the current action, `/app/step/[stepId]` keeps the guide
+and portal companion beside that action, and `/app/roadmap` provides a compact
+preview of what comes next. Messages, files, team, and settings live under More.
 
-| Area                     | What users can do                                                                                                          |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
-| Today                    | See overdue, blocking, waiting-on-agency, upcoming, and informational work in priority order                               |
-| Research                 | Run durable official-source capture, watch progress live, inspect safe source snapshots, and recover partial/failed runs   |
-| Requirements             | Review cited AI proposals, resolve conflicts, manage dependencies, assign owners, and confirm statuses                     |
-| Tasks and evidence       | Create work, attach private files, link evidence, set expirations, and track completion in realtime                        |
-| Applications             | Collect reusable answers, track attachments and readiness, use official portal links, and record external outcomes         |
-| Case inbox               | Provision an inbox, receive signed webhooks, link threads to work, approve proposed updates, and approve outbound delivery |
-| Inspections and renewals | Record outcomes, corrective actions, recurrence, reminders, and future deadlines                                           |
-| Ribbon Assistant         | Ask grounded questions about the current workspace and receive cited, proposal-only help                                   |
-| Team                     | Invite members and enforce owner, admin, contributor, and viewer boundaries server-side                                    |
-| Data controls            | Search, receive notifications, export the organization, and permanently delete it                                          |
+| Area                   | What users can do                                                                                          |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Journey                | See one current action, progress, reason, expected time/cost, preparation list, and evidence               |
+| Live research          | Watch durable Exa discovery, Firecrawl capture, specialist checks, and route building update in realtime   |
+| Portal companion       | Open safe embeddable sources beside the guide or use a secure direct-window fallback                       |
+| AI specialist guides   | Ask legal, money-and-tax, or general journey questions grounded in the step’s saved citations              |
+| Proof and applications | Attach private proof to a step, reuse application answers, prepare packets, and record external outcomes   |
+| Case inbox             | Provision an inbox, receive signed webhooks, connect threads to steps, and approve every outbound delivery |
+| After-opening route    | Continue through renewals, recurring filings, inspections, notices, expirations, and reminders             |
+| Team                   | Invite members and enforce owner, admin, contributor, and viewer boundaries server-side                    |
+| Data controls          | Search, receive notifications, export the organization, and permanently delete it                          |
 
 ## Trust model
 
-- **People confirm consequential changes.** AI proposes; owners and admins approve requirements, deadline changes, and external email.
-- **Evidence stays attached.** Confirmed requirements preserve the source URL, agency, capture date, excerpt, confidence, and verification state.
-- **Uncertainty stays visible.** Missing, conflicting, nonofficial, or truncated guidance becomes a review item.
+- **Only evidence creates must-do work.** Professional references can explain; commercial pages can offer paid help; only official sources support required steps.
+- **AI guides, owners act.** The guides perform research and checking, while owners deliberately click every filing, payment, attestation, destructive action, and external send.
+- **Evidence stays attached.** Each journey step preserves source tier, URL, capture date, excerpt, model/prompt trace, and the reason it applies.
+- **Uncertainty becomes one question.** Missing or conflicting evidence cannot silently produce a confident conclusion.
 - **Authorization lives on the server.** Every protected Convex operation checks the authenticated user, organization membership, and role.
 - **External content is untrusted.** Pages, documents, and email are isolated from system instructions and rendered through safe readers.
 - **Secrets stay server-side.** Only public Site and Convex URLs reach the browser.
@@ -96,11 +97,12 @@ flowchart LR
   U[Business owner and team] --> S[ChatGPT Site\nReact + Vinext]
   S --> A[Better Auth\nverified email + passkeys]
   S <--> C[Convex\ndata + realtime + workflows + files]
-  C --> F[Firecrawl\nofficial-source capture]
-  C --> O[OpenRouter\nOpenAI models]
+  C --> E[Exa\nfocused source discovery]
+  C --> F[Firecrawl\ndurable source capture]
+  C --> O[OpenRouter\nGPT-5.6 Terra + Luna]
   C <--> M[AgentMail\ncase inbox + signed webhooks]
-  C --> H[Human review gates]
-  H --> S
+  O --> G[AI Legal Guide\nAI Money & Tax Guide\nJourney Guide]
+  G --> S
 ```
 
 RibbonDesk uses ChatGPT Sites/Vinext, React 19, strict TypeScript, Tailwind and
@@ -109,9 +111,10 @@ queries, server functions, HTTP callbacks, scheduled work, durable components,
 and file storage. Better Auth provides verified email/password, sessions,
 password reset, and authenticated passkey enrollment. Social providers are not
 exposed by the public release.
-AgentMail delivers security mail through a bounded Convex retry queue. Firecrawl captures official
-sources, OpenRouter serves OpenAI models for structured extraction and grounded
-assistance, and AgentMail provides case inboxes and delivery events.
+AgentMail delivers security mail through a bounded Convex retry queue. Exa finds
+focused current sources, Firecrawl saves durable evidence, OpenRouter serves
+OpenAI GPT-5.6 Terra and Luna for specialist checks and plain-language route
+building, and AgentMail provides case inboxes and delivery events.
 
 See [Architecture](docs/ARCHITECTURE.md) for domains, workflows, authorization,
 provider boundaries, and failure behavior. [Authentication operations](docs/AUTHENTICATION.md)
@@ -142,6 +145,7 @@ environment, not `.env.local`. The client receives only public URLs.
 Required production values:
 
 - `OPENROUTER_API_KEY`
+- `EXA_API_KEY`
 - `FIRECRAWL_API_KEY`
 - `AGENTMAIL_API_KEY`
 - `AGENTMAIL_WEBHOOK_SECRET`
