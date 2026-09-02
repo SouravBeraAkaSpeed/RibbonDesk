@@ -247,7 +247,7 @@ export default function Home() {
             <span className="rd-blob rd-blob-yellow" />
             <Image
               src="/art/ribbondesk-research-storefront.png"
-              alt="A local storefront connected to official source records and its jurisdiction"
+              alt="A local storefront connected to official source records for its location"
               width={1448}
               height={1086}
               className="rd-storefront-image"

@@ -1797,7 +1797,7 @@ function OnboardingFrame({
     { number: 1, label: 'Workspace' },
     { number: 2, label: 'Business' },
     { number: 3, label: 'Location' },
-    { number: 4, label: 'Jurisdiction' },
+    { number: 4, label: 'Place check' },
   ];
   return (
     <main className="auth-page min-h-screen px-5 py-10">
