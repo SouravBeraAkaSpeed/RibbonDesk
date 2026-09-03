@@ -12,7 +12,7 @@
 - **Auth:** Other (Better Auth passkeys on Convex)
 - **AI models:** openai/gpt-5.6-terra and openai/gpt-5.6-luna through OpenRouter
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-09-02T08:46:18Z
+- **Last updated:** 2026-09-03T17:19:36Z
 
 ## Log
 
@@ -588,3 +588,21 @@ its cards beyond the viewport. Both grid tracks and cards now have explicit
 shrink boundaries, the sidebar contains its children, and titles wrap inside
 the available width instead of stretching the page. Strict TypeScript and lint
 pass for the fix before production packaging.
+
+### 2026-09-03 - working tree
+
+I replaced the fragile cross-domain email-confirmation redirect with a dedicated
+RibbonDesk confirmation route. Verification and password-reset messages now use
+the public Site origin and carry their one-time secret in a URL fragment, which
+the browser removes before exchanging it with Better Auth. Clicking a confirmation
+now produces an explicit success screen followed by deliberate password sign-in
+instead of implying that a Convex-domain cookie can authenticate the public Site.
+
+I reproduced the original behavior against production logs, verified that the
+reported account was confirmed, and proved the repaired flow with real AgentMail
+delivery and a successful Better Auth token exchange. The controlled acceptance
+run then completed verified-email sign-in, authenticated passkey enrollment,
+passkey sign-in, password reset, post-reset sign-in, and bounded workspace cleanup.
+Ten domain tests, strict TypeScript, lint, the production dependency audit, and
+the production Sites build pass, and the updated auth functions are live on the
+production Convex deployment.

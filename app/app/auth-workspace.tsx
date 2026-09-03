@@ -122,7 +122,11 @@ type AuthMode = 'signin' | 'register' | 'forgot' | 'reset' | 'verify';
 function AccountEntry() {
   const capabilities = useQuery(api.auth.getAuthCapabilities);
   const urlParameters = new URLSearchParams(window.location.search);
-  const resetToken = urlParameters.get('token');
+  const hashParameters = new URLSearchParams(window.location.hash.slice(1));
+  const [resetToken, setResetToken] = useState(
+    () => urlParameters.get('token') ?? hashParameters.get('token'),
+  );
+  const resetTokenWasInHash = hashParameters.has('token');
   const justVerified = urlParameters.get('verified') === '1';
   const pendingVerificationEmail =
     window.sessionStorage.getItem('ribbondesk.pendingVerificationEmail') ?? '';
@@ -159,9 +163,25 @@ function AccountEntry() {
   );
 
   useEffect(() => {
+    const consumeResetHash = () => {
+      const token = new URLSearchParams(window.location.hash.slice(1)).get(
+        'token',
+      );
+      if (!token) return;
+      setResetToken(token);
+      setMode('reset');
+      setError(null);
+      setNotice(null);
+      window.history.replaceState({}, '', '/app');
+    };
+
+    window.addEventListener('hashchange', consumeResetHash);
+    if (resetTokenWasInHash)
+      window.history.replaceState({}, '', '/app');
     if (justVerified)
       window.sessionStorage.removeItem('ribbondesk.pendingVerificationEmail');
-  }, [justVerified]);
+    return () => window.removeEventListener('hashchange', consumeResetHash);
+  }, [justVerified, resetTokenWasInHash]);
 
   function switchMode(next: AuthMode) {
     if (next !== 'verify')
@@ -192,7 +212,7 @@ function AccountEntry() {
           name,
           email,
           password,
-          callbackURL: `${window.location.origin}/app?verified=1`,
+          callbackURL: `${window.location.origin}/verify-email`,
         });
         if (result.error)
           throw new Error(result.error.message || 'Account creation failed.');
@@ -247,7 +267,7 @@ function AccountEntry() {
         if (/verif/i.test(result.error.message ?? '')) {
           const verification = await authClient.sendVerificationEmail({
             email,
-            callbackURL: `${window.location.origin}/app?verified=1`,
+            callbackURL: `${window.location.origin}/verify-email`,
           });
           if (verification.error)
             throw new Error(
@@ -304,7 +324,7 @@ function AccountEntry() {
     try {
       const result = await authClient.sendVerificationEmail({
         email,
-        callbackURL: `${window.location.origin}/app?verified=1`,
+        callbackURL: `${window.location.origin}/verify-email`,
       });
       if (result.error)
         throw new Error(

@@ -14,6 +14,12 @@ import authSchema from './betterAuth/schema';
 const siteUrl = env.SITE_URL ?? 'http://localhost:3000';
 const authBaseUrl = env.CONVEX_SITE_URL;
 
+function publicTokenLink(path: string, token: string) {
+  const link = new URL(path, siteUrl);
+  link.hash = new URLSearchParams({ token }).toString();
+  return link.toString();
+}
+
 async function queueSecurityEmail(
   ctx: GenericCtx<DataModel>,
   args: {
@@ -49,11 +55,12 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
       autoSignIn: false,
       revokeSessionsOnPasswordReset: true,
       resetPasswordTokenExpiresIn: 3_600,
-      sendResetPassword: async ({ user, url }) => {
+      sendResetPassword: async ({ user, token }) => {
+        const resetUrl = publicTokenLink('/app', token);
         await queueSecurityEmail(ctx, {
           to: user.email,
           subject: 'Reset your RibbonDesk password',
-          text: `A password reset was requested for your RibbonDesk account.\n\nReset it within one hour:\n${url}\n\nIf you did not request this, you can ignore this message.`,
+          text: `A password reset was requested for your RibbonDesk account.\n\nReset it within one hour:\n${resetUrl}\n\nIf you did not request this, you can ignore this message.`,
           kind: 'password_reset',
         });
       },
@@ -61,13 +68,14 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>) =>
     emailVerification: {
       sendOnSignUp: true,
       sendOnSignIn: false,
-      autoSignInAfterVerification: true,
+      autoSignInAfterVerification: false,
       expiresIn: 3_600,
-      sendVerificationEmail: async ({ user, url }) => {
+      sendVerificationEmail: async ({ user, token }) => {
+        const verificationUrl = publicTokenLink('/verify-email', token);
         await queueSecurityEmail(ctx, {
           to: user.email,
           subject: 'Verify your RibbonDesk email',
-          text: `Welcome to RibbonDesk.\n\nConfirm this email address within one hour:\n${url}\n\nIf you did not create this account, you can ignore this message.`,
+          text: `Welcome to RibbonDesk.\n\nConfirm this email address within one hour:\n${verificationUrl}\n\nAfter confirmation, RibbonDesk will ask you to sign in with the password you created.\n\nIf you did not create this account, you can ignore this message.`,
           kind: 'verification',
         });
       },

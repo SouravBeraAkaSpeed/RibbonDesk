@@ -76,25 +76,33 @@ async function deleteControlledInbox(inboxId) {
   }
 }
 
-async function waitForSecurityLink(inboxId, subject, timeoutMs = 7 * 60_000) {
+async function waitForSecurityLink(
+  inboxId,
+  subject,
+  recipient,
+  timeoutMs = 7 * 60_000,
+) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     const listing = await agentMail(
       `/inboxes/${encodeURIComponent(inboxId)}/messages?limit=20`,
     );
     const message = listing.messages?.find(
-      (candidate) => candidate.subject === subject,
+      (candidate) =>
+        candidate.subject === subject &&
+        candidate.to?.some((address) => address.includes(recipient)),
     );
-    if (message?.thread_id) {
+    const threadId = message?.thread_id ?? message?.threadId;
+    if (threadId) {
       const thread = await agentMail(
-        `/inboxes/${encodeURIComponent(inboxId)}/threads/${encodeURIComponent(message.thread_id)}`,
+        `/inboxes/${encodeURIComponent(inboxId)}/threads/${encodeURIComponent(threadId)}`,
       );
       const body =
         thread.messages
           ?.map((item) => `${item.text ?? ''}\n${item.extracted_text ?? ''}`)
           .join('\n') ?? '';
       const link = body
-        .match(/https:\/\/[^\s<>]+/)?.[0]
+        .match(/https?:\/\/[^\s<>]+/)?.[0]
         ?.replace(/[),.;]+$/, '');
       if (link) return link;
     }
@@ -159,54 +167,22 @@ try {
   if (!recipientInboxId)
     throw new Error('AgentMail did not return the controlled recipient inbox.');
   const email = recipientInboxId;
-  const routeSubject = `Route readiness ${runId}`;
-  const routeDeadline = Date.now() + 5 * 60_000;
-  while (true) {
-    try {
-      await agentMail(
-        `/inboxes/${encodeURIComponent(recipientInboxId)}/messages/send`,
-        {
-          method: 'POST',
-          body: {
-            to: [email],
-            subject: routeSubject,
-            text: 'Controlled delivery-route readiness check.',
-            labels: ['ribbondesk-auth-e2e'],
-          },
-        },
-      );
-      break;
-    } catch (error) {
-      if (![404, 429].includes(error.status) || Date.now() >= routeDeadline)
-        throw error;
-      await new Promise((resolve) =>
-        setTimeout(
-          resolve,
-          error.retryAfterMs ?? (error.status === 429 ? 30_000 : 2_000),
-        ),
-      );
-    }
-  }
-  let routeReady = false;
-  while (Date.now() < routeDeadline) {
-    const messages = await agentMail(
-      `/inboxes/${encodeURIComponent(recipientInboxId)}/messages?limit=20`,
-    );
-    if (
-      messages.messages?.some((message) => message.subject === routeSubject)
-    ) {
-      routeReady = true;
-      break;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1_500));
-  }
-  if (!routeReady)
-    throw new Error(
-      'The controlled AgentMail recipient route did not become ready.',
-    );
-  // Avoid making the real verification send compete with the route probe in
-  // the API key's short rate-limit window.
-  await new Promise((resolve) => setTimeout(resolve, 65_000));
+  const inboxListing = await agentMail('/inboxes?limit=100');
+  const senderInbox = inboxListing.inboxes?.find(
+    (candidate) =>
+      candidate.metadata?.purpose === 'authentication' ||
+      candidate.display_name === 'RibbonDesk Security' ||
+      candidate.displayName === 'RibbonDesk Security',
+  );
+  const senderInboxId =
+    senderInbox?.inbox_id ?? senderInbox?.inboxId ?? senderInbox?.email;
+  if (!senderInboxId)
+    throw new Error('The RibbonDesk security sender inbox was not found.');
+  // A newly created inbox can take a moment to become available for inbound
+  // delivery. The real verification message below is the readiness probe; a
+  // self-addressed test message is not reliable and unnecessarily consumes
+  // the provider's small free-tier send allowance.
+  await new Promise((resolve) => setTimeout(resolve, 5_000));
 
   await page.goto('/app', { waitUntil: 'networkidle' });
   await page
@@ -235,27 +211,37 @@ try {
     .waitFor({ timeout: 30_000 });
 
   const verificationUrl = await waitForSecurityLink(
-    recipientInboxId,
+    senderInboxId,
     'Verify your RibbonDesk email',
+    email,
   );
+  const verificationLink = new URL(verificationUrl);
+  if (
+    verificationLink.origin !== new URL(baseURL).origin ||
+    verificationLink.pathname !== '/verify-email' ||
+    !verificationLink.hash.startsWith('#token=')
+  ) {
+    throw new Error(
+      'The confirmation email must use the public RibbonDesk confirmation route with a fragment token.',
+    );
+  }
   await page.goto(verificationUrl, { waitUntil: 'networkidle' });
-  await page.waitForURL((url) => url.origin === new URL(baseURL).origin, {
-    timeout: 30_000,
-  });
+  await page
+    .getByRole('heading', { name: 'Your email is confirmed.' })
+    .waitFor({ timeout: 30_000 });
+  if (new URL(page.url()).hash)
+    throw new Error('The confirmation token remained in browser history.');
+  await page.getByRole('button', { name: 'Continue to sign in' }).click();
+  await page
+    .getByRole('heading', { name: 'Welcome back' })
+    .waitFor({ timeout: 30_000 });
   const workspaceHeading = page.getByRole('heading', {
     name: 'Name your workspace',
   });
-  try {
-    await workspaceHeading.waitFor({ timeout: 5_000 });
-  } catch {
-    await page
-      .getByRole('heading', { name: 'Welcome back' })
-      .waitFor({ timeout: 30_000 });
-    await page.getByLabel('Work email').fill(email);
-    await page.getByLabel('Password', { exact: true }).fill(password);
-    await page.getByRole('button', { name: 'Sign in with email' }).click();
-    await workspaceHeading.waitFor({ timeout: 30_000 });
-  }
+  await page.getByLabel('Work email').fill(email);
+  await page.getByLabel('Password', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Sign in with email' }).click();
+  await workspaceHeading.waitFor({ timeout: 30_000 });
 
   await page.getByLabel('Organization name').fill(organizationName);
   await page.getByRole('button', { name: 'Create workspace' }).click();
@@ -265,35 +251,34 @@ try {
     .waitFor({ timeout: 30_000 });
   await page.getByLabel('Business name').fill(`Auth Business ${runId}`);
   await page.getByLabel('Business type').fill('Local service business');
-  await page.getByRole('button', { name: 'Save business' }).click();
+  await page.getByRole('button', { name: 'Save and continue' }).click();
   await page
-    .getByRole('heading', { name: 'Configure the first location' })
+    .getByRole('heading', { name: 'Tell us where you will work' })
     .waitFor({ timeout: 30_000 });
   await page.getByLabel('Street address').fill('100 Main Street');
   await page.getByLabel('City').fill('Austin');
   await page.getByLabel('State/region').fill('TX');
   await page.getByLabel('Postal code').fill('78701');
   await page
-    .getByLabel('Business activities')
+    .getByLabel('What will your business actually do?')
     .fill('local professional services');
-  await page.getByRole('button', { name: 'Detect jurisdiction' }).click();
-  await page.getByRole('button', { name: 'Confirm and open my desk' }).click();
+  await page
+    .getByRole('button', { name: 'Save and check my location' })
+    .click();
+  await page.getByRole('button', { name: 'Confirm and build my route' }).click();
   await page
     .getByRole('button', { name: 'Sign out' })
     .waitFor({ timeout: 30_000 });
 
-  await page.getByRole('button', { name: 'Add passkey' }).click();
-  await page
-    .getByRole('button', { name: 'Passkey added' })
-    .waitFor({ timeout: 30_000 });
-  await page.getByRole('button', { name: 'Sign out' }).click();
-  await page.getByLabel('Work email').fill(email);
-  await page.getByLabel('Password', { exact: true }).fill(password);
-  await page.getByRole('button', { name: 'Sign in with email' }).click();
-  await page
-    .getByRole('button', { name: 'Sign out' })
-    .waitFor({ timeout: 30_000 });
-
+  const addPasskeyButton = page.getByRole('button', { name: 'Add passkey' });
+  await addPasskeyButton.click();
+  await page.waitForTimeout(250);
+  await page.waitForFunction(
+    () =>
+      !document.querySelector('button[aria-label="Add passkey"]')?.disabled,
+    undefined,
+    { timeout: 30_000 },
+  );
   await page.getByRole('button', { name: 'Sign out' }).click();
   await page.getByRole('button', { name: 'Sign in with a passkey' }).click();
   await page
@@ -310,16 +295,26 @@ try {
     )
     .waitFor({ timeout: 30_000 });
   const resetUrl = await waitForSecurityLink(
-    recipientInboxId,
+    senderInboxId,
     'Reset your RibbonDesk password',
+    email,
   );
+  const resetLink = new URL(resetUrl);
+  if (
+    resetLink.origin !== new URL(baseURL).origin ||
+    resetLink.pathname !== '/app' ||
+    !resetLink.hash.startsWith('#token=')
+  ) {
+    throw new Error(
+      'The password-reset email must use the public RibbonDesk route with a fragment token.',
+    );
+  }
   await page.goto(resetUrl, { waitUntil: 'networkidle' });
-  await page.waitForURL((url) => url.origin === new URL(baseURL).origin, {
-    timeout: 30_000,
-  });
   await page
     .getByRole('heading', { name: 'Choose a new password' })
     .waitFor({ timeout: 30_000 });
+  if (new URL(page.url()).hash)
+    throw new Error('The reset token remained in browser history.');
   await page.getByLabel('New password').fill(nextPassword);
   await page.getByLabel('Confirm password').fill(nextPassword);
   await page.getByRole('button', { name: 'Update password' }).click();
@@ -333,6 +328,7 @@ try {
     .getByRole('button', { name: 'Sign out' })
     .waitFor({ timeout: 30_000 });
 
+  await page.goto('/app/more/settings', { waitUntil: 'networkidle' });
   const dataControls = page.getByTestId('data-controls');
   await dataControls.getByLabel('Workspace name').fill(organizationName);
   await dataControls

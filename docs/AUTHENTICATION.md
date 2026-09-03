@@ -74,11 +74,22 @@ API key. The `.env.example` file contains names only.
   isolated Convex component tables.
 - Registration creates no usable password session until the email is verified.
 - Verification and reset links expire after one hour.
+- Security-email links begin on the public RibbonDesk Site, not the Convex auth
+  host. Their one-time token is carried in the URL fragment, removed from the
+  address bar immediately, and then exchanged directly with Better Auth. The
+  token is therefore not included in Sites requests, access logs, or referrer
+  headers.
+- Confirmation deliberately ends on a dedicated success screen. The owner then
+  signs in with the password they created; RibbonDesk does not claim that a
+  cross-domain session was established by clicking the email.
 - AgentMail security messages are first persisted to a bounded retry queue.
 - Transient provider failures honor AgentMail's `Retry-After` response and retry
   with exponential backoff; token-bearing queue records
   are deleted after delivery, terminal failure, or expiry.
 - Password reset revokes the account's other sessions.
+- The current AgentMail sender uses a shared provider domain. Mailbox providers
+  may initially place those messages in spam; a verified custom sending domain
+  is the production deliverability upgrade when one becomes available.
 
 ## Passkeys
 
