@@ -42,9 +42,9 @@ type Env = {
   readonly FIRECRAWL_WEBHOOK_SECRET: string | undefined;
   readonly GOOGLE_CLIENT_ID: string | undefined;
   readonly GOOGLE_CLIENT_SECRET: string | undefined;
-  readonly OPENROUTER_API_KEY: string | undefined;
-  readonly OPENROUTER_MODEL_COMPLEX: string | undefined;
-  readonly OPENROUTER_MODEL_FAST: string | undefined;
+  readonly OPENAI_API_KEY: string | undefined;
+  readonly OPENAI_MODEL_COMPLEX: string | undefined;
+  readonly OPENAI_MODEL_FAST: string | undefined;
   readonly RIBBONDESK_PROVIDER_MODE: string | undefined;
   readonly SITE_URL: string;
 };

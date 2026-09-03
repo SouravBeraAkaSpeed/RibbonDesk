@@ -99,7 +99,7 @@ flowchart LR
   S <--> C[Convex\ndata + realtime + workflows + files]
   C --> E[Exa\nfocused source discovery]
   C --> F[Firecrawl\ndurable source capture]
-  C --> O[OpenRouter\nGPT-5.6 Terra + Luna]
+  C --> O[OpenAI Responses API\nGPT-5.6 Terra + Luna]
   C <--> M[AgentMail\ncase inbox + signed webhooks]
   O --> G[AI Legal Guide\nAI Money & Tax Guide\nJourney Guide]
   G --> S
@@ -112,8 +112,8 @@ and file storage. Better Auth provides verified email/password, sessions,
 password reset, and authenticated passkey enrollment. Social providers are not
 exposed by the public release.
 AgentMail delivers security mail through a bounded Convex retry queue. Exa finds
-focused current sources, Firecrawl saves durable evidence, OpenRouter serves
-OpenAI GPT-5.6 Terra and Luna for specialist checks and plain-language route
+focused current sources, Firecrawl saves durable evidence, and the direct
+OpenAI Responses API serves GPT-5.6 Terra and Luna for specialist checks and plain-language route
 building, and AgentMail provides case inboxes and delivery events.
 
 See [Architecture](docs/ARCHITECTURE.md) for domains, workflows, authorization,
@@ -128,7 +128,7 @@ documents the public authentication policy and private judge-account procedure.
 - npm
 - A Convex account and deployment
 - Google Chrome or Microsoft Edge for the complete authentication smoke test
-- Optional Firecrawl, OpenRouter, and AgentMail credentials for live provider verification
+- Optional Firecrawl, OpenAI, and AgentMail credentials for live provider verification
 
 ```powershell
 git clone https://github.com/SouravBeraAkaSpeed/RibbonDesk.git
@@ -144,7 +144,7 @@ environment, not `.env.local`. The client receives only public URLs.
 
 Required production values:
 
-- `OPENROUTER_API_KEY`
+- `OPENAI_API_KEY`
 - `EXA_API_KEY`
 - `FIRECRAWL_API_KEY`
 - `AGENTMAIL_API_KEY`

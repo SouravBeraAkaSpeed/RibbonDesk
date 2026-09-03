@@ -330,7 +330,7 @@ export function ResearchPanel({
 
       {integrations && !integrations.researchReady ? (
         <div className="border-b bg-[var(--amber-soft)] px-5 py-4 text-sm text-[var(--amber)] sm:px-6">
-          Live research is paused until genuine OpenRouter and Firecrawl credentials
+          Live research is paused until genuine OpenAI and Firecrawl credentials
           are configured. Manual cited requirements and tasks remain fully
           available; RibbonDesk will not manufacture replacement results.
         </div>

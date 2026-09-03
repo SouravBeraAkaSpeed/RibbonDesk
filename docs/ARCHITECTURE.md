@@ -12,7 +12,7 @@ without allowing automation to quietly take actions as the business owner.
 | Convex application    | Authorization, durable data, indexed queries, workflow state, files, schedules, callbacks, quotas, and audit events              |
 | Exa                   | Focused discovery and current evidence highlights across government, professional, and commercial sources                        |
 | Firecrawl component   | Durable authoritative-page capture and audit snapshots                                                                           |
-| OpenRouter            | GPT-5.6 Terra legal/tax reviews and GPT-5.6 Luna journey composition, explanations, and screenshot guidance                      |
+| OpenAI Responses API  | GPT-5.6 Terra legal/tax reviews and GPT-5.6 Luna journey composition, explanations, and screenshot guidance                      |
 | AgentMail             | Location-owned inboxes, messages, attachments, signed events, delivery, and bounce state                                         |
 
 Convex is the source of truth. Provider records are mirrored only where the
@@ -122,6 +122,7 @@ every protected server operation.
 4. Source and portal URLs are HTTPS/public-network validated before retrieval and captured text is treated as untrusted data.
 5. Webhook signatures and provider event IDs are verified and deduplicated.
 6. Private data, tokens, messages, and inbox addresses are excluded from public fixtures, logs, analytics, and hackathon evidence.
+7. Direct OpenAI requests set `store: false`, carry no app metadata, title, URL, or custom identifying headers, and use only a hashed workspace safety identifier when abuse isolation is useful.
 
 Verification and password-reset emails enter a bounded Convex queue. Transient
 AgentMail `404`, `409`, `429`, and server failures honor `Retry-After` and retry

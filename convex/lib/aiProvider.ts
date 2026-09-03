@@ -1,39 +1,45 @@
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOpenAI } from '@ai-sdk/openai';
 
 import { env } from '../_generated/server';
 
 export const COMPLEX_MODEL =
-  env.OPENROUTER_MODEL_COMPLEX ?? 'openai/gpt-5.6-terra';
+  env.OPENAI_MODEL_COMPLEX ?? 'gpt-5.6-terra';
 export const FAST_MODEL =
-  env.OPENROUTER_MODEL_FAST ?? 'openai/gpt-5.6-luna';
+  env.OPENAI_MODEL_FAST ?? 'gpt-5.6-luna';
 
 export function hasAiProvider() {
-  return Boolean(env.OPENROUTER_API_KEY?.trim());
+  return Boolean(env.OPENAI_API_KEY?.trim());
 }
 
-const openrouter = createOpenRouter({
-  apiKey: env.OPENROUTER_API_KEY?.trim() || 'not-configured',
-  compatibility: 'strict',
+const openai = createOpenAI({
+  apiKey: env.OPENAI_API_KEY?.trim() || 'not-configured',
 });
 
 export function requireAiProvider() {
   if (!hasAiProvider()) {
     throw new Error(
-      'OpenRouter is not configured for live AI features. Set OPENROUTER_API_KEY on the Convex deployment.',
+      'OpenAI is not configured for live AI features. Set OPENAI_API_KEY on the Convex deployment.',
     );
   }
 }
 
-export function complexModel(options?: { structured?: boolean }) {
-  return openrouter(COMPLEX_MODEL, {
-    plugins: options?.structured ? [{ id: 'response-healing' }] : undefined,
-    usage: { include: true },
-  });
+export function openAiProviderOptions(options: {
+  reasoningEffort: 'none' | 'minimal' | 'low' | 'medium' | 'high';
+  safetyIdentifier?: string;
+}) {
+  return {
+    openai: {
+      reasoningEffort: options.reasoningEffort,
+      safetyIdentifier: options.safetyIdentifier,
+      store: false,
+    },
+  };
 }
 
-export function fastModel(options?: { structured?: boolean }) {
-  return openrouter(FAST_MODEL, {
-    plugins: options?.structured ? [{ id: 'response-healing' }] : undefined,
-    usage: { include: true },
-  });
+export function complexModel(_options?: { structured?: boolean }) {
+  return openai.responses(COMPLEX_MODEL);
+}
+
+export function fastModel(_options?: { structured?: boolean }) {
+  return openai.responses(FAST_MODEL);
 }

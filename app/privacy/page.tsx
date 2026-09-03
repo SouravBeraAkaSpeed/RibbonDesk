@@ -32,7 +32,7 @@ export default function PrivacyPage() {
         {
           title: 'Service providers',
           paragraphs: [
-            'Convex provides the backend, authentication storage, and realtime data layer. Better Auth manages authentication logic. OpenAI models accessed through OpenRouter, Exa, Firecrawl, AgentMail, and ChatGPT Sites support specific product workflows. AgentMail also delivers verification and password-reset messages. Secrets stay in server environments and are never placed in the public client or build log.',
+            'Convex provides the backend, authentication storage, and realtime data layer. Better Auth manages authentication logic. OpenAI, Exa, Firecrawl, AgentMail, and ChatGPT Sites support specific product workflows. AgentMail also delivers verification and password-reset messages. OpenAI requests disable response storage and do not include app-identifying metadata. Secrets stay in server environments and are never placed in the public client or build log.',
           ],
         },
       ]}

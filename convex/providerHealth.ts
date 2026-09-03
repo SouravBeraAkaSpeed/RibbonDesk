@@ -1,11 +1,19 @@
 import { FirecrawlClient } from '@firecrawl/firecrawl-convex';
-import { generateText } from 'ai';
+import { generateText, Output } from 'ai';
 import { v } from 'convex/values';
+import { z } from 'zod';
 
 import { components } from './_generated/api';
 import { env, internalAction } from './_generated/server';
 import { listAgentMailInboxes } from './lib/agentMailClient';
-import { FAST_MODEL, fastModel, hasAiProvider } from './lib/aiProvider';
+import {
+  COMPLEX_MODEL,
+  FAST_MODEL,
+  complexModel,
+  fastModel,
+  hasAiProvider,
+  openAiProviderOptions,
+} from './lib/aiProvider';
 
 const firecrawl = new FirecrawlClient(components.firecrawl);
 
@@ -26,28 +34,39 @@ function safeError(error: unknown) {
 export const verify = internalAction({
   args: {},
   returns: v.object({
-    openrouter: checkValidator,
+    openai: checkValidator,
     firecrawl: checkValidator,
     agentmail: checkValidator,
   }),
   handler: async (ctx) => {
-    const openrouterConfigured = hasAiProvider();
+    const openaiConfigured = hasAiProvider();
     const firecrawlConfigured = Boolean(env.FIRECRAWL_API_KEY?.trim());
     const agentmailConfigured = Boolean(env.AGENTMAIL_API_KEY?.trim());
 
-    const [openrouterResult, firecrawlResult, agentmailResult] =
+    const [openaiResult, firecrawlResult, agentmailResult] =
       await Promise.allSettled([
-        openrouterConfigured
-          ? generateText({
-              model: fastModel(),
-              prompt:
-                'Reply with exactly: RibbonDesk provider health check passed',
-              maxOutputTokens: 32,
-              providerOptions: {
-                openrouter: { reasoning: { effort: 'none' } },
-              },
-            })
-          : Promise.reject(new Error('OPENROUTER_API_KEY is not configured.')),
+        openaiConfigured
+          ? Promise.all([
+              generateText({
+                model: fastModel(),
+                prompt: 'Reply with exactly: provider health check passed',
+                maxOutputTokens: 32,
+                providerOptions: openAiProviderOptions({
+                  reasoningEffort: 'none',
+                }),
+              }),
+              generateText({
+                model: complexModel({ structured: true }),
+                output: Output.object({
+                  schema: z.object({ status: z.literal('ok') }),
+                }),
+                prompt: 'Return the requested health status.',
+                providerOptions: openAiProviderOptions({
+                  reasoningEffort: 'none',
+                }),
+              }),
+            ])
+          : Promise.reject(new Error('OPENAI_API_KEY is not configured.')),
         firecrawlConfigured
           ? firecrawl.scrape(
               ctx,
@@ -65,19 +84,21 @@ export const verify = internalAction({
       ]);
 
     return {
-      openrouter:
-        openrouterResult.status === 'fulfilled'
+      openai:
+        openaiResult.status === 'fulfilled'
           ? {
               configured: true,
-              healthy: openrouterResult.value.text
-                .toLowerCase()
-                .includes('health check passed'),
-              detail: `OpenRouter responded through ${FAST_MODEL}.`,
+              healthy:
+                openaiResult.value[0].text
+                  .toLowerCase()
+                  .includes('health check passed') &&
+                openaiResult.value[1].output.status === 'ok',
+              detail: `OpenAI responded through ${FAST_MODEL} and ${COMPLEX_MODEL}, including structured output.`,
             }
           : {
-              configured: openrouterConfigured,
+              configured: openaiConfigured,
               healthy: false,
-              detail: safeError(openrouterResult.reason),
+              detail: safeError(openaiResult.reason),
             },
       firecrawl:
         firecrawlResult.status === 'fulfilled'

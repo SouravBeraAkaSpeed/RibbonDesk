@@ -42,7 +42,7 @@ Set provider values with the Convex CLI or dashboard. Never copy them into a
 committed file, shell transcript, issue, or build log.
 
 - `BETTER_AUTH_SECRET`
-- `OPENROUTER_API_KEY`
+- `OPENAI_API_KEY`
 - `EXA_API_KEY`
 - `FIRECRAWL_API_KEY`
 - `AGENTMAIL_API_KEY`

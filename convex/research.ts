@@ -28,6 +28,7 @@ import {
   COMPLEX_MODEL,
   complexModel,
   hasAiProvider,
+  openAiProviderOptions,
 } from './lib/aiProvider';
 import { recordActivity, requireLocation } from './lib/permissions';
 import schema from './schema';
@@ -262,7 +263,7 @@ export const start = mutation({
       throw new ConvexError({
         code: 'LIVE_PROVIDERS_NOT_CONFIGURED',
         message:
-          'Live research needs genuine OpenRouter and Firecrawl credentials. No synthetic result was created.',
+          'Live research needs genuine OpenAI and Firecrawl credentials. No synthetic result was created.',
       });
     }
 
@@ -871,9 +872,9 @@ async function synthesize(
   if (!hasAiProvider()) {
     await ctx.runMutation(internal.research.markFailed, {
       researchRunId,
-      code: 'OPENROUTER_NOT_CONFIGURED',
+      code: 'OPENAI_NOT_CONFIGURED',
       message:
-        'Live research requires an OpenRouter API key in the Convex deployment environment.',
+        'Live research requires an OpenAI API key in the Convex deployment environment.',
     });
     return;
   }
@@ -920,12 +921,10 @@ async function synthesize(
           content: document.content,
         })),
       }),
-      providerOptions: {
-        openrouter: {
-          reasoning: { effort: 'medium' },
-          user: await safetyIdentifier(context.run.organizationId),
-        },
-      },
+      providerOptions: openAiProviderOptions({
+        reasoningEffort: 'medium',
+        safetyIdentifier: await safetyIdentifier(context.run.organizationId),
+      }),
     });
     await ctx.runMutation(internal.research.persistSynthesis, {
       researchRunId,
@@ -943,7 +942,7 @@ async function synthesize(
       message:
         error instanceof Error
           ? error.message.slice(0, 500)
-          : 'OpenRouter structured extraction failed.',
+          : 'OpenAI structured extraction failed.',
     });
   }
 }
@@ -1268,7 +1267,7 @@ export const failAiRun = internalMutation({
     });
     await ctx.db.patch(args.researchRunId, {
       status: 'failed',
-      errorCode: 'OPENROUTER_FAILED',
+      errorCode: 'OPENAI_FAILED',
       errorMessage: args.message,
       completedAt: now,
       updatedAt: now,

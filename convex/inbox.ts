@@ -6,7 +6,12 @@ import { z } from 'zod';
 import { internal } from './_generated/api';
 import type { Doc, Id } from './_generated/dataModel';
 import { env, internalAction, internalMutation, internalQuery, mutation, query } from './_generated/server';
-import { FAST_MODEL, fastModel, hasAiProvider } from './lib/aiProvider';
+import {
+  FAST_MODEL,
+  fastModel,
+  hasAiProvider,
+  openAiProviderOptions,
+} from './lib/aiProvider';
 import { arrayBufferToBase64, createAgentMailInbox, sendAgentMailMessage } from './lib/agentMailClient';
 import { recordActivity, requireLocation } from './lib/permissions';
 import { roleValidator } from './lib/validators';
@@ -223,7 +228,7 @@ export const provision = mutation({
       throw new ConvexError({
         code: 'LIVE_PROVIDERS_NOT_CONFIGURED',
           message:
-            'A live case inbox needs genuine AgentMail and OpenRouter credentials. No synthetic inbox was created.',
+            'A live case inbox needs genuine AgentMail and OpenAI credentials. No synthetic inbox was created.',
         });
       }
       if (existing) {
@@ -917,7 +922,7 @@ export const classifyInbound = internalAction({
       return null;
     }
     if (!hasAiProvider()) {
-      await ctx.runMutation(internal.inbox.failInboundClassification, { messageId: args.messageId, aiRunId, message: 'OpenRouter is not configured; review this message manually.' });
+      await ctx.runMutation(internal.inbox.failInboundClassification, { messageId: args.messageId, aiRunId, message: 'OpenAI is not configured; review this message manually.' });
       return null;
     }
     try {
@@ -930,7 +935,12 @@ export const classifyInbound = internalAction({
           requirements: context.requirements.map((requirement) => ({ id: requirement._id, title: requirement.title, status: requirement.status, agency: requirement.agency })),
           applications: context.applications.map((application) => ({ id: application._id, name: application.name, status: application.status, agency: application.agency })),
         }),
-        providerOptions: { openrouter: { reasoning: { effort: 'low' }, user: await safetyIdentifier(context.message.organizationId) } },
+        providerOptions: openAiProviderOptions({
+          reasoningEffort: 'low',
+          safetyIdentifier: await safetyIdentifier(
+            context.message.organizationId,
+          ),
+        }),
       });
       const dueAt = output.dueAtIso ? Date.parse(output.dueAtIso) : undefined;
       await ctx.runMutation(internal.inbox.persistInboundClassification, {

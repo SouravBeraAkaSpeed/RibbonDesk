@@ -122,7 +122,7 @@ the deadline rather than discovering extra fields during the final hour.
   indexed domain schema, authenticated queries and mutations, HTTP auth routes,
   activity events, and a realtime command-center query. The production
   deployment is bound to the final public Site origin and now runs this verified
-  backend source in live mode. OpenRouter, Firecrawl, and AgentMail production
+  backend source in live mode. OpenAI, Firecrawl, and AgentMail production
   health checks pass, and the complete production AgentMail acceptance journey
   passes through the existing public Site. Authenticated organization, business,
   and location edits are role-checked, audited, and deployed to production.
@@ -206,10 +206,10 @@ the deadline rather than discovering extra fields during the final hour.
   shared development workspace is never used as the destructive test target.
 - **Sponsor components:** AgentMail and Firecrawl components are registered,
   along with Agent, Workflow, and Rate Limiter. A controlled live Firecrawl run
-  captures official source text into Convex storage; OpenRouter models generate
+  captures official source text into Convex storage; OpenAI models generate
   cited proposals and a grounded Assistant answer; and a second browser observes
   the accepted work in realtime. The signed AgentMail webhook receives a real
-  controlled message, OpenRouter proposes follow-up work, an owner approves it,
+  controlled message, OpenAI proposes follow-up work, an owner approves it,
   and a separately approved reply reaches the controlled recipient. Workspace
   deletion also removes its provider inbox. These tests use real provider
   credentials and no replay or synthetic provider data. The current guided

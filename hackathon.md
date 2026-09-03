@@ -10,9 +10,9 @@
 - **Components:** @convex-dev/agent, @convex-dev/better-auth, @convex-dev/rate-limiter, @convex-dev/workflow, @firecrawl/firecrawl-convex, @agentmail/convex
 - **Convex features:** schema, indexes, full-text search, queries, mutations, actions, HTTP actions, scheduled functions, realtime queries, file storage
 - **Auth:** Other (Better Auth passkeys on Convex)
-- **AI models:** openai/gpt-5.6-terra and openai/gpt-5.6-luna through OpenRouter
+- **AI models:** gpt-5.6-terra and gpt-5.6-luna through the direct OpenAI Responses API
 - **Started:** 2026-08-30T20:40:25Z
-- **Last updated:** 2026-09-03T17:19:36Z
+- **Last updated:** 2026-09-03T18:55:47Z
 
 ## Log
 
@@ -589,7 +589,7 @@ shrink boundaries, the sidebar contains its children, and titles wrap inside
 the available width instead of stretching the page. Strict TypeScript and lint
 pass for the fix before production packaging.
 
-### 2026-09-03 - working tree
+### 2026-09-03 - 2b8a9df
 
 I replaced the fragile cross-domain email-confirmation redirect with a dedicated
 RibbonDesk confirmation route. Verification and password-reset messages now use
@@ -606,3 +606,29 @@ passkey sign-in, password reset, post-reset sign-in, and bounded workspace clean
 Ten domain tests, strict TypeScript, lint, the production dependency audit, and
 the production Sites build pass, and the updated auth functions are live on the
 production Convex deployment.
+
+### 2026-09-03 - working tree
+
+I rotated the Firecrawl server credential without exposing it to the client or
+repository and synchronized it across the development and production Convex
+deployments. Live provider checks in both environments successfully retrieved
+content from an official NYC source; OpenRouter and AgentMail remained healthy
+during the same checks. The replacement account has usable research capacity,
+so new provider-backed journeys can run again.
+
+I rechecked the current official event page and Vibe Apps submission fields
+against the repository and public deployment. The public repository, root build
+log, public Site, sponsor-backed Convex architecture, lint, strict TypeScript,
+ten domain tests, and production build are ready. I left the social post, final
+sub-three-minute product video, demo link in this log, and Vibe Apps submission
+explicitly pending rather than presenting the project as submission-complete.
+
+I migrated every live AI workload from the intermediary provider to the direct
+OpenAI Responses API: research synthesis, legal and money/tax checks, journey
+composition, inbox classification, grounded chat, step questions, screenshot
+guidance, and provider health. Requests use GPT-5.6 Terra and Luna with response
+storage disabled, hashed workspace safety identifiers where needed, and no
+application title, URL, metadata, or custom identifying header. Direct OpenAI,
+Firecrawl, and AgentMail health checks pass in development and production after
+the legacy provider secrets were removed from both Convex deployments
+(`convex/lib/aiProvider.ts`, `convex/providerHealth.ts`).

@@ -205,8 +205,8 @@ export function AssistantSourcesPanel({
             </div>
             <Badge variant="outline">
               {integrations?.ai && integrations.mode === 'live'
-                ? 'Live OpenRouter AI'
-                : 'Live OpenRouter required'}
+                ? 'Live OpenAI'
+                : 'Live OpenAI required'}
             </Badge>
           </div>
 
